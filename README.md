@@ -1,3 +1,9 @@
+<p align = "center">
+  <a href = "https://discord.com/oauth2/authorize?client_id=855437723166703616&permissions=8&scope=bot%20applications.commands">
+    <img alt = "Axiol" src = "https://i.imgur.com/HosYSWj.png" width = "140"/>
+  </a>
+</p>
+
 # **Shinobi Bot**
 > **【Multipurpose Discord Bot】Tickets｜Logging｜Anti-Spam｜Giveaways｜Suggestions｜Moderation｜Games｜ChatGPT｜100+ commands**
 
@@ -73,13 +79,20 @@ Get a quick overview of your server's status, members, and more with Shinobi Bot
 
 <img src = "https://i.imgur.com/BqcipEF.png" width = 700>
 
-## Installation
+## Bot Links
+[Invite Link](https://discord.com/oauth2/authorize?client_id=855437723166703616&permissions=8&scope=bot%20applications.commands)
+<br>
+[top.gg](https://top.gg/bot/855437723166703616)
+<br>
+[discordbotlist.com](https://discordbotlist.com/bots/shinobi-bot)
 
-Use my hosted bot from [here](https://top.gg/bot/855437723166703616), or install and host it on your own. here is how:
+## Installation Guide
+
+If you want to install and host it on your own, here is how:
 
 <ol>
 <li>
-Create a new bot from https://discord.com/developers/applications and copy your bot token and application ID
+Create a new bot from https://discord.com/developers/applications and save your bot token and application ID
 </li>
 
 <li>
@@ -112,9 +125,9 @@ pip install -r requirements.txt
 Run the .py file!
 
 ```
-python3 main.py
+py main.py
 ```
-If you are on Windows you may need to change `python3` to `py`
+If you are on Linux you may need to change `py` to `python3`
 </li>
 </ol>
 You can host the bot on a free service like Google Cloud, Oracle Cloud or AWS
