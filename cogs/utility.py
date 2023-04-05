@@ -109,7 +109,7 @@ class Utility(commands.Cog):
     async def bing_image(self, interaction: discord.Interaction, prompt: str):
         await interaction.response.defer()
         try:
-            auth_cookie = os.getenv("BING_AUTH_COOKIE")
+            auth_cookie = os.getenv("BING_AUTH_COOKIE") # visit https://github.com/acheong08/BingImageCreator for guide on how to get
             async with ImageGenAsync(auth_cookie, quiet = True) as image_generator:
                 images_links = await image_generator.get_images(prompt)
             images_list = []
@@ -141,7 +141,7 @@ class Utility(commands.Cog):
             if word in prompt.lower(): return await interaction.response.send_message("I can't do that.")
         await interaction.response.defer()
         try:
-            API_TOKEN = os.getenv("MJ_TOKEN")
+            API_TOKEN = os.getenv("MJ_TOKEN") # search for openjourney
             API_URL = "https://api-inference.huggingface.co/models/prompthero/openjourney"
             headers = {"Authorization": f"Bearer {API_TOKEN}"}
             payload = {"inputs": f"{prompt}, mdjrny-v4 style"}
@@ -161,7 +161,7 @@ class Utility(commands.Cog):
     async def bard(self, interaction: discord.Interaction, prompt: str):
         await interaction.response.defer()
         try:
-            session_cookie = os.getenv("BARD_COOKIE")
+            session_cookie = os.getenv("BARD_COOKIE") # visit https://github.com/acheong08/Bard for guide on how to get
             bot = Bard.Chatbot(session_cookie)
             response = bot.ask(prompt)
             response = str(response).split("{'content': ")[1].split(", 'conversation_id")[0].replace("\\n", "\n").replace("\\'", "'").replace('\\"', '"')[1:-1]
@@ -206,7 +206,7 @@ class Utility(commands.Cog):
     async def bing(self, interaction: discord.Interaction, prompt: str):
         await interaction.response.defer()
         try:
-            bot = EdgeGPT.Chatbot(cookiePath = os.getenv("BING_COOKIE_DIR"))
+            bot = EdgeGPT.Chatbot(cookiePath = os.getenv("BING_COOKIE_DIR")) # visit https://github.com/acheong08/EdgeGPT for guide on how to get
             response = await bot.ask(prompt = prompt, conversation_style = EdgeGPT.ConversationStyle.creative)
             response = str(response).split("[{'type': 'TextBlock', 'text': ")[1].split(", 'wrap': True}")[0].replace("\\n", "\n").replace("\\'", "'").replace('\\"', '"')[1:-1]
             limit = 1800
