@@ -1,7 +1,3 @@
-<div align = "center">
-<img src = "https://i.imgur.com/fTPtBSf.png" width = 200></img>
-</div>
-
 # **Shinobi Bot**
 > **【Multipurpose Discord Bot】Tickets｜Logging｜Anti-Spam｜Giveaways｜Suggestions｜Moderation｜Games｜ChatGPT｜100+ commands**
 
