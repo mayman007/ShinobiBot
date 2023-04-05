@@ -79,7 +79,7 @@ Get a quick overview of your server's status, members, and more with Shinobi Bot
 
 ## Installation
 
-Use our hosted bot from [here](https://top.gg/bot/855437723166703616) or install and host it on your own, here is how:
+Use my hosted bot from [here](https://top.gg/bot/855437723166703616), or install and host it on your own. here is how:
 
 <ol>
 <li>
