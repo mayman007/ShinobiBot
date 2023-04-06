@@ -7,13 +7,6 @@ import wikipedia
 from deep_translator import GoogleTranslator
 import aiohttp
 from datetime import datetime
-import revChatGPT.V1
-import EdgeGPT
-import openai
-import Bard
-import io
-from ImageGen import ImageGenAsync
-import os
 
 
 # giveaway button
@@ -101,152 +94,6 @@ class Utility(commands.Cog):
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     async def ping(self, interaction: discord.Interaction):
         await interaction.response.send_message(f">>> _**Pong!**_\n{round(self.bot.latency * 1000)}ms")
-
-    # bingimagecreator
-    @app_commands.command(name = "bing_image", description = "Use Bing Image Creator to create images.")
-    @app_commands.describe(prompt = "Describe the image.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
-    async def bing_image(self, interaction: discord.Interaction, prompt: str):
-        await interaction.response.defer()
-        try:
-            auth_cookie = os.getenv("BING_AUTH_COOKIE") # visit https://github.com/acheong08/BingImageCreator for guide on how to get
-            async with ImageGenAsync(auth_cookie, quiet = True) as image_generator:
-                images_links = await image_generator.get_images(prompt)
-            images_list = []
-            for image_link in images_links:
-                async with aiohttp.ClientSession() as session: # creates session
-                    async with session.get(image_link) as resp: # gets image from url
-                        img = await resp.read() # reads image from response
-                        with io.BytesIO(img) as file: # converts to file-like object
-                            file = discord.File(file, "image.png")
-                            images_list.append(file)
-            await interaction.followup.send(f"Prompt: {prompt}", files = images_list)
-        except Exception as e:
-            print(f"BingImageCreator error: {e}")
-            await interaction.followup.send("Sorry, an unexpected error has occured.")
-
-    # midjourney
-    @app_commands.command(name = "midjourney", description = "Use MidJourney AI to create images.")
-    @app_commands.describe(prompt = "Describe the image.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
-    async def midjourney(self, interaction: discord.Interaction, prompt: str):
-        banned_words = ["sex", "s.ex", "se.x",
-                        "porn", "p.orn", "po.rn", "por.n",
-                        "pussy", "p.ussy", "pu.ssy", "pus.sy", "puss.y",
-                        "boob", "b.oob", "bo.ob", "boo.b",
-                        "tits", "t.its", "ti.ts", "tit.s",
-                        "nude", "n.ude", "nu.de", "nud.e",
-                        "nake", "n.ake", "na.ke", "nak.e"]
-        for word in banned_words:
-            if word in prompt.lower(): return await interaction.response.send_message("I can't do that.")
-        await interaction.response.defer()
-        try:
-            API_TOKEN = os.getenv("MJ_TOKEN") # search for openjourney
-            API_URL = "https://api-inference.huggingface.co/models/prompthero/openjourney"
-            headers = {"Authorization": f"Bearer {API_TOKEN}"}
-            payload = {"inputs": f"{prompt}, mdjrny-v4 style"}
-            async with aiohttp.ClientSession(headers = headers) as session:
-                async with session.post(API_URL, json = payload) as response:
-                    image_bytes =  await response.read()
-            with io.BytesIO(image_bytes) as file: # converts to file-like object
-                await interaction.followup.send(f"Prompt: {prompt.strip()}", file = discord.File(file, "image.png"))
-        except Exception as e:
-            print(f"MidJourney error: {e}")
-            await interaction.followup.send("Sorry, an unexpected error has occured.")
-
-    # bard
-    @app_commands.command(name = "bard", description = "Ask Bard.")
-    @app_commands.describe(prompt = "The question you wanna ask.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
-    async def bard(self, interaction: discord.Interaction, prompt: str):
-        await interaction.response.defer()
-        try:
-            session_cookie = os.getenv("BARD_COOKIE") # visit https://github.com/acheong08/Bard for guide on how to get
-            bot = Bard.Chatbot(session_cookie)
-            response = bot.ask(prompt)
-            response = str(response).split("{'content': ")[1].split(", 'conversation_id")[0].replace("\\n", "\n").replace("\\'", "'").replace('\\"', '"')[1:-1]
-            limit = 1800
-            total_text = len(prompt) + len(response)
-            if total_text > limit:
-                result = [response[i: i + limit] for i in range(0, len(response), limit)]
-                for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bard:** {half}")
-            else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bard:** {response}")
-        except Exception as e:
-            print(f"Bard error: {e}")
-            await interaction.followup.send("Sorry, an unexpected error has occured.")
-
-    # dalle
-    @app_commands.command(name = "dalle", description = "Use Dall-E AI to create images.")
-    @app_commands.describe(prompt = "Describe the image.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
-    async def dalle(self, interaction: discord.Interaction, prompt: str):
-        await interaction.response.defer()
-        try:
-            openai.api_key = "" # leave ths blank
-            openai.api_base = "https://api.hypere.app"
-            try:
-                img = openai.Image.create(
-                    prompt = prompt,
-                    n = 1,
-                    size = "1024x1024"
-                )
-            except openai.error.InvalidRequestError as e: return await interaction.followup.send(e)
-            image_url = str(img).split('"url": "')[1].split('"')[0]
-            embed = discord.Embed(colour = 0x2F3136)
-            embed.set_image(url = image_url)
-            await interaction.followup.send(f"Prompt: {prompt}", embed = embed)
-        except Exception as e:
-            print(f"Dalle error: {e}")
-            await interaction.followup.send("Sorry, an unexpected error has occured.")
-
-    # bing
-    @app_commands.command(name = "bing", description = "Ask Bing AI.")
-    @app_commands.describe(prompt = "The question you wanna ask.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
-    async def bing(self, interaction: discord.Interaction, prompt: str):
-        await interaction.response.defer()
-        try:
-            bot = EdgeGPT.Chatbot(cookiePath = os.getenv("BING_COOKIE_DIR")) # visit https://github.com/acheong08/EdgeGPT for guide on how to get
-            response = await bot.ask(prompt = prompt, conversation_style = EdgeGPT.ConversationStyle.creative)
-            response = str(response).split("[{'type': 'TextBlock', 'text': ")[1].split(", 'wrap': True}")[0].replace("\\n", "\n").replace("\\'", "'").replace('\\"', '"')[1:-1]
-            limit = 1800
-            total_text = len(prompt) + len(response)
-            if total_text > limit:
-                result = [response[i: i + limit] for i in range(0, len(response), limit)]
-                for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bing AI:** {half}")
-            else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bing AI:** {response}")
-            await bot.close()
-        except Exception as e:
-            print(f"Bing error: {e}")
-            await interaction.followup.send("Sorry, an unexpected error has occured.")
-
-    # chatgpt
-    @app_commands.command(name = "chatgpt", description = "Ask ChatGPT-4.")
-    @app_commands.describe(prompt = "The question you wanna ask.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
-    async def chatgpt(self, interaction: discord.Interaction, prompt: str):
-        await interaction.response.defer()
-        try:
-            chatbot = revChatGPT.V1.Chatbot(config = {"email": os.getenv("CHATGPT_EMAIL"),
-                                                      "password": os.getenv("CHATGPT_PASS"),
-                                                      "model": "gpt-4"
-                                                      }
-                                            )
-            response = ""
-            while True:
-                try:
-                    for data in chatbot.ask(prompt): response = data["message"]
-                    break
-                except revChatGPT.typings.Error: await asyncio.sleep(2)
-            limit = 1800
-            total_text = len(prompt) + len(response)
-            if total_text > limit:
-                result = [response[i: i + limit] for i in range(0, len(response), limit)]
-                for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**ChatGPT-4:** {half}")
-            else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**ChatGPT-4:** {response}")
-        except Exception as e:
-            print(f"Chatgpt error: {e}")
-            await interaction.followup.send("Sorry, an unexpected error has occured.")
 
     # advice
     @app_commands.command(name = "advice", description = "Get a random advice.")
@@ -361,11 +208,9 @@ class Utility(commands.Cog):
         app_commands.Choice(name = "orange", value = "orange"),
         app_commands.Choice(name = "yellow", value = "yellow"),
         app_commands.Choice(name = "green", value = "green"),
-        app_commands.Choice(name = "transparent (rounded corners)", value = "transparent (rounded corners)"),
-        app_commands.Choice(name = "transparent (pointy corners)", value = "transparent (pointy corners)"),
         app_commands.Choice(name = "random", value = "random")
         ])
-    @app_commands.choices(thumbnail = [app_commands.Choice(name = "enable", value = "enable"),])
+    @app_commands.choices(thumbnail = [app_commands.Choice(name = "enable", value = "enable")])
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     async def embed(self, interaction: discord.Interaction, title: str, description: str, footer: str = None, color: app_commands.Choice[str] = None, thumbnail: app_commands.Choice[str] = None):
         if footer == None and color == None and thumbnail == None:
@@ -388,19 +233,16 @@ class Utility(commands.Cog):
             emb.set_thumbnail(url = icon)
             await interaction.response.send_message(embed = emb)
         elif color != None:
-            if (color.value == 'dark theme'): true_color = discord.Colour.dark_theme()
-            elif (color.value == 'dark grey'): true_color = discord.Colour.dark_grey()
-            elif (color.value == 'light grey'): true_color = discord.Colour.light_grey()
-            elif (color.value == 'blue'): true_color = discord.Colour.blue()
-            elif (color.value == 'red'): true_color = discord.Colour.red()
-            elif (color.value == 'gold'): true_color = discord.Colour.gold()
-            elif (color.value == 'orange'): true_color = discord.Colour.orange()
-            elif (color.value == 'yellow'): true_color = discord.Colour.yellow()
-            elif (color.value == 'green'): true_color = discord.Colour.green()
-            elif (color.value == 'transparent (rounded corners)'): true_color = 0x2F3136
-            elif (color.value == 'transparent (pointy corners)'): true_color = 0x36393E
-            elif (color.value == 'random'): true_color = discord.Colour.random()
-            else: return await interaction.response.send_message("Wrong color option.", ephemeral = True)
+            if color.value == "dark theme": true_color = discord.Colour.dark_theme()
+            elif color.value == "dark grey": true_color = discord.Colour.dark_grey()
+            elif color.value == "light grey": true_color = discord.Colour.light_grey()
+            elif color.value == "blue": true_color = discord.Colour.blue()
+            elif color.value == "red": true_color = discord.Colour.red()
+            elif color.value == "gold": true_color = discord.Colour.gold()
+            elif color.value == "orange": true_color = discord.Colour.orange()
+            elif color.value == "yellow": true_color = discord.Colour.yellow()
+            elif color.value == "green": true_color = discord.Colour.green()
+            elif color.value == "random": true_color = discord.Colour.random()
             if footer == None and thumbnail == None:
                 emb = discord.Embed(title = title, description = description, color = true_color)
                 await interaction.response.send_message(embed = emb)
