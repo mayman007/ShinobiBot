@@ -16,9 +16,10 @@ load_dotenv()
 class MyBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix = None, intents = discord.Intents.all(), application_id = os.getenv("APP_ID"))
-        self.initial_extensions = [ "cogs.moderation", "cogs.utility", "cogs.serverinfo", "cogs.help", "cogs.fun", # Load cogs
-                                    "cogs.connect4", "cogs.tictactoe", "cogs.rps","cogs.settings", "cogs.ticket",
-                                    "cogs.logs", "cogs.logs_events", "cogs.antispam"]
+        files = [file_name for file_name in os.listdir("cogs") if file_name.endswith(".py")]
+        cogs = []
+        for file_name in files: cogs.append(f"cogs.{file_name[:-3]}")
+        self.initial_extensions = cogs
         self.added = False
     async def setup_hook(self):
         self.session = aiohttp.ClientSession()
