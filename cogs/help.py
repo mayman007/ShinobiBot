@@ -96,7 +96,7 @@ class Dropdown(discord.ui.Select):
         # Artificial Intelligence page
         elif self.values[0] == "Artificial Intelligence":
             embed = discord.Embed(title = "**Anti-Spam**", description = "Use famous AI tools", color = 0x2F3136)
-            embed.add_field(name = "**Commands**", value = "> </chatgpt:1088511615072206962> , </bing:1088508793110933524> , </bard:1090416058382438440> , </dalle:1089010855695368253> , </midjourney:1092615807990767669> , </bing_image:1093034708054589460>")
+            embed.add_field(name = "**Commands**", value = "> </chatgpt:1088511615072206962> , </bard:1090416058382438440> , </bing chat:1088508793110933524> , </bing image_creator:1088508793110933524> , </dalle:1089010855695368253> , </midjourney:1092615807990767669>")
             embed.set_footer(text = "Use /help artificial-intelligence <command> for information on a command.")
             await interaction.message.edit(embed = embed)
             await interaction.response.defer()
@@ -474,11 +474,11 @@ class Help(commands.GroupCog, name = "help"):
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     @app_commands.choices(command = [
         app_commands.Choice(name = "chatgpt", value = "chatgpt"),
-        app_commands.Choice(name = "bing", value = "bing"),
+        app_commands.Choice(name = "bing chat", value = "bing chat"),
         app_commands.Choice(name = "bard", value = "bard"),
         app_commands.Choice(name = "dalle", value = "dalle"),
         app_commands.Choice(name = "midjourney", value = "midjourney"),
-        app_commands.Choice(name = "bing_image", value = "bing_image")
+        app_commands.Choice(name = "bing image_creator", value = "bing image_creator")
         ])
     async def utility(self, interaction: discord.Interaction, command: app_commands.Choice[str]):
         if command.value == "chatgpt":
@@ -487,10 +487,10 @@ class Help(commands.GroupCog, name = "help"):
             em.add_field(name = "**Example:**", value = "> `/chatgpt hello`")
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
-        elif command.value == "bing":
-            em = discord.Embed(title = "__**Bing**__", description = "Ask Bing AI.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> bing <prompt>")
-            em.add_field(name = "**Example:**", value = "> `/bing hello`")
+        elif command.value == "bing chat":
+            em = discord.Embed(title = "__**Bing Chat**__", description = "Ask Bing AI.", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> bing chat <prompt>")
+            em.add_field(name = "**Example:**", value = "> `/bing chat hello`")
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
         elif command.value == "bard":
@@ -510,10 +510,10 @@ class Help(commands.GroupCog, name = "help"):
             em.add_field(name = "**Example:**", value = "> `/midjourney a white dog`")
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
-        elif command.value == "bing_image":
-            em = discord.Embed(title = "__**Bing Image**__", description = "Create an image using Bing Image Creator.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> bing_image <prompt>")
-            em.add_field(name = "**Example:**", value = "> `/bing_image a white cow`")
+        elif command.value == "bing image_creator":
+            em = discord.Embed(title = "__**Bing Image Creator**__", description = "Create an image using Bing Image Creator.", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> bing image_creator <prompt>")
+            em.add_field(name = "**Example:**", value = "> `/bing image_creator a white cow`")
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
 
