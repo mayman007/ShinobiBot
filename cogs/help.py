@@ -95,7 +95,7 @@ class Dropdown(discord.ui.Select):
 
         # Artificial Intelligence page
         elif self.values[0] == "Artificial Intelligence":
-            embed = discord.Embed(title = "**Anti-Spam**", description = "Use famous AI tools", color = 0x2F3136)
+            embed = discord.Embed(title = "**Artificial Intelligence**", description = "Use famous AI tools", color = 0x2F3136)
             embed.add_field(name = "**Commands**", value = "> </chatgpt:1088511615072206962> , </bard:1090416058382438440> , </bing chat:1088508793110933524> , </bing image_creator:1088508793110933524> , </dalle:1089010855695368253> , </midjourney:1092615807990767669>")
             embed.set_footer(text = "Use /help artificial-intelligence <command> for information on a command.")
             await interaction.message.edit(embed = embed)
