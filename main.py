@@ -15,7 +15,10 @@ load_dotenv()
 #MyBot Class
 class MyBot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix = None, intents = discord.Intents.all(), application_id = os.getenv("APP_ID"))
+        intents = discord.Intents.default()
+        intents.members = True
+        intents.message_content = True
+        super().__init__(command_prefix = None, intents = intents, application_id = os.getenv("APP_ID"))
         files = [file_name for file_name in os.listdir("cogs") if file_name.endswith(".py")]
         cogs = []
         for file_name in files: cogs.append(f"cogs.{file_name[:-3]}")
