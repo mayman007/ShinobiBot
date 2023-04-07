@@ -125,9 +125,8 @@ pip install -r requirements.txt
 Run the .py file!
 
 ```
-py main.py
+python main.py
 ```
-If you are on Linux you may need to change `py` to `python3`
 </li>
 </ol>
 You can host the bot on a free service like Google Cloud, Oracle Cloud or AWS
