@@ -56,7 +56,7 @@ class Dropdown(discord.ui.Select):
         # Utility page
         elif self.values[0] == "Utility":
             embed = discord.Embed(title = "**Utility**", description = "Utility commands contains varies types of commands to use", color = 0x2F3136)
-            embed.add_field(name = "**Commands**", value = "> </poll:1017544215762317331> , </ping:1012416649825112084> , </serverlink:1017544215762317329> , </invite:1017544215762317330> , </vote:1027208511911895111> , </timer:1026825814525882428> , </tax:1029148523851169840> , </nick:1017544215762317323> , </embed:1020114423026810902> , </calculator:1081342436112081025> , </giveaway:1020114423026810903> , </translate:1021765874358698045> , </search:1020808368069292133> , </quote:1081342436112081024> , </affirmation:1081342436112081023> , </advice:1081342436112081022>")
+            embed.add_field(name = "**Commands**", value = "> </poll:1093371959825408075> , </ping:1093371959628283945> , </serverlink:1093371959825408072> , </invite:1093371959825408073> , </vote:1093371959825408074> , </timer:1093371959825408071> , </tax:1093371959825408070> , </nick:1093371959628283953> , </embed:1093371959628283952> , </calculator:1093371959628283951> , </giveaway:1093371959628283954> , </translate:1093371959628283950> , </search:1093371959628283949> , </quote:1093371959628283948> , </affirmation:1093371959628283947> , </advice:1093371959628283946>")
             embed.set_footer(text = "Use /help utility <command> for information on a command.")
             await interaction.message.edit(embed = embed)
             await interaction.response.defer()
