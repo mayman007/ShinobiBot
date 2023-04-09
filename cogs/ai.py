@@ -101,8 +101,8 @@ class AI(commands.Cog):
             print(f"BingImageCreator error: {e}")
             await interaction.followup.send("Sorry, an unexpected error has occured.")
 
-    # Bing Chat
-    @bing.command(name = "chat", description = "Ask Bing AI.")
+    # Bing Ask
+    @bing.command(name = "ask", description = "Ask Bing AI.")
     @app_commands.describe(prompt = "The question you wanna ask.", conversation_style = "default is balanced")
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     @app_commands.choices(conversation_style = [app_commands.Choice(name = "creative", value = "creative"),
@@ -149,25 +149,44 @@ class AI(commands.Cog):
             print(f"Bard error: {e}")
             await interaction.followup.send("Sorry, an unexpected error has occured.")
 
-    # ChatGPT
-    @app_commands.command(name = "chatgpt", description = "Ask ChatGPT-4.")
+    # ChatGPT category
+    chatgpt = app_commands.Group(name = "chatgpt", description = "ChatGPT")
+
+    # ChatGPT Reset Chat
+    @chatgpt.command(name = "reset_chat", description = "Resets your conversation with ChatGPT-4.")
+    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    async def chatgpt_reset_chat(self, interaction: discord.Interaction):
+        async with aiosqlite.connect("db/chatgpt_convos.db") as db: # Open the db
+            async with db.cursor() as cursor:
+                await cursor.execute("CREATE TABLE IF NOT EXISTS convos (convo_id TEXT, user ID)") # Create the table if not exists
+                await cursor.execute("SELECT convo_id FROM convos WHERE user = ?", (interaction.user.id,))
+                data = await cursor.fetchone()
+                if data:
+                    await cursor.execute("DELETE FROM convos WHERE user = ?", (interaction.user.id,))
+                    await interaction.response.send_message("Your conversation with ChatGPT has been reseted successfully.")
+                else:
+                    await interaction.response.send_message("You don't have a conversation with ChatGPT yet, start one with </chatgpt ask:1088511615072206962>!", ephemeral = True)
+            await db.commit()
+
+    # ChatGPT Ask
+    @chatgpt.command(name = "ask", description = "Ask ChatGPT-4.")
     @app_commands.describe(prompt = "The question you wanna ask.")
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
-    async def chatgpt(self, interaction: discord.Interaction, prompt: str):
+    async def chatgpt_ask(self, interaction: discord.Interaction, prompt: str):
         await interaction.response.defer()
         try:
             chatbot = revChatGPT.V1.Chatbot(config = {"access_token": os.getenv("CHATGPT_ACCESS_TOKEN")})
             response = ""
-            async with aiosqlite.connect("db/chatgpt_conv.db") as db: # Open the db
+            async with aiosqlite.connect("db/chatgpt_convos.db") as db: # Open the db
                 async with db.cursor() as cursor:
-                    await cursor.execute("CREATE TABLE IF NOT EXISTS conv (conv_uuid TEXT, user ID)") # Create the table if not exists
-                    await cursor.execute("SELECT conv_uuid FROM conv WHERE user = ?", (interaction.user.id,))
+                    await cursor.execute("CREATE TABLE IF NOT EXISTS convos (convo_id TEXT, user ID)") # Create the table if not exists
+                    await cursor.execute("SELECT convo_id FROM convos WHERE user = ?", (interaction.user.id,))
                     data = await cursor.fetchone()
                     if data:
-                        conv_uuid = data[0]
+                        convo_id = data[0]
                         while True:
                             try:
-                                for data in chatbot.ask(prompt, conversation_id = conv_uuid, model = "gpt-4"): response = data["message"]
+                                for data in chatbot.ask(prompt, conversation_id = convo_id, model = "gpt-4"): response = data["message"]
                                 break
                             except revChatGPT.typings.Error: await asyncio.sleep(2)
                     else:
@@ -175,8 +194,8 @@ class AI(commands.Cog):
                             try:
                                 for data in chatbot.ask(prompt, model="gpt-4"):
                                     response = data["message"]
-                                    conv_uuid = data["conversation_id"]
-                                    await cursor.execute("INSERT INTO conv (conv_uuid, user) VALUES (?, ?)", (conv_uuid, interaction.user.id,))
+                                    convo_id = data["conversation_id"]
+                                    await cursor.execute("INSERT INTO convos (convo_id, user) VALUES (?, ?)", (convo_id, interaction.user.id,))
                                 break
                             except revChatGPT.typings.Error: await asyncio.sleep(2)
                 await db.commit()
