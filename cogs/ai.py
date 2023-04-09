@@ -9,6 +9,7 @@ import io
 from ImageGen import ImageGenAsync
 import os
 import aiohttp
+import aiosqlite
 import asyncio
 
 # AI Class
@@ -155,17 +156,30 @@ class AI(commands.Cog):
     async def chatgpt(self, interaction: discord.Interaction, prompt: str):
         await interaction.response.defer()
         try:
-            chatbot = revChatGPT.V1.Chatbot(config = {"email": os.getenv("CHATGPT_EMAIL"),
-                                                      "password": os.getenv("CHATGPT_PASS"),
-                                                      "model": "gpt-4"
-                                                      }
-                                            )
+            chatbot = revChatGPT.V1.Chatbot(config = {"access_token": os.getenv("CHATGPT_ACCESS_TOKEN")})
             response = ""
-            while True:
-                try:
-                    for data in chatbot.ask(prompt): response = data["message"]
-                    break
-                except revChatGPT.typings.Error: await asyncio.sleep(2)
+            async with aiosqlite.connect("db/chatgpt_conv.db") as db: # Open the db
+                async with db.cursor() as cursor:
+                    await cursor.execute("CREATE TABLE IF NOT EXISTS conv (conv_uuid TEXT, user ID)") # Create the table if not exists
+                    await cursor.execute("SELECT conv_uuid FROM conv WHERE user = ?", (interaction.user.id,))
+                    data = await cursor.fetchone()
+                    if data:
+                        conv_uuid = data[0]
+                        while True:
+                            try:
+                                for data in chatbot.ask(prompt, conversation_id = conv_uuid, model = "gpt-4"): response = data["message"]
+                                break
+                            except revChatGPT.typings.Error: await asyncio.sleep(2)
+                    else:
+                        while True:
+                            try:
+                                for data in chatbot.ask(prompt, model="gpt-4"):
+                                    response = data["message"]
+                                    conv_uuid = data["conversation_id"]
+                                    await cursor.execute("INSERT INTO conv (conv_uuid, user) VALUES (?, ?)", (conv_uuid, interaction.user.id,))
+                                break
+                            except revChatGPT.typings.Error: await asyncio.sleep(2)
+                await db.commit()
             limit = 1800
             total_text = len(prompt) + len(response)
             if total_text > limit:
