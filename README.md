@@ -96,8 +96,6 @@ Get a quick overview of your server's status, members, and more with Shinobi Bot
 
 ## Installation Guide
 
-If you want to install and self-host it, here is how:
-
 <ol>
 <li>
 Create a new bot from https://discord.com/developers/applications and save your bot token and application ID
