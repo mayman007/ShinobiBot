@@ -54,8 +54,8 @@ class Serverinfo(commands.Cog):
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     async def roles(self, interaction: discord.Interaction):
         roles = ', '.join([str(r.name) for r in interaction.guild.roles])
-        embed = discord.Embed(title=f"{interaction.guild.name}", color = 0x00000)
-        embed.add_field(name="Roles", value=f"{roles}", inline = True)
+        embed = discord.Embed(title = interaction.guild.name, color = 0x00000)
+        embed.add_field(name = "Roles", value = roles)
         await interaction.response.send_message(embed = embed)
 
     #server info command
@@ -63,14 +63,14 @@ class Serverinfo(commands.Cog):
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     async def server(self, interaction: discord.Interaction):
         embed = discord.Embed(color = 0x2F3136)
-        embed.add_field(name = '**🆔Server ID**', value = f"> {interaction.guild.id}", inline = True)
-        embed.add_field(name = '**📆Created On**', value = f"> {interaction.guild.created_at.strftime('%b %d %Y')}", inline = True)
-        embed.add_field(name = '**👑Owner**', value = f"> {interaction.guild.owner}", inline = True)
-        embed.add_field(name = '**👥Members**', value = f'> {interaction.guild.member_count} Members | {sum(member.status != discord.Status.offline and not member.bot for member in interaction.guild.members)} Online', inline = True)
-        embed.add_field(name = '**💬Channels**', value = f'> {len(interaction.guild.text_channels)} Text | {len(interaction.guild.voice_channels)} Voice', inline = True)
+        embed.add_field(name = "**🆔 Server ID**", value = interaction.guild.id)
+        embed.add_field(name = "**📆 Created On**", value = interaction.guild.created_at.strftime('%b %d %Y'))
+        embed.add_field(name = "**👑 Owner**", value = interaction.guild.owner.mention)
+        embed.add_field(name = "**👥 Members**", value = f"**{interaction.guild.member_count}**")
+        embed.add_field(name = f"**💬 Channels ({len(interaction.guild.text_channels) + len(interaction.guild.voice_channels)})**", value = f"**{len(interaction.guild.text_channels)}** Text | **{len(interaction.guild.voice_channels)}** Voice")
+        embed.add_field(name = f"**:closed_lock_with_key: Roles ({len(interaction.guild.roles)})**", value = f"To see a list with all roles use </roles:1017544215871373399>", inline = False)
         embed.set_thumbnail(url = interaction.guild.icon.url)
-        embed.set_footer(text = "Server Information")
-        embed.set_author(name = f'{interaction.guild.name}', icon_url = interaction.guild.icon.url)
+        embed.set_author(name = interaction.guild.name, icon_url = interaction.guild.icon.url)
         await interaction.response.send_message(embed = embed)
 
     #owner info
