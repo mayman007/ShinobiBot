@@ -7,6 +7,14 @@
 # **Shinobi Bot**
 > **【Multipurpose Discord Bot】Tickets｜Logging｜Anti-Spam｜Giveaways｜Suggestions｜Moderation｜Games｜ChatGPT｜100+ commands**
 
+## Contents
+<ul>
+<li><a href = "https://github.com/Shinobi7k/ShinobiBot#features">Features</li>
+<li><a href = "https://github.com/Shinobi7k/ShinobiBot#bot-links">Bot Links</li>
+<li><a href = "https://github.com/Shinobi7k/ShinobiBot#installation-guide">Installation Guide</li>
+<li><a href = "https://github.com/Shinobi7k/ShinobiBot#recommended-hosting-services">Recommended Hosting Services</a></li>
+</ul>
+
 ## Features
 
 ### **Tickets**
@@ -88,7 +96,7 @@ Get a quick overview of your server's status, members, and more with Shinobi Bot
 
 ## Installation Guide
 
-If you want to install and host it on your own, here is how:
+If you want to install and self-host it, here is how:
 
 <ol>
 <li>
@@ -129,4 +137,21 @@ python main.py
 ```
 </li>
 </ol>
-You can host the bot on a free service like Google Cloud, Oracle Cloud or AWS
+
+## Recommended Hosting Services
+### Free Plan
+<ul>
+<li><a href = "https://cloud.google.com/">Google Cloud</a></li>
+<li><a href = "https://www.oracle.com/cloud/">Oracle Cloud</a></li>
+</ul>
+
+### Free Trial
+<ul>
+<li><a href = "https://aws.amazon.com/">AWS</a> (12 months)</li>
+<li><a href = "https://www.digitalocean.com/">Digital Ocean</a> (2 months)</li>
+</ul>
+
+### Paid
+<ul>
+<li><a href = "https://www.heroku.com/">Heruko</a></li>
+</ul>
