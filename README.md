@@ -116,15 +116,15 @@ cd ShinobiBot
 </li>
 
 <li>
-Create .env file and fill it with your bot token and application ID that you copied earlier
-</li>
-
-<li>
 Install modules using pip
 
 ```
 pip install -r requirements.txt
 ```
+</li>
+
+<li>
+Create .env file and fill it with your bot token in a variable named `BOT_TOKEN` and application ID in a variable named `APP_ID` that you copied earlier
 </li>
 
 <li>
