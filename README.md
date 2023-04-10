@@ -128,7 +128,7 @@ Create .env file and fill it with your bot token in a variable named `BOT_TOKEN`
 </li>
 
 <li>
-Run the .py file!
+Run the bot
 
 ```
 python main.py
