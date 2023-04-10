@@ -69,7 +69,7 @@ Add some fun to your server with Shinobi Bot's selection of games, including con
 
 Giveaways, Suggestions System, Fun commands and much more!: Shinobi Bot offers a ton of other amazing features that are guaranteed to keep your server lively and entertaining. The possibilities are endless with Shinobi Bot.
 
-<img src = "https://i.imgur.com/cymaSw9.png" width = 700>
+<img src = "https://i.imgur.com/8rBxjLd.png" width = 700>
 
 ## Bot Links
 [Invite Link](https://discord.com/oauth2/authorize?client_id=855437723166703616&permissions=8&scope=bot%20applications.commands)
