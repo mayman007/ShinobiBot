@@ -67,7 +67,7 @@ Add some fun to your server with Shinobi Bot's selection of games, including con
 
 ### **And much more!**
 
-Giveaways, Suggestions System, Fun commands and much more!: Shinobi Bot offers a ton of other amazing features that are guaranteed to keep your server lively and entertaining. The possibilities are endless with Shinobi Bot.
+Giveaways, Suggestions System, Fun commands and much more! Shinobi Bot offers a ton of other amazing features that are guaranteed to keep your server lively and entertaining. The possibilities are endless with Shinobi Bot.
 
 <img src = "https://i.imgur.com/8rBxjLd.png" width = 700>
 
@@ -108,6 +108,7 @@ pip install -r requirements.txt
 </li>
 
 <li>
+
 Create .env file and fill it with your bot token in a variable named `BOT_TOKEN` and application ID in a variable named `APP_ID`
 </li>
 
