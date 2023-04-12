@@ -10,4 +10,3 @@ revChatGPT==4.1.4
 EdgeGPT==0.1.22.1
 openai==0.27.2
 googlebard==0.0.6.1
-replicate==0.6.1
