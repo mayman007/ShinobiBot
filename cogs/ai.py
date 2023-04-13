@@ -156,6 +156,7 @@ class AI(commands.Cog):
     @chatgpt.command(name = "reset_chat", description = "Resets your conversation with ChatGPT-4.")
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     async def chatgpt_reset_chat(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         async with aiosqlite.connect("db/chatgpt_convos.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS convos (convo_id TEXT, user ID)") # Create the table if not exists
@@ -163,9 +164,9 @@ class AI(commands.Cog):
                 data = await cursor.fetchone()
                 if data:
                     await cursor.execute("DELETE FROM convos WHERE user = ?", (interaction.user.id,))
-                    await interaction.response.send_message("Your conversation with ChatGPT has been reseted successfully.")
+                    await interaction.followup.send("Your conversation with ChatGPT has been reseted successfully.")
                 else:
-                    await interaction.response.send_message("You don't have a conversation with ChatGPT yet, start one with </chatgpt ask:1088511615072206962>!", ephemeral = True)
+                    await interaction.followup.send("You don't have a conversation with ChatGPT yet, start one with </chatgpt ask:1088511615072206962>!", ephemeral = True)
             await db.commit()
 
     # ChatGPT Ask
@@ -184,21 +185,37 @@ class AI(commands.Cog):
                     data = await cursor.fetchone()
                     if data:
                         convo_id = data[0]
-                        while True:
+                        try:
+                            chatbot.get_msg_history(convo_id)
+                        except:
+                            await cursor.execute("DELETE FROM convos WHERE user = ?", (interaction.user.id,))
+                            await db.commit()
                             try:
-                                for data in chatbot.ask(prompt, conversation_id = convo_id, model = "gpt-4"): response = data["message"]
-                                break
+                                while True:
+                                    for data in chatbot.ask(prompt, model = "gpt-4"):
+                                        response = data["message"]
+                                        convo_id = data["conversation_id"]
+                                        await cursor.execute("INSERT INTO convos (convo_id, user) VALUES (?, ?)", (convo_id, interaction.user.id,))
+                                        await db.commit()
+                                        break
                             except revChatGPT.typings.Error: await asyncio.sleep(2)
+                        else:
+                            while True:
+                                try:
+                                    for data in chatbot.ask(prompt, conversation_id = convo_id, model = "gpt-4"): response = data["message"]
+                                    break
+                                except revChatGPT.typings.Error:
+                                    await asyncio.sleep(2)
                     else:
                         while True:
                             try:
-                                for data in chatbot.ask(prompt, model="gpt-4"):
+                                for data in chatbot.ask(prompt, model = "gpt-4"):
                                     response = data["message"]
                                     convo_id = data["conversation_id"]
                                     await cursor.execute("INSERT INTO convos (convo_id, user) VALUES (?, ?)", (convo_id, interaction.user.id,))
+                                    await db.commit()
                                 break
                             except revChatGPT.typings.Error: await asyncio.sleep(2)
-                await db.commit()
             limit = 1800
             total_text = len(prompt) + len(response)
             if total_text > limit:
