@@ -23,15 +23,11 @@ Shinobi Bot's ticket system makes communication with your community more streaml
 
 ![Alt Text](https://i.imgur.com/l4XfxvH.png)
 
-<br>
-
 ### **Logging**
 
 Keep track of server activities and monitor user behavior with our logging system, which provides detailed logs of messages, actions, and more.
 
 ![Alt Text](https://i.imgur.com/QByUKmb.png)
-
-<br>
 
 ### **Anti-Spam**
 
@@ -39,15 +35,11 @@ Say goodbye to unwanted messages cluttering up your server with our antispam sys
 
 ![Alt Text](https://i.imgur.com/eKd7C5o.png)
 
-<br>
-
 ### **AI Tools**
 
 Shinobi Bot also comes packed with a range of AI tools, including ChatGPT-4, Bard, Bing Chat, Bing Image Creator, Dall-E, and MidJourney. Whether you want to generate custom images, have intelligent conversations, Shinobi Bot has you covered.
 
 ![Alt Text](https://i.imgur.com/n2j8mcd.png)
-
-<br>
 
 ### **Moderation**
 
@@ -55,15 +47,11 @@ Shinobi Bot's moderation tools make managing users, roles, and channels a breeze
 
 ![Alt Text](https://i.imgur.com/Xbc2rXe.png)
 
-<br>
-
 ### **Games**
 
 Add some fun to your server with Shinobi Bot's selection of games, including connect 4, tictactoe and more.
 
 ![Alt Text](https://i.imgur.com/cymaSw9.png)
-
-<br>
 
 ### **And much more!**
 
