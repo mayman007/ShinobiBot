@@ -7,7 +7,7 @@
 # **Shinobi Bot**
 > **【Multipurpose Discord Bot】Tickets｜Logging｜Anti-Spam｜Giveaways｜Suggestions｜Moderation｜Games｜ChatGPT｜100+ commands**
 
-## Contents
+## Content
 <ul>
 <li><a href = "https://github.com/Shinobi7k/ShinobiBot#features">Features</li>
 <li><a href = "https://github.com/Shinobi7k/ShinobiBot#bot-links">Bot Links</li>
@@ -72,11 +72,20 @@ Giveaways, Suggestions System, Fun commands and much more! Shinobi Bot offers a 
 <img src = "https://i.imgur.com/8rBxjLd.png" width = 700>
 
 ## Bot Links
+<ul>
+<li>
+
 [Invite Link](https://discord.com/oauth2/authorize?client_id=855437723166703616&permissions=8&scope=bot%20applications.commands)
-<br>
+</li>
+<li>
+
 [top.gg](https://top.gg/bot/855437723166703616)
-<br>
+</li>
+<li>
+
 [discordbotlist.com](https://discordbotlist.com/bots/shinobi-bot)
+</li>
+</ul>
 
 ## Installation Guide
 
