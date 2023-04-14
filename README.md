@@ -21,7 +21,7 @@
 
 Shinobi Bot's ticket system makes communication with your community more streamlined and organized, allowing you to quickly respond to requests and inquiries.
 
-<img src = "https://i.imgur.com/l4XfxvH.png" width = 700>
+![Alt Text](https://i.imgur.com/l4XfxvH.png)
 
 <br>
 
@@ -29,7 +29,7 @@ Shinobi Bot's ticket system makes communication with your community more streaml
 
 Keep track of server activities and monitor user behavior with our logging system, which provides detailed logs of messages, actions, and more.
 
-<img src = "https://i.imgur.com/QByUKmb.png" width = 700>
+![Alt Text](https://i.imgur.com/QByUKmb.png)
 
 <br>
 
@@ -37,7 +37,7 @@ Keep track of server activities and monitor user behavior with our logging syste
 
 Say goodbye to unwanted messages cluttering up your server with our antispam system, which effectively filters out spam and keeps your server clean and tidy.
 
-<img src = "https://i.imgur.com/eKd7C5o.png" width = 700>
+![Alt Text](https://i.imgur.com/eKd7C5o.png)
 
 <br>
 
@@ -45,7 +45,7 @@ Say goodbye to unwanted messages cluttering up your server with our antispam sys
 
 Shinobi Bot also comes packed with a range of AI tools, including ChatGPT-4, Bard, Bing Chat, Bing Image Creator, Dall-E, and MidJourney. Whether you want to generate custom images, have intelligent conversations, Shinobi Bot has you covered.
 
-<img src = "https://i.imgur.com/n2j8mcd.png" width = 700>
+![Alt Text](https://i.imgur.com/n2j8mcd.png)
 
 <br>
 
@@ -53,7 +53,7 @@ Shinobi Bot also comes packed with a range of AI tools, including ChatGPT-4, Bar
 
 Shinobi Bot's moderation tools make managing users, roles, and channels a breeze, allowing you to keep your server safe and free from unwanted behavior.
 
-<img src = "https://i.imgur.com/Xbc2rXe.png" width = 700>
+![Alt Text](https://i.imgur.com/Xbc2rXe.png)
 
 <br>
 
@@ -61,7 +61,7 @@ Shinobi Bot's moderation tools make managing users, roles, and channels a breeze
 
 Add some fun to your server with Shinobi Bot's selection of games, including connect 4, tictactoe and more.
 
-<img src = "https://i.imgur.com/cymaSw9.png" width = 700>
+![Alt Text](https://i.imgur.com/cymaSw9.png)
 
 <br>
 
@@ -69,7 +69,7 @@ Add some fun to your server with Shinobi Bot's selection of games, including con
 
 Giveaways, Suggestions System, Fun commands and much more! Shinobi Bot offers a ton of other amazing features that are guaranteed to keep your server lively and entertaining. The possibilities are endless with Shinobi Bot.
 
-<img src = "https://i.imgur.com/8rBxjLd.png" width = 700>
+![Alt Text](https://i.imgur.com/8rBxjLd.png)
 
 ## Bot Links
 <ul>
