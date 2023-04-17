@@ -7,6 +7,5 @@ lxml==4.9.2
 aiosqlite==0.18.0
 beautifulsoup4==4.11.2
 revChatGPT==4.2.3
-EdgeGPT==0.1.25.1
-openai==0.27.2
+EdgeGPT==0.1.25.1
 googlebard==0.0.7
