@@ -1,12 +1,14 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-import revChatGPT.V1
+import revChatGPT
+from revChatGPT.V1 import AsyncChatbot as GPTChatbot
+from Bard import Chatbot as BardChatbot
 import EdgeGPT
-import openai
-import Bard
-import io
+from EdgeGPT import Chatbot as BingChatbot
 from ImageGen import ImageGenAsync
+import json
+import io
 import os
 import aiohttp
 import aiosqlite
@@ -58,17 +60,22 @@ class AI(commands.Cog):
     async def dalle(self, interaction: discord.Interaction, prompt: str):
         await interaction.response.defer()
         try:
-            openai.api_key = os.getenv("DALLE_FOX_API_KEY")
-            openai.api_base = "https://api.hypere.app"
-            try:
-                img = openai.Image.create(
-                    prompt = prompt,
-                    n = 1,
-                    size = "1024x1024"
-                )
-            except openai.error.InvalidRequestError as e: return await interaction.followup.send(e)
-            image_url = str(img).split('"url": "')[1].split('"')[0]
-            embed = discord.Embed(colour = 0x2F3136)
+            api_key = os.getenv("FOX_API_KEY")
+            api_url = "https://api.hypere.app/images/generations"
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {api_key}"
+            }
+            data = {
+                "prompt": prompt,
+                "n": 1,
+                "size": "1024x1024"
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.post(api_url, headers = headers, data = json.dumps(data)) as response:
+                    image = await response.text()
+            image_url = image.split('"url": "')[1].split('"')[0]
+            embed = discord.Embed(title = "Image Link ", url = image_url, colour = 0x2F3136)
             embed.set_image(url = image_url)
             await interaction.followup.send(f"Prompt: {prompt}", embed = embed)
         except Exception as e:
@@ -85,7 +92,7 @@ class AI(commands.Cog):
     async def bing_image_creator(self, interaction: discord.Interaction, prompt: str):
         await interaction.response.defer()
         try:
-            auth_cookie = os.getenv("BING_AUTH_COOKIE") # visit https://github.com/acheong08/BingImageCreator for guide on how to get
+            auth_cookie = os.getenv("BING_AUTH_COOKIE") # visit https://github.com/acheong08/EdgeGPT for guide on how to get
             async with ImageGenAsync(auth_cookie, quiet = True) as image_generator:
                 images_links = await image_generator.get_images(prompt)
             images_list = []
@@ -111,7 +118,7 @@ class AI(commands.Cog):
     async def bing_chat(self, interaction: discord.Interaction, prompt: str, conversation_style: app_commands.Choice[str] = None):
         await interaction.response.defer()
         try:
-            bot = EdgeGPT.Chatbot(cookiePath = os.getenv("BING_COOKIE_DIR")) # visit https://github.com/acheong08/EdgeGPT for guide on how to get
+            bot = BingChatbot(cookiePath = os.getenv("BING_COOKIE_DIR")) # visit https://github.com/acheong08/EdgeGPT for guide on how to get
             if conversation_style == None or conversation_style.value == "balanced": style = EdgeGPT.ConversationStyle.balanced
             elif conversation_style.value == "creative": style = EdgeGPT.ConversationStyle.creative
             elif conversation_style.value == "precise": style = EdgeGPT.ConversationStyle.precise
@@ -136,7 +143,7 @@ class AI(commands.Cog):
         await interaction.response.defer()
         try:
             session_cookie = os.getenv("BARD_COOKIE") # visit https://github.com/acheong08/Bard for guide on how to get
-            bot = Bard.Chatbot(session_cookie)
+            bot = BardChatbot(session_cookie)
             response = bot.ask(prompt)
             response = str(response).split("{'content': ")[1].split(", 'conversation_id")[0].replace("\\n", "\n").replace("\\'", "'").replace('\\"', '"')[1:-1]
             limit = 1800
@@ -176,7 +183,7 @@ class AI(commands.Cog):
     async def chatgpt_ask(self, interaction: discord.Interaction, prompt: str):
         await interaction.response.defer()
         try:
-            chatbot = revChatGPT.V1.Chatbot(config = {"access_token": os.getenv("CHATGPT_ACCESS_TOKEN")})
+            chatbot = GPTChatbot(config = {"access_token": os.getenv("CHATGPT_ACCESS_TOKEN")})
             response = ""
             async with aiosqlite.connect("db/chatgpt_convos.db") as db: # Open the db
                 async with db.cursor() as cursor:
@@ -186,13 +193,13 @@ class AI(commands.Cog):
                     if data:
                         convo_id = data[0]
                         try:
-                            chatbot.get_msg_history(convo_id)
+                            await chatbot.get_msg_history(convo_id)
                         except:
                             await cursor.execute("DELETE FROM convos WHERE user = ?", (interaction.user.id,))
                             await db.commit()
                             try:
                                 while True:
-                                    for data in chatbot.ask(prompt, model = "gpt-4"):
+                                    async for data in chatbot.ask(prompt, model = "gpt-4"):
                                         response = data["message"]
                                         convo_id = data["conversation_id"]
                                         await cursor.execute("INSERT INTO convos (convo_id, user) VALUES (?, ?)", (convo_id, interaction.user.id,))
@@ -202,14 +209,14 @@ class AI(commands.Cog):
                         else:
                             while True:
                                 try:
-                                    for data in chatbot.ask(prompt, conversation_id = convo_id, model = "gpt-4"): response = data["message"]
+                                    async for data in chatbot.ask(prompt, conversation_id = convo_id, model = "gpt-4"): response = data["message"]
                                     break
                                 except revChatGPT.typings.Error:
                                     await asyncio.sleep(2)
                     else:
                         while True:
                             try:
-                                for data in chatbot.ask(prompt, model = "gpt-4"):
+                                async for data in chatbot.ask(prompt, model = "gpt-4"):
                                     response = data["message"]
                                     convo_id = data["conversation_id"]
                                     await cursor.execute("INSERT INTO convos (convo_id, user) VALUES (?, ?)", (convo_id, interaction.user.id,))
