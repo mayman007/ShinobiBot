@@ -58,7 +58,7 @@ class AI(commands.Cog):
     async def dalle(self, interaction: discord.Interaction, prompt: str):
         await interaction.response.defer()
         try:
-            openai.api_key = "" # leave ths blank
+            openai.api_key = os.getenv("DALLE_FOX_API_KEY") # leave ths blank
             openai.api_base = "https://api.hypere.app"
             try:
                 img = openai.Image.create(
