@@ -41,33 +41,49 @@ class pollButtons(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Yes", style = discord.ButtonStyle.blurple, emoji = "<:pepeyes:1070834912782987424>")
     async def poll_yes_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        global upvotes, downvotes, voted
-        if interaction.user in voted:
-            await interaction.response.send_message("You've already voted once.", ephemeral = True)
+        global upvotes, downvotes, yes_pollers, no_pollers
+        if interaction.user in yes_pollers:
+            upvotes = upvotes - 1
+            yes_pollers.remove(interaction.user)
+            await interaction.response.send_message("Vote removed.", ephemeral = True)
+        elif interaction.user in no_pollers:
+            downvotes = downvotes - 1
+            no_pollers.remove(interaction.user)
+            upvotes = upvotes + 1
+            yes_pollers.append(interaction.user)
+            await interaction.response.send_message("Voted.", ephemeral = True)
         else:
             upvotes = upvotes + 1
-            voted.append(interaction.user)
-            emb = discord.Embed(title = poll_title, description = poll_description)
-            emb.set_author(name = f"Poll by {poll_author}", icon_url = poll_avatar)
-            emb.set_footer(text = f"{upvotes} Yes | {downvotes} No")
-            view = pollButtons()
-            await interaction.message.edit(embed = emb, view = view)
+            yes_pollers.append(interaction.user)
             await interaction.response.send_message("Voted.", ephemeral = True)
+        emb = discord.Embed(title = poll_title, description = poll_description)
+        emb.set_author(name = f"Poll by {poll_author}", icon_url = poll_avatar)
+        emb.set_footer(text = f"{upvotes} Yes | {downvotes} No")
+        view = pollButtons()
+        await interaction.message.edit(embed = emb, view = view)
     #no button
     @discord.ui.button(label = "No", style = discord.ButtonStyle.blurple, emoji = "<:pepeno:1070834894537773087>")
     async def sugg_downvote(self, interaction: discord.Interaction, button: discord.ui.Button):
-        global upvotes, downvotes, voted
-        if interaction.user in voted:
-            await interaction.response.send_message("You've already voted once.", ephemeral = True)
+        global upvotes, downvotes, no_pollers, yes_pollers
+        if interaction.user in no_pollers:
+            downvotes = downvotes - 1
+            no_pollers.remove(interaction.user)
+            await interaction.response.send_message("Vote removed.", ephemeral = True)
+        elif interaction.user in yes_pollers:
+            upvotes = upvotes - 1
+            yes_pollers.remove(interaction.user)
+            downvotes = downvotes + 1
+            no_pollers.append(interaction.user)
+            await interaction.response.send_message("Voted.", ephemeral = True)
         else:
             downvotes = downvotes + 1
-            voted.append(interaction.user)
-            emb = discord.Embed(title = poll_title, description = poll_description)
-            emb.set_author(name = f"Poll by {poll_author}", icon_url = poll_avatar)
-            emb.set_footer(text = f"{upvotes} Yes | {downvotes} No")
-            view = pollButtons()
-            await interaction.message.edit(embed = emb, view = view)
+            no_pollers.append(interaction.user)
             await interaction.response.send_message("Voted.", ephemeral = True)
+        emb = discord.Embed(title = poll_title, description = poll_description)
+        emb.set_author(name = f"Poll by {poll_author}", icon_url = poll_avatar)
+        emb.set_footer(text = f"{upvotes} Yes | {downvotes} No")
+        view = pollButtons()
+        await interaction.message.edit(embed = emb, view = view)
 
 # ui class for invite button
 class Invite(discord.ui.View):
@@ -403,8 +419,9 @@ class Utility(commands.Cog):
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(manage_messages = True)
     async def poll(self, interaction: discord.Interaction, title: str, description: str):
-        global poll_title, poll_description, poll_author, poll_avatar, upvotes, downvotes, voted
-        voted = []
+        global poll_title, poll_description, poll_author, poll_avatar, upvotes, downvotes, yes_pollers, no_pollers
+        yes_pollers = []
+        no_pollers = []
         upvotes = 0
         downvotes = 0
         poll_title = title
