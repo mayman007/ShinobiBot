@@ -152,33 +152,49 @@ class suggVotes(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Upvote", style = discord.ButtonStyle.blurple, emoji = "🔼")
     async def sugg_upvote(self, interaction: discord.Interaction, button: discord.ui.Button):
-        global upvotes, downvotes, voted
-        if interaction.user in voted:
-            await interaction.response.send_message("You've already voted once.", ephemeral = True)
+        global upvotes, downvotes, upvoted_users, downvoted_users
+        if interaction.user in upvoted_users:
+            upvotes = upvotes - 1
+            upvoted_users.remove(interaction.user)
+            await interaction.response.send_message("Upvote removed.", ephemeral = True)
+        elif interaction.user in downvoted_users:
+            downvotes = downvotes - 1
+            downvoted_users.remove(interaction.user)
+            upvotes = upvotes + 1
+            upvoted_users.append(interaction.user)
+            await interaction.response.send_message("Upvoted.", ephemeral = True)
         else:
             upvotes = upvotes + 1
-            voted.append(interaction.user)
-            suggestEmbed = discord.Embed(title = "Suggestion", description = suggestion, color = 0xffd700)
-            suggestEmbed.set_author(name = f"Suggested by {sugg_author}", icon_url = sugg_avatar)
-            suggestEmbed.set_footer(text = f"{upvotes} Upvotes | {downvotes} Downvotes")
-            view = suggVotes()
-            await interaction.message.edit(embed = suggestEmbed, view = view)
+            upvoted_users.append(interaction.user)
             await interaction.response.send_message("Upvoted.", ephemeral = True)
+        suggestEmbed = discord.Embed(title = "Suggestion", description = suggestion, color = 0xffd700)
+        suggestEmbed.set_author(name = f"Suggested by {sugg_author}", icon_url = sugg_avatar)
+        suggestEmbed.set_footer(text = f"{upvotes} Upvotes | {downvotes} Downvotes")
+        view = suggVotes()
+        await interaction.message.edit(embed = suggestEmbed, view = view)
     #cancel button
     @discord.ui.button(label = "Downvote", style = discord.ButtonStyle.blurple, emoji = "🔽")
     async def sugg_downvote(self, interaction: discord.Interaction, button: discord.ui.Button):
-        global upvotes, downvotes, voted
-        if interaction.user in voted:
-            await interaction.response.send_message("You've already voted once.", ephemeral = True)
+        global upvotes, downvotes, downvoted_users, upvoted_users
+        if interaction.user in downvoted_users:
+            downvotes = downvotes - 1
+            downvoted_users.remove(interaction.user)
+            await interaction.response.send_message("Downvote removed.", ephemeral = True)
+        elif interaction.user in upvoted_users:
+            upvotes = upvotes - 1
+            upvoted_users.remove(interaction.user)
+            downvotes = downvotes + 1
+            downvoted_users.append(interaction.user)
+            await interaction.response.send_message("Downvoted.", ephemeral = True)
         else:
             downvotes = downvotes + 1
-            voted.append(interaction.user)
-            suggestEmbed = discord.Embed(title = "Suggestion", description = suggestion, color = 0xffd700)
-            suggestEmbed.set_author(name = f"Suggested by {sugg_author}", icon_url = sugg_avatar)
-            suggestEmbed.set_footer(text = f"{upvotes} Upvotes | {downvotes} Downvotes")
-            view = suggVotes()
-            await interaction.message.edit(embed = suggestEmbed, view = view)
+            downvoted_users.append(interaction.user)
             await interaction.response.send_message("Downvoted.", ephemeral = True)
+        suggestEmbed = discord.Embed(title = "Suggestion", description = suggestion, color = 0xffd700)
+        suggestEmbed.set_author(name = f"Suggested by {sugg_author}", icon_url = sugg_avatar)
+        suggestEmbed.set_footer(text = f"{upvotes} Upvotes | {downvotes} Downvotes")
+        view = suggVotes()
+        await interaction.message.edit(embed = suggestEmbed, view = view)
 
 # Settings Class
 class Settings(commands.Cog):
@@ -386,8 +402,9 @@ class Settings(commands.Cog):
                         await asyncio.sleep(3)
                         await msg.delete()
                         channel = self.bot.get_channel(rev_ch_id)
-                        global suggestion, sugg_author, sugg_avatar, upvotes, downvotes, voted
-                        voted = []
+                        global suggestion, sugg_author, sugg_avatar, upvotes, downvotes, upvoted_users, downvoted_users
+                        upvoted_users = []
+                        downvoted_users = []
                         upvotes = 0
                         downvotes = 0
                         suggestion = message.content
