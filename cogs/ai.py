@@ -51,7 +51,7 @@ class AI(commands.Cog):
                 await interaction.followup.send(f"Prompt: {prompt.strip()}", file = discord.File(file, "image.png"))
         except Exception as e:
             print(f"MidJourney error: {e}")
-            await interaction.followup.send("Sorry, an unexpected error has occured.")
+            await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
 
     # Dall-E
     @app_commands.command(name = "dalle", description = "Use Dall-E AI to create images.")
@@ -80,7 +80,7 @@ class AI(commands.Cog):
             await interaction.followup.send(f"Prompt: {prompt}", embed = embed)
         except Exception as e:
             print(f"Dalle error: {e}")
-            await interaction.followup.send("Sorry, an unexpected error has occured.")
+            await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
 
     # Bing category
     bing = app_commands.Group(name = "bing", description = "Bing AI")
@@ -106,7 +106,7 @@ class AI(commands.Cog):
             await interaction.followup.send(f"Prompt: {prompt}", files = images_list)
         except Exception as e:
             print(f"BingImageCreator error: {e}")
-            await interaction.followup.send("Sorry, an unexpected error has occured.")
+            await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
 
     # Bing Ask
     @bing.command(name = "ask", description = "Ask Bing AI.")
@@ -133,7 +133,7 @@ class AI(commands.Cog):
             await bot.close()
         except Exception as e:
             print(f"Bing error: {e}")
-            await interaction.followup.send("Sorry, an unexpected error has occured.")
+            await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
 
     # Bard
     @app_commands.command(name = "bard", description = "Ask Bard.")
@@ -154,7 +154,7 @@ class AI(commands.Cog):
             else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bard:** {response}")
         except Exception as e:
             print(f"Bard error: {e}")
-            await interaction.followup.send("Sorry, an unexpected error has occured.")
+            await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
 
     # ChatGPT category
     chatgpt = app_commands.Group(name = "chatgpt", description = "ChatGPT")
@@ -178,60 +178,114 @@ class AI(commands.Cog):
 
     # ChatGPT Ask
     @chatgpt.command(name = "ask", description = "Ask ChatGPT-4.")
-    @app_commands.describe(prompt = "The question you wanna ask.")
+    @app_commands.describe(prompt = "The question you wanna ask.", model = "Default is GPT-4 unless if it has issues.")
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
-    async def chatgpt_ask(self, interaction: discord.Interaction, prompt: str):
+    @app_commands.choices(model = [app_commands.Choice(name = "GPT-4", value = "gpt-4"),
+                                   app_commands.Choice(name = "GPT-3.5-Turbo", value = "gpt-3.5-turbo")])
+    async def chatgpt_ask(self, interaction: discord.Interaction, prompt: str, model: app_commands.Choice[str] = None):
         await interaction.response.defer()
-        try:
-            chatbot = GPTChatbot(config = {"access_token": os.getenv("CHATGPT_ACCESS_TOKEN")})
-            response = ""
-            async with aiosqlite.connect("db/chatgpt_convos.db") as db: # Open the db
-                async with db.cursor() as cursor:
-                    await cursor.execute("CREATE TABLE IF NOT EXISTS convos (convo_id TEXT, user ID)") # Create the table if not exists
-                    await cursor.execute("SELECT convo_id FROM convos WHERE user = ?", (interaction.user.id,))
-                    data = await cursor.fetchone()
-                    if data:
-                        convo_id = data[0]
-                        try:
-                            await chatbot.get_msg_history(convo_id)
-                        except:
-                            await cursor.execute("DELETE FROM convos WHERE user = ?", (interaction.user.id,))
-                            await db.commit()
+        gpt3_api_key = os.getenv("FOX_API_KEY")
+        gpt3_api_url = "https://api.hypere.app/v1/chat/completions"
+        gpt3_headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {gpt3_api_key}"
+        }
+        gpt3_data = {
+            "model": "gpt-3.5-turbo",
+            "max_tokens": 4000,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "You are ChatGPT, an helpful assistant."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+        }
+        if model == None or model.value == "gpt-4":
+            try:
+                chatbot = GPTChatbot(config = {"access_token": os.getenv("CHATGPT_ACCESS_TOKEN")})
+                response = ""
+                async with aiosqlite.connect("db/chatgpt_convos.db") as db: # Open the db
+                    async with db.cursor() as cursor:
+                        await cursor.execute("CREATE TABLE IF NOT EXISTS convos (convo_id TEXT, user ID)") # Create the table if not exists
+                        await cursor.execute("SELECT convo_id FROM convos WHERE user = ?", (interaction.user.id,))
+                        data = await cursor.fetchone()
+                        if data:
+                            convo_id = data[0]
                             try:
+                                await chatbot.get_msg_history(convo_id)
+                            except:
+                                await cursor.execute("DELETE FROM convos WHERE user = ?", (interaction.user.id,))
+                                await db.commit()
+                                try:
+                                    while True:
+                                        async for data in chatbot.ask(prompt, model = "gpt-4"):
+                                            response = data["message"]
+                                            convo_id = data["conversation_id"]
+                                            await cursor.execute("INSERT INTO convos (convo_id, user) VALUES (?, ?)", (convo_id, interaction.user.id,))
+                                            await db.commit()
+                                            break
+                                except revChatGPT.typings.Error: await asyncio.sleep(2)
+                            else:
                                 while True:
+                                    try:
+                                        async for data in chatbot.ask(prompt, conversation_id = convo_id, model = "gpt-4"): response = data["message"]
+                                        break
+                                    except revChatGPT.typings.Error:
+                                        await asyncio.sleep(2)
+                        else:
+                            while True:
+                                try:
                                     async for data in chatbot.ask(prompt, model = "gpt-4"):
                                         response = data["message"]
                                         convo_id = data["conversation_id"]
                                         await cursor.execute("INSERT INTO convos (convo_id, user) VALUES (?, ?)", (convo_id, interaction.user.id,))
                                         await db.commit()
-                                        break
-                            except revChatGPT.typings.Error: await asyncio.sleep(2)
-                        else:
-                            while True:
-                                try:
-                                    async for data in chatbot.ask(prompt, conversation_id = convo_id, model = "gpt-4"): response = data["message"]
                                     break
-                                except revChatGPT.typings.Error:
-                                    await asyncio.sleep(2)
-                    else:
-                        while True:
-                            try:
-                                async for data in chatbot.ask(prompt, model = "gpt-4"):
-                                    response = data["message"]
-                                    convo_id = data["conversation_id"]
-                                    await cursor.execute("INSERT INTO convos (convo_id, user) VALUES (?, ?)", (convo_id, interaction.user.id,))
-                                    await db.commit()
-                                break
-                            except revChatGPT.typings.Error: await asyncio.sleep(2)
-            limit = 1800
-            total_text = len(prompt) + len(response)
-            if total_text > limit:
-                result = [response[i: i + limit] for i in range(0, len(response), limit)]
-                for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**ChatGPT-4:** {half}")
-            else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**ChatGPT-4:** {response}")
-        except Exception as e:
-            print(f"Chatgpt error: {e}")
-            await interaction.followup.send("Sorry, an unexpected error has occured.")
+                                except revChatGPT.typings.Error: await asyncio.sleep(2)
+                limit = 1800
+                total_text = len(prompt) + len(response)
+                if total_text > limit:
+                    result = [response[i: i + limit] for i in range(0, len(response), limit)]
+                    for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**ChatGPT-4:** {half}")
+                else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**ChatGPT-4:** {response}")
+            except Exception as e:
+                if model == None:
+                    try:
+                        async with aiohttp.ClientSession() as session:
+                            async with session.post(gpt3_api_url, headers = gpt3_headers, data = json.dumps(gpt3_data)) as response:
+                                response = await response.text()
+                        response = response.split('{"role":"assistant","content":"')[1].split('"},"finish_reason"')[0].replace("\\n", "\n").replace("\\'", "'").replace('\\"', '"')
+                        limit = 1800
+                        total_text = len(prompt) + len(response)
+                        if total_text > limit:
+                            result = [response[i: i + limit] for i in range(0, len(response), limit)]
+                            for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**ChatGPT-3.5-Turbo:** {half}")
+                        else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**ChatGPT-3.5-Turbo:** {response}")
+                    except Exception as e:
+                        print(f"Chatgpt error (gpt-3.5-turbo): {e}")
+                        await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
+                elif model.value == "gpt-4":
+                    print(f"Chatgpt error (gpt-4): {e}")
+                    await interaction.followup.send("Sorry, an unexpected error has occured in GPT-4, Try changing the model to GPT-3-Turbo.", ephemeral = True)
+        elif model.value == "gpt-3.5-turbo":
+            try:
+                async with aiohttp.ClientSession() as session:
+                    async with session.post(gpt3_api_url, headers = gpt3_headers, data = json.dumps(gpt3_data)) as response:
+                        response = await response.text()
+                response = response.split('{"role":"assistant","content":"')[1].split('"},"finish_reason"')[0].replace("\\n", "\n").replace("\\'", "'").replace('\\"', '"')
+                limit = 1800
+                total_text = len(prompt) + len(response)
+                if total_text > limit:
+                    result = [response[i: i + limit] for i in range(0, len(response), limit)]
+                    for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**ChatGPT-3.5-Turbo:** {half}")
+                else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**ChatGPT-3.5-Turbo:** {response}")
+            except Exception as e:
+                print(f"Chatgpt error (gpt-3.5-turbo): {e}")
+                await interaction.followup.send("Sorry, an unexpected error has occured in GPT-3.5-Turbo, Try changing the model to GPT-4.", ephemeral = True)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(AI(bot))
