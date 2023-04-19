@@ -25,20 +25,16 @@ class AI(commands.Cog):
         print("AI is online.")
 
     # MidJourney
-    @app_commands.command(name = "midjourney", description = "Use MidJourney AI to create images.")
+    @app_commands.command(name = "midjourney", description = "Generate an image using fine-tuned Stable Diffustion trained on midjourney images.")
     @app_commands.describe(prompt = "Describe the image.")
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     async def midjourney(self, interaction: discord.Interaction, prompt: str):
-        banned_words = ["sex", "s.ex", "se.x",
-                        "porn", "p.orn", "po.rn", "por.n",
-                        "pussy", "p.ussy", "pu.ssy", "pus.sy", "puss.y",
-                        "boob", "b.oob", "bo.ob", "boo.b",
-                        "tits", "t.its", "ti.ts", "tit.s",
-                        "nude", "n.ude", "nu.de", "nud.e",
-                        "nake", "n.ake", "na.ke", "nak.e"]
-        for word in banned_words:
-            if word in prompt.lower(): return await interaction.response.send_message("I can't do that.")
         await interaction.response.defer()
+        with open("cogs/swear_words.txt") as file:
+            while line := file.readline():
+                line = line.rstrip()
+                if line in prompt.lower():
+                    return await interaction.followup.send("I detected an inappropriate word, I can't generate that.", ephemeral = True)
         try:
             API_TOKEN = os.getenv("MJ_TOKEN") # search for openjourney
             API_URL = "https://api-inference.huggingface.co/models/prompthero/openjourney"
@@ -54,10 +50,17 @@ class AI(commands.Cog):
             await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
 
     # Dall-E
-    @app_commands.command(name = "dalle", description = "Use Dall-E AI to create images.")
-    @app_commands.describe(prompt = "Describe the image.")
+    @app_commands.command(name = "dalle", description = "Generate images using Dall-E.")
+    @app_commands.describe(prompt = "Describe the image.", number_of_images = "default is 1.", size = "default is 1024x1024.")
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
-    async def dalle(self, interaction: discord.Interaction, prompt: str):
+    @app_commands.choices(size = [app_commands.Choice(name = "256x256", value = "256x256"),
+                                  app_commands.Choice(name = "512x512 ", value = "512x512"),
+                                  app_commands.Choice(name = "1024x1024", value = "1024x1024")])
+    async def dalle(self, interaction: discord.Interaction, prompt: str, number_of_images: int = None, size: app_commands.Choice[str] = None):
+        if number_of_images == None: number_of_images = 1
+        elif number_of_images > 5: return await interaction.response.send_message("The maximum number of images is 5.", ephemeral = True)
+        if size == None: size = "1024x1024"
+        else: size = size.value
         await interaction.response.defer()
         try:
             api_key = os.getenv("FOX_API_KEY")
@@ -68,16 +71,22 @@ class AI(commands.Cog):
             }
             data = {
                 "prompt": prompt,
-                "n": 1,
-                "size": "1024x1024"
+                "n": number_of_images,
+                "size": size
             }
             async with aiohttp.ClientSession() as session:
                 async with session.post(api_url, headers = headers, data = json.dumps(data)) as response:
-                    image = await response.text()
-            image_url = image.split('"url": "')[1].split('"')[0]
-            embed = discord.Embed(title = "Image Link ", url = image_url, colour = 0x2F3136)
-            embed.set_image(url = image_url)
-            await interaction.followup.send(f"Prompt: {prompt}", embed = embed)
+                    images = await response.text()
+            images_dict = json.loads(images)
+            images_list = []
+            for image_url in images_dict["data"]:
+                async with aiohttp.ClientSession() as session: # creates session
+                    async with session.get(str(image_url["url"])) as response: # gets image from url
+                        image = await response.read() # reads image from response
+                        with io.BytesIO(image) as file: # converts to file-like object
+                            file = discord.File(file, "image.png")
+                            images_list.append(file)
+            await interaction.followup.send(f"Prompt: {prompt}", files = images_list)
         except Exception as e:
             print(f"Dalle error: {e}")
             await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
@@ -86,7 +95,7 @@ class AI(commands.Cog):
     bing = app_commands.Group(name = "bing", description = "Bing AI")
 
     # Bing Image Creator
-    @bing.command(name = "image_creator", description = "Use Bing Image Creator to create images.")
+    @bing.command(name = "image_creator", description = "Generate images using Bing Image Creator.")
     @app_commands.describe(prompt = "Describe the image.")
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     async def bing_image_creator(self, interaction: discord.Interaction, prompt: str):
@@ -175,6 +184,29 @@ class AI(commands.Cog):
                 else:
                     await interaction.followup.send("You don't have a conversation with ChatGPT yet, start one with </chatgpt ask:1088511615072206962>!", ephemeral = True)
             await db.commit()
+
+    # ChatGPT Show msg History
+    # @chatgpt.command(name = "show_msg_history", description = "Resets your conversation with ChatGPT-4.")
+    # @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    # async def chatgpt_show_msg_history(self, interaction: discord.Interaction):
+    #     await interaction.response.defer()
+    #     async with aiosqlite.connect("db/chatgpt_convos.db") as db: # Open the db
+    #         async with db.cursor() as cursor:
+    #             await cursor.execute("CREATE TABLE IF NOT EXISTS convos (convo_id TEXT, user ID)") # Create the table if not exists
+    #             await cursor.execute("SELECT convo_id FROM convos WHERE user = ?", (interaction.user.id,))
+    #             data = await cursor.fetchone()
+    #             if data:
+    #                 convo_id = data[0]
+    #                 chatbot = GPTChatbot(config = {"access_token": os.getenv("CHATGPT_ACCESS_TOKEN")})
+    #                 try: history = chatbot.get_msg_history(convo_id)
+    #                 except: await interaction.followup.send("You don't have a conversation with ChatGPT, start one with </chatgpt ask:1088511615072206962>!", ephemeral = True)
+    #                 # else: await interaction.followup.send(history)
+    #                 else:
+    #                     await interaction.followup.send("done")
+    #                     print(history)
+    #                     print(history['mapping'][f'{convo_id}']['message']['content']['parts'])
+    #             else:
+    #                 await interaction.followup.send("You don't have a conversation with ChatGPT, start one with </chatgpt ask:1088511615072206962>!", ephemeral = True)
 
     # ChatGPT Ask
     @chatgpt.command(name = "ask", description = "Ask ChatGPT-4.")
