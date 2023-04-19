@@ -496,8 +496,8 @@ class Help(commands.GroupCog, name = "help"):
             await interaction.response.send_message(embed = em)
         elif command.value == "bing ask":
             em = discord.Embed(title = "__**Bing Ask**__", description = "Ask Bing AI.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> bing chat <prompt>")
-            em.add_field(name = "**Example:**", value = "> `/bing chat hello`")
+            em.add_field(name = "**Syntax:**", value = "> bing ask <prompt> [conversation_style]")
+            em.add_field(name = "**Example:**", value = "> `/bing ask hello creative`")
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
         elif command.value == "bard":
@@ -507,8 +507,8 @@ class Help(commands.GroupCog, name = "help"):
             em.set_footer(text = "<> means requird, [] means optional")
         elif command.value == "dalle":
             em = discord.Embed(title = "__**Dall-E**__", description = "Create an image using Dall-E AI.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> dalle <prompt>")
-            em.add_field(name = "**Example:**", value = "> `/dalle a white cat`")
+            em.add_field(name = "**Syntax:**", value = "> dalle <prompt> [number_of_images] [size]")
+            em.add_field(name = "**Example:**", value = "> `/dalle a white cat 5 512x512`")
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
         elif command.value == "midjourney":
