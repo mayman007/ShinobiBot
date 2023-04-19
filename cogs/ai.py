@@ -185,29 +185,6 @@ class AI(commands.Cog):
                     await interaction.followup.send("You don't have a conversation with ChatGPT yet, start one with </chatgpt ask:1088511615072206962>!", ephemeral = True)
             await db.commit()
 
-    # ChatGPT Show msg History
-    # @chatgpt.command(name = "show_msg_history", description = "Resets your conversation with ChatGPT-4.")
-    # @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
-    # async def chatgpt_show_msg_history(self, interaction: discord.Interaction):
-    #     await interaction.response.defer()
-    #     async with aiosqlite.connect("db/chatgpt_convos.db") as db: # Open the db
-    #         async with db.cursor() as cursor:
-    #             await cursor.execute("CREATE TABLE IF NOT EXISTS convos (convo_id TEXT, user ID)") # Create the table if not exists
-    #             await cursor.execute("SELECT convo_id FROM convos WHERE user = ?", (interaction.user.id,))
-    #             data = await cursor.fetchone()
-    #             if data:
-    #                 convo_id = data[0]
-    #                 chatbot = GPTChatbot(config = {"access_token": os.getenv("CHATGPT_ACCESS_TOKEN")})
-    #                 try: history = chatbot.get_msg_history(convo_id)
-    #                 except: await interaction.followup.send("You don't have a conversation with ChatGPT, start one with </chatgpt ask:1088511615072206962>!", ephemeral = True)
-    #                 # else: await interaction.followup.send(history)
-    #                 else:
-    #                     await interaction.followup.send("done")
-    #                     print(history)
-    #                     print(history['mapping'][f'{convo_id}']['message']['content']['parts'])
-    #             else:
-    #                 await interaction.followup.send("You don't have a conversation with ChatGPT, start one with </chatgpt ask:1088511615072206962>!", ephemeral = True)
-
     # ChatGPT Ask
     @chatgpt.command(name = "ask", description = "Ask ChatGPT-4.")
     @app_commands.describe(prompt = "The question you wanna ask.", model = "Default is GPT-4 unless if it has issues.")
