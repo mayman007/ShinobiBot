@@ -127,7 +127,7 @@ class AI(commands.Cog):
     async def bing_chat(self, interaction: discord.Interaction, prompt: str, conversation_style: app_commands.Choice[str] = None):
         await interaction.response.defer()
         try:
-            bot = BingChatbot(cookiePath = os.getenv("BING_COOKIE_DIR")) # visit https://github.com/acheong08/EdgeGPT for guide on how to get
+            bot = await BingChatbot.create()
             if conversation_style == None or conversation_style.value == "balanced": style = EdgeGPT.ConversationStyle.balanced
             elif conversation_style.value == "creative": style = EdgeGPT.ConversationStyle.creative
             elif conversation_style.value == "precise": style = EdgeGPT.ConversationStyle.precise
@@ -154,7 +154,7 @@ class AI(commands.Cog):
             session_cookie = os.getenv("BARD_COOKIE") # visit https://github.com/acheong08/Bard for guide on how to get
             bot = BardChatbot(session_cookie)
             response = bot.ask(prompt)
-            response = str(response).split("{'content': ")[1].split(", 'conversation_id")[0].replace("\\n", "\n").replace("\\'", "'").replace('\\"', '"')[1:-1]
+            response = str(response).split("{'content': ")[1].split(", 'conversation_id")[0].replace("\\n", "\n").replace("\\'", "'").replace('\\"', '"').replace("\\r", "\r")[1:-1]
             limit = 1800
             total_text = len(prompt) + len(response)
             if total_text > limit:
@@ -185,9 +185,32 @@ class AI(commands.Cog):
                     await interaction.followup.send("You don't have a conversation with ChatGPT yet, start one with </chatgpt ask:1088511615072206962>!", ephemeral = True)
             await db.commit()
 
+    # ChatGPT Show msg History
+    # @chatgpt.command(name = "show_msg_history", description = "Resets your conversation with ChatGPT-4.")
+    # @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    # async def chatgpt_show_msg_history(self, interaction: discord.Interaction):
+    #     await interaction.response.defer()
+    #     async with aiosqlite.connect("db/chatgpt_convos.db") as db: # Open the db
+    #         async with db.cursor() as cursor:
+    #             await cursor.execute("CREATE TABLE IF NOT EXISTS convos (convo_id TEXT, user ID)") # Create the table if not exists
+    #             await cursor.execute("SELECT convo_id FROM convos WHERE user = ?", (interaction.user.id,))
+    #             data = await cursor.fetchone()
+    #             if data:
+    #                 convo_id = data[0]
+    #                 chatbot = GPTChatbot(config = {"access_token": os.getenv("CHATGPT_ACCESS_TOKEN")})
+    #                 try: history = chatbot.get_msg_history(convo_id)
+    #                 except: await interaction.followup.send("You don't have a conversation with ChatGPT, start one with </chatgpt ask:1088511615072206962>!", ephemeral = True)
+    #                 # else: await interaction.followup.send(history)
+    #                 else:
+    #                     await interaction.followup.send("done")
+    #                     print(history)
+    #                     print(history['mapping'][f'{convo_id}']['message']['content']['parts'])
+    #             else:
+    #                 await interaction.followup.send("You don't have a conversation with ChatGPT, start one with </chatgpt ask:1088511615072206962>!", ephemeral = True)
+
     # ChatGPT Ask
     @chatgpt.command(name = "ask", description = "Ask ChatGPT-4.")
-    @app_commands.describe(prompt = "The question you wanna ask.", model = "Default is GPT-4 unless if it has issues.")
+    @app_commands.describe(prompt = "The question you wanna ask.", model = "Default is GPT-4 unless if it has issues. (Only GPT-4 saves conversations)")
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     @app_commands.choices(model = [app_commands.Choice(name = "GPT-4", value = "gpt-4"),
                                    app_commands.Choice(name = "GPT-3.5-Turbo", value = "gpt-3.5-turbo")])
