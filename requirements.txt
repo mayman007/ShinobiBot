@@ -9,3 +9,4 @@ revChatGPT==5.1.0
 EdgeGPT==0.6.2
 googlebard==1.0.3
 python-dotenv==1.0.0
+imaginepy==1.1.0
