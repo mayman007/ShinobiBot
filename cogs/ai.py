@@ -13,6 +13,7 @@ import os
 import aiohttp
 import aiosqlite
 import asyncio
+from imaginepy import AsyncImagine, Style, Ratio
 
 # AI Class
 class AI(commands.Cog):
@@ -25,29 +26,78 @@ class AI(commands.Cog):
         print("AI is online.")
 
     # MidJourney
-    @app_commands.command(name = "midjourney", description = "Generate an image using fine-tuned Stable Diffustion trained on midjourney images.")
-    @app_commands.describe(prompt = "Describe the image.")
+    @app_commands.command(name = "midjourney", description = "Generate images using Midjourney-like model.")
+    @app_commands.describe(prompt = "Describe the image.", style = "Default is IMAGINE_V4_Beta.", ratio = "Default is 4x3.")
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
-    async def midjourney(self, interaction: discord.Interaction, prompt: str):
+    @app_commands.choices(style = [app_commands.Choice(name = "IMAGINE_V4_Beta", value = "IMAGINE_V4_Beta"),
+                                  app_commands.Choice(name = "IMAGINE_V3 ", value = "IMAGINE_V3"),
+                                  app_commands.Choice(name = "IMAGINE_V1 ", value = "IMAGINE_V1"),
+                                  app_commands.Choice(name = "V4_CREATIVE ", value = "V4_CREATIVE"),
+                                  app_commands.Choice(name = "COSMIC ", value = "COSMIC"),
+                                  app_commands.Choice(name = "ANIME ", value = "ANIME"),
+                                  app_commands.Choice(name = "ANIME_V2 ", value = "ANIME_V2"),
+                                  app_commands.Choice(name = "CANDYLAND ", value = "CANDYLAND"),
+                                  app_commands.Choice(name = "CYBERPUNK ", value = "CYBERPUNK"),
+                                  app_commands.Choice(name = "VIBRANT ", value = "VIBRANT"),
+                                  app_commands.Choice(name = "CINEMATIC_RENDER ", value = "CINEMATIC_RENDER"),
+                                  app_commands.Choice(name = "SURREALISM ", value = "SURREALISM"),
+                                  app_commands.Choice(name = "LOGO ", value = "LOGO"),
+                                  app_commands.Choice(name = "GTA ", value = "GTA")
+                                  ])
+    @app_commands.choices(ratio = [app_commands.Choice(name = "16x9", value = "16x9"),
+                                  app_commands.Choice(name = "1x1 ", value = "16x9"),
+                                  app_commands.Choice(name = "3x2 ", value = "16x9"),
+                                  app_commands.Choice(name = "4x3 ", value = "16x9"),
+                                  app_commands.Choice(name = "9x16 ", value = "16x9")
+                                  ])
+    async def midjourney(self, interaction: discord.Interaction, prompt: str, style: app_commands.Choice[str] = None, ratio: app_commands.Choice[str] = None):
         await interaction.response.defer()
-        with open("cogs/swear_words.txt") as file:
-            while line := file.readline():
-                line = line.rstrip()
-                if line in prompt.lower():
-                    return await interaction.followup.send("I detected an inappropriate word, I can't generate that.", ephemeral = True)
+        imagine = AsyncImagine()
+
+        if style == None: style = Style.IMAGINE_V4_Beta
+        elif style.value == "IMAGINE_V4_Beta": style = Style.IMAGINE_V4_Beta
+        elif style.value == "IMAGINE_V3": style = Style.IMAGINE_V3
+        elif style.value == "IMAGINE_V1": style = Style.IMAGINE_V1
+        elif style.value == "V4_CREATIVE": style = Style.V4_CREATIVE
+        elif style.value == "COSMIC": style = Style.COSMIC
+        elif style.value == "ANIME": style = Style.ANIME
+        elif style.value == "ANIME_V2": style = Style.ANIME_V2
+        elif style.value == "CANDYLAND": style = Style.CANDYLAND
+        elif style.value == "CYBERPUNK": style = Style.CYBERPUNK
+        elif style.value == "VIBRANT": style = Style.VIBRANT
+        elif style.value == "CINEMATIC_RENDER": style = Style.CINEMATIC_RENDER
+        elif style.value == "SURREALISM": style = Style.SURREALISM
+        elif style.value == "LOGO": style = Style.LOGO
+        elif style.value == "GTA": style = Style.GTA
+        if ratio == None: ratio = Ratio.RATIO_4X3
+        elif ratio.value == "16x9": ratio = Ratio.RATIO_16X9
+        elif ratio.value == "1x1": ratio = Ratio.RATIO_1X1
+        elif ratio.value == "3x2": ratio = Ratio.RATIO_3X2
+        elif ratio.value == "4x3": ratio = Ratio.RATIO_4X3
+        elif ratio.value == "9x16": ratio = Ratio.RATIO_9X16
+        img_data = await imagine.sdprem(
+            prompt=prompt,
+            style=style,
+            ratio=ratio
+        )
+
+        if img_data is None:
+            print(f"MidJourney error: while generating the image")
+            return await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
+        img_data = await imagine.upscale(image=img_data)
+        if img_data is None:
+            print(f"MidJourney error: while upscaling the image")
+            return await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
+        await imagine.close()
+
         try:
-            API_TOKEN = os.getenv("MJ_TOKEN") # search for openjourney
-            API_URL = "https://api-inference.huggingface.co/models/prompthero/openjourney"
-            headers = {"Authorization": f"Bearer {API_TOKEN}"}
-            payload = {"inputs": f"{prompt}, mdjrny-v4 style"}
-            async with aiohttp.ClientSession(headers = headers) as session:
-                async with session.post(API_URL, json = payload) as response:
-                    image_bytes =  await response.read()
-            with io.BytesIO(image_bytes) as file: # converts to file-like object
-                await interaction.followup.send(f"Prompt: {prompt.strip()}", file = discord.File(file, "image.png"))
+            with io.BytesIO(img_data) as file:
+                file = discord.File(file, "image.png")
         except Exception as e:
-            print(f"MidJourney error: {e}")
-            await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
+            print(f"MidJourney error: while writing image to file {e}")
+            return await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
+
+        await interaction.followup.send(f"Prompt: {prompt}", file=file)
 
     # Dall-E
     @app_commands.command(name = "dalle", description = "Generate images using Dall-E.")

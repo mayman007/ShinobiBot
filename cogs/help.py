@@ -512,8 +512,8 @@ class Help(commands.GroupCog, name = "help"):
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
         elif command.value == "midjourney":
-            em = discord.Embed(title = "__**MidJourney**__", description = "Create an image using MidJourney.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> midjourney <prompt>")
+            em = discord.Embed(title = "__**MidJourney**__", description = "Create an image using Midjourney-like model.", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> midjourney <prompt> [style] [ratio]")
             em.add_field(name = "**Example:**", value = "> `/midjourney a white dog`")
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
