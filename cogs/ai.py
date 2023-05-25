@@ -27,7 +27,7 @@ class AI(commands.Cog):
 
     # MidJourney
     @app_commands.command(name = "midjourney", description = "Generate images using Midjourney-like model.")
-    @app_commands.describe(prompt = "Describe the image.", style = "Default is IMAGINE_V4_Beta.", ratio = "Default is 4x3.")
+    @app_commands.describe(prompt = "Describe the image.", style = "Default is IMAGINE_V4_Beta.", ratio = "Default is 4x3.", number_of_images = "Default is 1, maximum is 6.")
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     @app_commands.choices(style = [app_commands.Choice(name = "IMAGINE_V4_Beta", value = "IMAGINE_V4_Beta"),
                                   app_commands.Choice(name = "IMAGINE_V3 ", value = "IMAGINE_V3"),
@@ -50,7 +50,10 @@ class AI(commands.Cog):
                                   app_commands.Choice(name = "4x3 ", value = "16x9"),
                                   app_commands.Choice(name = "9x16 ", value = "16x9")
                                   ])
-    async def midjourney(self, interaction: discord.Interaction, prompt: str, style: app_commands.Choice[str] = None, ratio: app_commands.Choice[str] = None):
+    async def midjourney(self, interaction: discord.Interaction, prompt: str,
+                         style: app_commands.Choice[str] = None,
+                         ratio: app_commands.Choice[str] = None,
+                         number_of_images: int = None):
         await interaction.response.defer()
         imagine = AsyncImagine()
 
@@ -75,29 +78,36 @@ class AI(commands.Cog):
         elif ratio.value == "3x2": ratio = Ratio.RATIO_3X2
         elif ratio.value == "4x3": ratio = Ratio.RATIO_4X3
         elif ratio.value == "9x16": ratio = Ratio.RATIO_9X16
-        img_data = await imagine.sdprem(
-            prompt=prompt,
-            style=style,
-            ratio=ratio
-        )
+        if number_of_images == None: number_of_images = 1
+        elif number_of_images > 6: return await interaction.followup.send("You can't generate more than 6 images at once.", ephemeral=True)
 
-        if img_data is None:
-            print(f"MidJourney error: while generating the image")
-            return await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
-        img_data = await imagine.upscale(image=img_data)
-        if img_data is None:
-            print(f"MidJourney error: while upscaling the image")
-            return await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
+        images_list = []
+        for an_image in range(number_of_images):
+            print(f"loop {an_image}")
+            img_data = await imagine.sdprem(
+                prompt=prompt,
+                style=style,
+                ratio=ratio
+            )
+
+            if img_data is None:
+                print(f"MidJourney error: while generating the image")
+                return await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
+            img_data = await imagine.upscale(image=img_data)
+            if img_data is None:
+                print(f"MidJourney error: while upscaling the image")
+                return await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
+
+            try:
+                with io.BytesIO(img_data) as file:
+                    file = discord.File(file, "image.png")
+                    images_list.append(file)
+            except Exception as e:
+                print(f"MidJourney error: while writing image to file {e}")
+                return await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
         await imagine.close()
-
-        try:
-            with io.BytesIO(img_data) as file:
-                file = discord.File(file, "image.png")
-        except Exception as e:
-            print(f"MidJourney error: while writing image to file {e}")
-            return await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
-
-        await interaction.followup.send(f"Prompt: {prompt}", file=file)
+        style_str = str(style).replace("Style.", "")
+        await interaction.followup.send(f"- Prompt: `{prompt}`\n- Style: `{style_str}`", files=images_list)
 
     # Dall-E
     @app_commands.command(name = "dalle", description = "Generate images using Dall-E.")
