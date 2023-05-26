@@ -4,8 +4,14 @@
   </a>
 </p>
 
+
 # **Shinobi Bot**
 > **【Multipurpose Discord Bot】Tickets｜Logging｜Anti-Spam｜Giveaways｜Suggestions｜Moderation｜Games｜ChatGPT｜100+ commands**
+
+
+[![Discord Server](https://discordapp.com/api/guilds/1111697702535839756/widget.png?style=banner2)](https://discord.gg/YScaCDY7PN)
+
+
 
 ## Content
 <ul>
@@ -21,54 +27,61 @@
 
 Shinobi Bot's ticket system makes communication with your community more streamlined and organized, allowing you to quickly respond to requests and inquiries.
 
-![Alt Text](https://i.imgur.com/l4XfxvH.png)
+![Tickets System Preview Image](https://i.imgur.com/l4XfxvH.png)
 
 ### **Logging**
 
 Keep track of server activities and monitor user behavior with our logging system, which provides detailed logs of messages, actions, and more.
 
-![Alt Text](https://i.imgur.com/QByUKmb.png)
+![Logging Preview Image](https://i.imgur.com/QByUKmb.png)
 
 ### **Anti-Spam**
 
 Say goodbye to unwanted messages cluttering up your server with our antispam system, which effectively filters out spam and keeps your server clean and tidy.
 
-![Alt Text](https://i.imgur.com/eKd7C5o.png)
+![Anti-Spam Preview Image](https://i.imgur.com/eKd7C5o.png)
 
 ### **AI Tools**
 
 Shinobi Bot also comes packed with a range of AI tools, including ChatGPT-4, Bard, Bing Chat, Bing Image Creator, Dall-E, and MidJourney. Whether you want to generate custom images, have intelligent conversations, Shinobi Bot has you covered.
 
-![Alt Text](https://i.imgur.com/n2j8mcd.png)
+![AI Tools Preview Image](https://i.imgur.com/n2j8mcd.png)
 
 ### **Moderation**
 
 Shinobi Bot's moderation tools make managing users, roles, and channels a breeze, allowing you to keep your server safe and free from unwanted behavior.
 
-![Alt Text](https://i.imgur.com/Xbc2rXe.png)
+![Moderation Preview Image](https://i.imgur.com/Xbc2rXe.png)
 
 ### **Games**
 
 Add some fun to your server with Shinobi Bot's selection of games, including connect 4, tictactoe and more.
 
-![Alt Text](https://i.imgur.com/cymaSw9.png)
+![Games Preview Image](https://i.imgur.com/cymaSw9.png)
 
 ### **And much more!**
 
 Giveaways, Suggestions System, Fun commands and much more! Shinobi Bot offers a ton of other amazing features that are guaranteed to keep your server lively and entertaining. The possibilities are endless with Shinobi Bot.
 
-![Alt Text](https://i.imgur.com/8rBxjLd.png)
+![More Preview Image](https://i.imgur.com/8rBxjLd.png)
 
 ## Bot Links
 <ul>
 <li>
 
-[Invite Link](https://discord.com/oauth2/authorize?client_id=855437723166703616&permissions=8&scope=bot%20applications.commands)
+[Invite Link](https://discord.com/oauth2/authorize?client_id=855437723166703616&permissions=1497267301495&scope=bot%20applications.commands)
 </li>
+
+<li>
+
+[Support Server](https://discord.gg/YScaCDY7PN)
+</li>
+
 <li>
 
 [top.gg](https://top.gg/bot/855437723166703616)
 </li>
+
 <li>
 
 [discordbotlist.com](https://discordbotlist.com/bots/shinobi-bot)
