@@ -79,7 +79,7 @@ class AI(commands.Cog):
         elif ratio.value == "4x3": ratio = Ratio.RATIO_4X3
         elif ratio.value == "9x16": ratio = Ratio.RATIO_9X16
         if number_of_images == None: number_of_images = 1
-        elif number_of_images > 4: return await interaction.followup.send("You can't generate more than 6 images at once.", ephemeral=True)
+        elif number_of_images > 4: return await interaction.followup.send("You can't generate more than 4 images at once.", ephemeral=True)
 
         images_list = []
         for an_image in range(number_of_images):
