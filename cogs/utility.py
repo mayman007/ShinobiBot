@@ -398,9 +398,12 @@ class Utility(commands.Cog):
         view=Invite()
         view.add_item(discord.ui.Button(label = "Invite", style = discord.ButtonStyle.link,
                                         url = "https://discord.com/api/oauth2/authorize?client_id=855437723166703616&permissions=8&scope=bot%20applications.commands"))
+        view.add_item(discord.ui.Button(label = "Support Server", style = discord.ButtonStyle.link,
+                                        url = "https://discord.gg/YScaCDY7PN"))
         emb = discord.Embed(title = "Bot's invite link",
                             description = "[Invite Link](https://discord.com/api/oauth2/authorize?client_id=855437723166703616&permissions=8&scope=bot%20applications.commands)",
                             colour = 0x2F3136)
+        emb.add_field(name="Support Server", value="[Support Server](https://discord.gg/YScaCDY7PN)")
         await interaction.response.send_message(embed = emb, view = view)
 
     # vote command
