@@ -67,7 +67,11 @@ async def on_app_command_error(interaction: discord.Interaction, error: app_comm
         await interaction.response.send_message(embed = cool_error, ephemeral = True)
     elif isinstance(error, app_commands.MissingPermissions):
         missing_perm = error.missing_permissions[0].replace("_", " ").title()
-        per_error = discord.Embed(title = f"Missing Permissions!", description = f"You don't have {missing_perm} permission.", colour = discord.Colour.light_grey())
+        per_error = discord.Embed(title = f"You're Missing Permissions!", description = f"You don't have {missing_perm} permission.", colour = discord.Colour.light_grey())
+        await interaction.response.send_message(embed = per_error, ephemeral = True)
+    elif isinstance(error, app_commands.BotMissingPermissions):
+        missing_perm = error.missing_permissions[0].replace("_", " ").title()
+        per_error = discord.Embed(title = f"I'm Missing Permissions!", description = f"I don't have {missing_perm} permission.", colour = discord.Colour.light_grey())
         await interaction.response.send_message(embed = per_error, ephemeral = True)
     else:
         raise error
