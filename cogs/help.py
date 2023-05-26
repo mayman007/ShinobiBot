@@ -40,7 +40,7 @@ class Dropdown(discord.ui.Select):
             em = discord.Embed(title = "**Shinobi Bot Help**",
                            description = "Hello! Welcome to the help page.\n\nUse </feedback:1027218853127794780> to send your feedback directly to the developers.\nUse `/help <category> <command>` for more info on a command.\nUse the dropdown menu below to select a category.\n\n",
                            color = 0x2F3136)
-            em.add_field(name = "**Who are you?**", value = "I'm a bot developed by Shinobi#8010. I'm a multipurpose bot than can do _almost_ anything. You can get more info using the dropdown menu below.\n\nI'm also open source. You can see my code on [GitHub](https://github.com/Shinobi7k/ShinobiBot)!")
+            em.add_field(name = "**Who are you?**", value = "I'm a bot developed by Shinobi7k#8010. I'm a multipurpose bot than can do _almost_ anything. You can get more info using the dropdown menu below.\n\nI'm also open source. You can see my code on [GitHub](https://github.com/Shinobi7k/ShinobiBot)!")
             em.add_field(name = "**Features**", value = "- Advanced Ticket System\n- Anti-Spam System\n- Logging System\n- Suggestions\n- Moderation\n- Games\n- Utility")
             await interaction.message.edit(embed = em)
             await interaction.response.defer()
@@ -150,7 +150,7 @@ class Help(commands.GroupCog, name = "help"):
         em = discord.Embed(title = "**Shinobi Bot Help**",
                            description = "Hello! Welcome to the help page.\n\nUse </feedback:1027218853127794780> to send your feedback directly to the developers.\nUse `/help <category> <command>` for more info on a command.\nUse the dropdown menu below to select a category.\n\n",
                            color = 0x2F3136)
-        em.add_field(name = "**Who are you?**", value = "I'm a bot developed by Shinobi#8010. I'm a multipurpose bot than can do _almost_ anything. You can get more info using the dropdown menu below.\n\nI'm also open source. You can see my code on [GitHub](https://github.com/Shinobi7k/ShinobiBot)!")
+        em.add_field(name = "**Who are you?**", value = "I'm a bot developed by Shinobi7k#8010. I'm a multipurpose bot than can do _almost_ anything. You can get more info using the dropdown menu below.\n\nI'm also open source. You can see my code on [GitHub](https://github.com/Shinobi7k/ShinobiBot)!")
         em.add_field(name = "**Features**", value = "- Advanced Ticket System\n- Anti-Spam System\n- Logging System\n- Suggestions\n- Moderation\n- Games\n- Utility")
         global author
         author = interaction.user
