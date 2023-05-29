@@ -15,6 +15,26 @@ import aiosqlite
 import asyncio
 from imaginepy import AsyncImagine, Style, Ratio
 
+
+class errorButtons(discord.ui.View):
+    def __init__(self, *, timeout = 180):
+        super().__init__(timeout = timeout)
+    @discord.ui.button(label = "Yes", style = discord.ButtonStyle.green)
+    async def edits_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        await error_channel.send(error)
+        for child in self.children:
+            child.disabled = True
+        await interaction.message.edit(view = self)
+        await interaction.response.send_message("Error sent to the developer.")
+    @discord.ui.button(label = "No", style = discord.ButtonStyle.red)
+    async def edits_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        for child in self.children:
+            child.disabled = True
+        await interaction.message.edit(view = self)
+        await interaction.response.send_message("Cancelled.")
+
 # AI Class
 class AI(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
@@ -90,20 +110,37 @@ class AI(commands.Cog):
             )
 
             if img_data is None:
-                print(f"MidJourney error: while generating the image")
-                return await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
+                e = f"MidJourney error: while generating the image"
+                global error, error_channel
+                error = f"Midjourney: {e}"
+                error_channel = self.bot.get_channel(int(os.getenv("ERROR_CHANNEL_ID")))
+                embed = discord.Embed(title = "Error",
+                                    description = f"Sorry, an unexpected error has occured, do you want to send the error message to the developer?",
+                                    color = discord.Color.red())
+                return await interaction.followup.send(embed = embed, view = errorButtons())
             img_data = await imagine.upscale(image=img_data)
             if img_data is None:
-                print(f"MidJourney error: while upscaling the image")
-                return await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
+                e = f"MidJourney error: while upscaling the image"
+                global error2, error_channel2
+                error2 = f"Midjourney: {e}"
+                error_channel2 = self.bot.get_channel(int(os.getenv("ERROR_CHANNEL_ID")))
+                embed = discord.Embed(title = "Error",
+                                    description = f"Sorry, an unexpected error has occured, do you want to send the error message to the developer?",
+                                    color = discord.Color.red())
+                return await interaction.followup.send(embed = embed, view = errorButtons())
 
             try:
                 with io.BytesIO(img_data) as file:
                     file = discord.File(file, "image.png")
                     images_list.append(file)
             except Exception as e:
-                print(f"MidJourney error: while writing image to file {e}")
-                return await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
+                global error3, error_channel3
+                error3 = f"Midjourney: {e}"
+                error_channel3 = self.bot.get_channel(int(os.getenv("ERROR_CHANNEL_ID")))
+                embed = discord.Embed(title = "Error",
+                                    description = f"Sorry, an unexpected error has occured, do you want to send the error message to the developer?",
+                                    color = discord.Color.red())
+                return await interaction.followup.send(embed = embed, view = errorButtons())
         await imagine.close()
         style_str = str(style).replace("Style.", "")
         await interaction.followup.send(f"- Prompt: `{prompt}`\n- Style: `{style_str}`", files=images_list)
@@ -147,8 +184,13 @@ class AI(commands.Cog):
                             images_list.append(file)
             await interaction.followup.send(f"Prompt: {prompt}", files = images_list)
         except Exception as e:
-            print(f"Dalle error: {e}")
-            await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
+            global error, error_channel
+            error = f"Dalle: {e}"
+            error_channel = self.bot.get_channel(int(os.getenv("ERROR_CHANNEL_ID")))
+            embed = discord.Embed(title = "Error",
+                                  description = f"Sorry, an unexpected error has occured, do you want to send the error message to the developer?",
+                                  color = discord.Color.red())
+            await interaction.followup.send(embed = embed, view = errorButtons())
 
     # Bing category
     bing = app_commands.Group(name = "bing", description = "Bing AI")
@@ -173,8 +215,13 @@ class AI(commands.Cog):
                             images_list.append(file)
             await interaction.followup.send(f"Prompt: {prompt}", files = images_list)
         except Exception as e:
-            print(f"BingImageCreator error: {e}")
-            await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
+            global error, error_channel
+            error = f"BingImageCreator: {e}"
+            error_channel = self.bot.get_channel(int(os.getenv("ERROR_CHANNEL_ID")))
+            embed = discord.Embed(title = "Error",
+                                  description = f"Sorry, an unexpected error has occured, do you want to send the error message to the developer?",
+                                  color = discord.Color.red())
+            await interaction.followup.send(embed = embed, view = errorButtons())
 
     # Bing Ask
     @bing.command(name = "ask", description = "Ask Bing AI.")
@@ -200,8 +247,13 @@ class AI(commands.Cog):
             else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bing AI:** {response}")
             await bot.close()
         except Exception as e:
-            print(f"Bing error: {e}")
-            await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
+            global error, error_channel
+            error = f"Bing: {e}"
+            error_channel = self.bot.get_channel(int(os.getenv("ERROR_CHANNEL_ID")))
+            embed = discord.Embed(title = "Error",
+                                  description = f"Sorry, an unexpected error has occured, do you want to send the error message to the developer?",
+                                  color = discord.Color.red())
+            await interaction.followup.send(embed = embed, view = errorButtons())
 
     # Bard
     @app_commands.command(name = "bard", description = "Ask Bard.")
@@ -221,51 +273,16 @@ class AI(commands.Cog):
                 for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bard:** {half}")
             else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bard:** {response}")
         except Exception as e:
-            print(f"Bard error: {e}")
-            await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
+            global error, error_channel
+            error = f"Bard: {e}"
+            error_channel = self.bot.get_channel(int(os.getenv("ERROR_CHANNEL_ID")))
+            embed = discord.Embed(title = "Error",
+                                  description = f"Sorry, an unexpected error has occured, do you want to send the error message to the developer?",
+                                  color = discord.Color.red())
+            await interaction.followup.send(embed = embed, view = errorButtons())
 
     # ChatGPT category
     chatgpt = app_commands.Group(name = "chatgpt", description = "ChatGPT")
-
-    # ChatGPT Reset Chat
-    @chatgpt.command(name = "reset_chat", description = "Resets your conversation with ChatGPT-4.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
-    async def chatgpt_reset_chat(self, interaction: discord.Interaction):
-        await interaction.response.defer()
-        async with aiosqlite.connect("db/chatgpt_convos.db") as db: # Open the db
-            async with db.cursor() as cursor:
-                await cursor.execute("CREATE TABLE IF NOT EXISTS convos (convo_id TEXT, user ID)") # Create the table if not exists
-                await cursor.execute("SELECT convo_id FROM convos WHERE user = ?", (interaction.user.id,))
-                data = await cursor.fetchone()
-                if data:
-                    await cursor.execute("DELETE FROM convos WHERE user = ?", (interaction.user.id,))
-                    await interaction.followup.send("Your conversation with ChatGPT has been reseted successfully.")
-                else:
-                    await interaction.followup.send("You don't have a conversation with ChatGPT yet, start one with </chatgpt ask:1088511615072206962>!", ephemeral = True)
-            await db.commit()
-
-    # ChatGPT Show msg History
-    # @chatgpt.command(name = "show_msg_history", description = "Resets your conversation with ChatGPT-4.")
-    # @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
-    # async def chatgpt_show_msg_history(self, interaction: discord.Interaction):
-    #     await interaction.response.defer()
-    #     async with aiosqlite.connect("db/chatgpt_convos.db") as db: # Open the db
-    #         async with db.cursor() as cursor:
-    #             await cursor.execute("CREATE TABLE IF NOT EXISTS convos (convo_id TEXT, user ID)") # Create the table if not exists
-    #             await cursor.execute("SELECT convo_id FROM convos WHERE user = ?", (interaction.user.id,))
-    #             data = await cursor.fetchone()
-    #             if data:
-    #                 convo_id = data[0]
-    #                 chatbot = GPTChatbot(config = {"access_token": os.getenv("CHATGPT_ACCESS_TOKEN")})
-    #                 try: history = chatbot.get_msg_history(convo_id)
-    #                 except: await interaction.followup.send("You don't have a conversation with ChatGPT, start one with </chatgpt ask:1088511615072206962>!", ephemeral = True)
-    #                 # else: await interaction.followup.send(history)
-    #                 else:
-    #                     await interaction.followup.send("done")
-    #                     print(history)
-    #                     print(history['mapping'][f'{convo_id}']['message']['content']['parts'])
-    #             else:
-    #                 await interaction.followup.send("You don't have a conversation with ChatGPT, start one with </chatgpt ask:1088511615072206962>!", ephemeral = True)
 
     # ChatGPT Ask
     @chatgpt.command(name = "ask", description = "Ask ChatGPT-4.")
@@ -274,109 +291,78 @@ class AI(commands.Cog):
     @app_commands.choices(model = [app_commands.Choice(name = "GPT-4", value = "gpt-4"),
                                    app_commands.Choice(name = "GPT-3.5-Turbo", value = "gpt-3.5-turbo")])
     async def chatgpt_ask(self, interaction: discord.Interaction, prompt: str, model: app_commands.Choice[str] = None):
+        await interaction.response.send_message("Wanna chat with GPT and other AI models? Use </chatbot>!", ephemeral = True)
+
+    @app_commands.command(name = "chatbot", description = "Chat with powerful AI models.")
+    @app_commands.describe(prompt = "The question you wanna ask.", model = "Choose the AI model you wanna chat with.")
+    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.choices(model = [
+                                    app_commands.Choice(name = "gpt-4", value = "gpt-4"),
+                                    app_commands.Choice(name = "gpt-3.5-turbo", value = "gpt-3.5-turbo"),
+                                    app_commands.Choice(name = "alpaca-13b", value = "alpaca-13b"),
+                                    app_commands.Choice(name = "vicuna-13b", value = "vicuna-13b"),
+                                    app_commands.Choice(name = "koala-13b", value = "koala-13b"),
+                                    app_commands.Choice(name = "llama-13b", value = "llama-13b"),
+                                    app_commands.Choice(name = "oasst-pythia-12b", value = "oasst-pythia-12b"),
+                                    app_commands.Choice(name = "fastchat-t5-3b", value = "fastchat-t5-3b")
+                                    ])
+    async def chatbot(self, interaction: discord.Interaction, prompt: str, model: app_commands.Choice[str]):
         await interaction.response.defer()
-        gpt3_api_key = os.getenv("FOX_API_KEY")
-        gpt3_api_url = "https://api.hypere.app/v1/chat/completions"
-        gpt3_headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {gpt3_api_key}"
-        }
-        gpt3_data = {
-            "model": "gpt-3.5-turbo",
-            "max_tokens": 4000,
-            "messages": [
-                {
-                    "role": "system",
-                    "content": "You are ChatGPT, an helpful assistant."
-                },
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
-        }
-        if model == None or model.value == "gpt-4":
-            try:
-                chatbot = GPTChatbot(config = {"access_token": os.getenv("CHATGPT_ACCESS_TOKEN")})
+        try:
+            if model.value == "gpt-4":
+                chatbot = GPTChatbot(config={
+                                    "email": os.getenv("CHATGPT_EMAIL"),
+                                    "password": os.getenv("CHATGPT_PASS")
+                                    })
                 response = ""
-                async with aiosqlite.connect("db/chatgpt_convos.db") as db: # Open the db
-                    async with db.cursor() as cursor:
-                        await cursor.execute("CREATE TABLE IF NOT EXISTS convos (convo_id TEXT, user ID)") # Create the table if not exists
-                        await cursor.execute("SELECT convo_id FROM convos WHERE user = ?", (interaction.user.id,))
-                        data = await cursor.fetchone()
-                        if data:
-                            convo_id = data[0]
-                            try:
-                                await chatbot.get_msg_history(convo_id)
-                            except:
-                                await cursor.execute("DELETE FROM convos WHERE user = ?", (interaction.user.id,))
-                                await db.commit()
-                                try:
-                                    while True:
-                                        async for data in chatbot.ask(prompt, model = "gpt-4"):
-                                            response = data["message"]
-                                            convo_id = data["conversation_id"]
-                                            await cursor.execute("INSERT INTO convos (convo_id, user) VALUES (?, ?)", (convo_id, interaction.user.id,))
-                                            await db.commit()
-                                            break
-                                except revChatGPT.typings.Error: await asyncio.sleep(2)
-                            else:
-                                while True:
-                                    try:
-                                        async for data in chatbot.ask(prompt, conversation_id = convo_id, model = "gpt-4"): response = data["message"]
-                                        break
-                                    except revChatGPT.typings.Error:
-                                        await asyncio.sleep(2)
-                        else:
-                            while True:
-                                try:
-                                    async for data in chatbot.ask(prompt, model = "gpt-4"):
-                                        response = data["message"]
-                                        convo_id = data["conversation_id"]
-                                        await cursor.execute("INSERT INTO convos (convo_id, user) VALUES (?, ?)", (convo_id, interaction.user.id,))
-                                        await db.commit()
-                                    break
-                                except revChatGPT.typings.Error: await asyncio.sleep(2)
+                async for data in chatbot.ask(prompt, model=model.value):
+                    response = data["message"]
                 limit = 1800
                 total_text = len(prompt) + len(response)
                 if total_text > limit:
                     result = [response[i: i + limit] for i in range(0, len(response), limit)]
-                    for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**ChatGPT-4:** {half}")
-                else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**ChatGPT-4:** {response}")
-            except Exception as e:
-                if model == None:
-                    try:
-                        async with aiohttp.ClientSession() as session:
-                            async with session.post(gpt3_api_url, headers = gpt3_headers, data = json.dumps(gpt3_data)) as response:
-                                response = await response.text()
-                        response = response.split('{"role":"assistant","content":"')[1].split('"},"finish_reason"')[0].replace("\\n", "\n").replace("\\'", "'").replace('\\"', '"')
-                        limit = 1800
-                        total_text = len(prompt) + len(response)
-                        if total_text > limit:
-                            result = [response[i: i + limit] for i in range(0, len(response), limit)]
-                            for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**ChatGPT-3.5-Turbo:** {half}")
-                        else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**ChatGPT-3.5-Turbo:** {response}")
-                    except Exception as e:
-                        print(f"Chatgpt error (gpt-3.5-turbo): {e}")
-                        await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
-                elif model.value == "gpt-4":
-                    print(f"Chatgpt error (gpt-4): {e}")
-                    await interaction.followup.send("Sorry, an unexpected error has occured in GPT-4, Try changing the model to GPT-3-Turbo.", ephemeral = True)
-        elif model.value == "gpt-3.5-turbo":
-            try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.post(gpt3_api_url, headers = gpt3_headers, data = json.dumps(gpt3_data)) as response:
-                        response = await response.text()
-                response = response.split('{"role":"assistant","content":"')[1].split('"},"finish_reason"')[0].replace("\\n", "\n").replace("\\'", "'").replace('\\"', '"')
-                limit = 1800
-                total_text = len(prompt) + len(response)
-                if total_text > limit:
-                    result = [response[i: i + limit] for i in range(0, len(response), limit)]
-                    for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**ChatGPT-3.5-Turbo:** {half}")
-                else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**ChatGPT-3.5-Turbo:** {response}")
-            except Exception as e:
-                print(f"Chatgpt error (gpt-3.5-turbo): {e}")
-                await interaction.followup.send("Sorry, an unexpected error has occured in GPT-3.5-Turbo, Try changing the model to GPT-4.", ephemeral = True)
+                    for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**{model.name}:** {half}")
+                else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**{model.name}:** {response}")
+                return
+            api_key = os.getenv("PAWAN_API_KEY")
+            api_url = "https://api.pawan.krd/v1/chat/completions"
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {api_key}"
+            }
+            data = {
+                "model": model.value,
+                "max_tokens": 4000,
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You are a helpful assistant."
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ]
+            }
+
+            async with aiohttp.ClientSession() as session:
+                async with session.post(api_url, headers = headers, data = json.dumps(data)) as response:
+                    response = await response.json()
+            response = response["choices"][0]["message"]["content"]
+            limit = 1800
+            total_text = len(prompt) + len(response)
+            if total_text > limit:
+                result = [response[i: i + limit] for i in range(0, len(response), limit)]
+                for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**{model.name}:** {half}")
+            else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**{model.name}:** {response}")
+        except Exception as e:
+            global error, error_channel
+            error = f"{model.value}: {e}"
+            error_channel = self.bot.get_channel(int(os.getenv("ERROR_CHANNEL_ID")))
+            embed = discord.Embed(title = "Chatbot Error",
+                                  description = f"Sorry, an unexpected error has occured, do you want to send the error message to the developer?",
+                                  color = discord.Color.red())
+            await interaction.followup.send(embed = embed, view = errorButtons())
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(AI(bot))
