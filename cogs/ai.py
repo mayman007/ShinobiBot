@@ -349,7 +349,7 @@ class AI(commands.Cog):
 
             async with aiohttp.ClientSession() as session:
                 async with session.post(api_url, headers = headers, data = json.dumps(data)) as response:
-                    response = await response.read()
+                    response = await response.text()
             response = json.loads(response)
             response = response["choices"][0]["message"]["content"]
             limit = 1800
