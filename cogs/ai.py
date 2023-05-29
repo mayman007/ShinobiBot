@@ -11,8 +11,6 @@ import json
 import io
 import os
 import aiohttp
-import aiosqlite
-import asyncio
 from imaginepy import AsyncImagine, Style, Ratio
 
 
@@ -22,7 +20,11 @@ class errorButtons(discord.ui.View):
     @discord.ui.button(label = "Yes", style = discord.ButtonStyle.green)
     async def edits_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
-        await error_channel.send(error)
+        try:
+            await error_channel.send(error)
+        except Exception as e:
+            error = f"Error report failed due to: {e}"
+            await error_channel.send(error)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -359,7 +361,7 @@ class AI(commands.Cog):
             global error, error_channel
             error = f"{model.value}: {e}"
             error_channel = self.bot.get_channel(int(os.getenv("ERROR_CHANNEL_ID")))
-            embed = discord.Embed(title = "Chatbot Error",
+            embed = discord.Embed(title = "Error",
                                   description = f"Sorry, an unexpected error has occured, do you want to send the error message to the developer?",
                                   color = discord.Color.red())
             await interaction.followup.send(embed = embed, view = errorButtons())
