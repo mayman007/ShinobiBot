@@ -45,7 +45,7 @@ class MyBot(commands.Bot):
 bot = MyBot()
 bot.remove_command("help")
 
-#logging stuff
+# Logging stuff
 logger = logging.getLogger("discord")
 logger.setLevel(logging.INFO)
 handler = logging.handlers.RotatingFileHandler(
@@ -58,6 +58,26 @@ dt_fmt = "%Y-%m-%d %H:%M:%S"
 formatter = logging.Formatter("[{asctime}] [{levelname:<8}] {name}: {message}", dt_fmt, style = "{")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
+
+# Errors buttons
+class errorButtons(discord.ui.View):
+    def __init__(self, *, timeout = 180):
+        super().__init__(timeout = timeout)
+    @discord.ui.button(label = "Yes", style = discord.ButtonStyle.green)
+    async def edits_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        await error_channel.send(error_message)
+        for child in self.children:
+            child.disabled = True
+        await interaction.message.edit(view = self)
+        await interaction.response.send_message("Error sent to the developer.")
+    @discord.ui.button(label = "No", style = discord.ButtonStyle.red)
+    async def edits_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        for child in self.children:
+            child.disabled = True
+        await interaction.message.edit(view = self)
+        await interaction.response.send_message("Cancelled.")
 
 # Errors handling
 @bot.tree.error
@@ -74,6 +94,13 @@ async def on_app_command_error(interaction: discord.Interaction, error: app_comm
         per_error = discord.Embed(title = f"I'm Missing Permissions!", description = f"I don't have {missing_perm} permission.", colour = discord.Colour.light_grey())
         await interaction.response.send_message(embed = per_error, ephemeral = True)
     else:
+        global error_message, error_channel
+        error_message = error
+        error_channel = bot.get_channel(int(os.getenv("ERROR_CHANNEL_ID")))
+        embed = discord.Embed(title = "Error",
+                            description = f"Sorry, an unexpected error has occured, do you want to send the error message to the developer?",
+                            color = discord.Color.red())
+        await interaction.response.send_message(embed = embed, view = errorButtons())
         raise error
 
 # User info context menu
@@ -131,7 +158,7 @@ async def open_ticket_context_menu(interaction: discord.Interaction, member: dis
         await channel.send(ticket_sentence, view = main())
         await interaction.response.send_message(f"I've opened a ticket for {member.mention} at {channel.mention}!", ephemeral = True)
 
-#feedback button
+# Feedback button
 class feedbackButton(discord.ui.View):
     def __init__(self, *, timeout = 180):
         super().__init__(timeout = timeout)
@@ -143,13 +170,13 @@ class feedbackButton(discord.ui.View):
         if retry: return await interaction.response.send_message(f"Slow down! Try again in {round(retry, 1)} seconds!", ephemeral = True)
         await interaction.response.send_modal(feedbackModal())
 
-#feedback modal
+# Feedback modal
 class feedbackModal(ui.Modal, title = "Send Your Feedback"):
     ftitle = ui.TextInput(label = "Title", style = discord.TextStyle.short, placeholder = "Write a title for the issue/suggestion.", required = True, max_length = 50)
     fdes = ui.TextInput(label = "Long Description", style = discord.TextStyle.short, placeholder = "Descripe the issue/suggestion.", required = True, max_length = 1000)
     fsol = ui.TextInput(label = "Solution (optional)", style = discord.TextStyle.short, placeholder = "Write a solution for the issue.", required = False, max_length = 1000)
     async def on_submit(self, interaction: discord.Interaction):
-        channel = bot.get_channel(1027230751651012659)
+        channel = bot.get_channel(int(os.getenv("FEEDBACK_CHANNEL_ID")))
         invite = await interaction.channel.create_invite(max_age = 300)
         try:
             embed = discord.Embed(title = f"User: {interaction.user}\nServer: {interaction.guild.name}\n{invite}", description = f"**{self.ftitle}**", timestamp = datetime.now())
@@ -165,7 +192,7 @@ class feedbackModal(ui.Modal, title = "Send Your Feedback"):
             await channel.send(embed = embed)
             await interaction.response.send_message("Your feedback has been sent succesfully!", ephemeral = True)
 
-#feedback command
+# Feedback command
 @bot.tree.command(name = "feedback", description = "Send your feedback directly to the developers.")
 async def feedback(interaction: discord.Interaction):
     global author
@@ -174,10 +201,10 @@ async def feedback(interaction: discord.Interaction):
     embed = discord.Embed(title = "If you had faced any problems or have any suggestions, feel free to send your feedback!")
     await interaction.response.send_message(embed = embed, view = view, ephemeral = True)
 
-#on leave
+# On leave
 @bot.event
 async def on_guild_remove(guild: discord.Guild):
-    # remove guild from databases
+    # Remove guild from databases
     async with aiosqlite.connect("db/tickets_role.db") as db:
         async with db.cursor() as cursor:
             await cursor.execute("CREATE TABLE IF NOT EXISTS roles (role INTEGER, guild ID)")
