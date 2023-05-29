@@ -96,7 +96,7 @@ class Dropdown(discord.ui.Select):
         # Artificial Intelligence page
         elif self.values[0] == "Artificial Intelligence":
             embed = discord.Embed(title = "**Artificial Intelligence**", description = "Use famous AI tools", color = 0x2F3136)
-            embed.add_field(name = "**Commands**", value = "> </chatgpt ask:1088511615072206962> , </chatgpt reset_chat:1088511615072206962> , </bard:1090416058382438440> , </bing ask:1088508793110933524> , </bing image_creator:1088508793110933524> , </dalle:1089010855695368253> , </midjourney:1092615807990767669>")
+            embed.add_field(name = "**Commands**", value = "> </chatbot:1112553506457526353> , </bard:1090416058382438440> , </bing ask:1088508793110933524> , </bing image_creator:1088508793110933524> , </dalle:1089010855695368253> , </midjourney:1092615807990767669>")
             embed.set_footer(text = "Use /help artificial-intelligence <command> for information on a command.")
             await interaction.message.edit(embed = embed)
             await interaction.response.defer()
@@ -474,8 +474,7 @@ class Help(commands.GroupCog, name = "help"):
     @app_commands.describe(command = "Choose a command to get info about it.")
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     @app_commands.choices(command = [
-        app_commands.Choice(name = "chatgpt ask", value = "chatgpt ask"),
-        app_commands.Choice(name = "chatgpt reset_chat", value = "chatgpt reset_chat"),
+        app_commands.Choice(name = "chatbot", value = "chatbot"),
         app_commands.Choice(name = "bing ask", value = "bing ask"),
         app_commands.Choice(name = "bard", value = "bard"),
         app_commands.Choice(name = "dalle", value = "dalle"),
@@ -483,16 +482,10 @@ class Help(commands.GroupCog, name = "help"):
         app_commands.Choice(name = "bing image_creator", value = "bing image_creator")
         ])
     async def utility(self, interaction: discord.Interaction, command: app_commands.Choice[str]):
-        if command.value == "chatgpt ask":
-            em = discord.Embed(title = "__**ChatGPT Ask**__", description = "Ask ChatGPT.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> chatgpt <prompt>")
-            em.add_field(name = "**Example:**", value = "> `/chatgpt hello`")
-            em.set_footer(text = "<> means requird, [] means optional")
-            await interaction.response.send_message(embed = em)
-        elif command.value == "chatgpt reset_chat":
-            em = discord.Embed(title = "__**ChatGPT reset_chat**__", description = "Resets your conversation with ChatGPT-4.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> chatgpt reset_chat")
-            em.add_field(name = "**Example:**", value = "> `/chatgpt reset_chat`")
+        if command.value == "chatbot":
+            em = discord.Embed(title = "__**Chatbot**__", description = "Chat with powerful AI models.", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> Chatbot <prompt> <model>")
+            em.add_field(name = "**Example:**", value = "> `/chatgpt hello gpt-3.5-turbo`")
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
         elif command.value == "bing ask":
