@@ -23,8 +23,8 @@ class errorButtons(discord.ui.View):
         try:
             await error_channel.send(error)
         except Exception as e:
-            error = f"Error report failed due to: {e}"
-            await error_channel.send(error)
+            report_failed_message = f"Error report failed due to: {e}"
+            await error_channel.send(report_failed_message)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -293,7 +293,7 @@ class AI(commands.Cog):
     @app_commands.choices(model = [app_commands.Choice(name = "GPT-4", value = "gpt-4"),
                                    app_commands.Choice(name = "GPT-3.5-Turbo", value = "gpt-3.5-turbo")])
     async def chatgpt_ask(self, interaction: discord.Interaction, prompt: str, model: app_commands.Choice[str] = None):
-        await interaction.response.send_message("Wanna chat with GPT and other AI models? Use </chatbot>!", ephemeral = True)
+        await interaction.response.send_message("Wanna chat with GPT and other AI models? Use </chatbot:1112553506457526353>!", ephemeral = True)
 
     @app_commands.command(name = "chatbot", description = "Chat with powerful AI models.")
     @app_commands.describe(prompt = "The question you wanna ask.", model = "Choose the AI model you wanna chat with.")
