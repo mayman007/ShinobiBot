@@ -326,8 +326,8 @@ class AI(commands.Cog):
                     for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**{model.name}:** {half}")
                 else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**{model.name}:** {response}")
                 return
-            api_key = os.getenv("PAWAN_API_KEY")
-            api_url = "https://api.pawan.krd/v1/chat/completions"
+            api_key = os.getenv("FOX_API_KEY")
+            api_url = "https://api.hypere.app/v1/chat/completions"
             headers = {
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {api_key}"
