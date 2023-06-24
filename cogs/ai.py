@@ -1,10 +1,7 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-import revChatGPT
-from revChatGPT.V1 import AsyncChatbot as GPTChatbot
-from Bard import Chatbot as BardChatbot
-import EdgeGPT
+from bardapi import BardAsync as BardChatbot # install the git version for all the features that i use
 from EdgeGPT.EdgeGPT import Chatbot as BingChatbot, ConversationStyle
 from EdgeGPT.ImageGen import ImageGenAsync
 import json
@@ -264,10 +261,10 @@ class AI(commands.Cog):
     async def bard(self, interaction: discord.Interaction, prompt: str):
         await interaction.response.defer()
         try:
-            session_cookie = os.getenv("BARD_COOKIE") # visit https://github.com/acheong08/Bard for guide on how to get
-            bot = BardChatbot(session_cookie)
-            response = bot.ask(prompt)
-            response = str(response).split("{'content': ")[1].split(", 'conversation_id")[0].replace("\\n", "\n").replace("\\'", "'").replace('\\"', '"').replace("\\r", "\r")[1:-1]
+            session_cookie = os.getenv("BARD_COOKIE")
+            bot = BardChatbot(token=session_cookie)
+            response = await bot.get_answer(prompt)
+            response = response['content']
             limit = 1800
             total_text = len(prompt) + len(response)
             if total_text > limit:
