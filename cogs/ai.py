@@ -301,12 +301,12 @@ class AI(commands.Cog):
     @app_commands.choices(model = [
                                     app_commands.Choice(name = "gpt-4", value = "gpt-4"),
                                     app_commands.Choice(name = "gpt-3.5-turbo", value = "gpt-3.5-turbo"),
-                                    app_commands.Choice(name = "alpaca-13b", value = "alpaca-13b"),
-                                    app_commands.Choice(name = "vicuna-13b", value = "vicuna-13b"),
-                                    app_commands.Choice(name = "koala-13b", value = "koala-13b"),
-                                    app_commands.Choice(name = "llama-13b", value = "llama-13b"),
-                                    app_commands.Choice(name = "oasst-pythia-12b", value = "oasst-pythia-12b"),
-                                    app_commands.Choice(name = "fastchat-t5-3b", value = "fastchat-t5-3b")
+                                    # app_commands.Choice(name = "alpaca-13b", value = "alpaca-13b"),
+                                    # app_commands.Choice(name = "vicuna-13b", value = "vicuna-13b"),
+                                    # app_commands.Choice(name = "koala-13b", value = "koala-13b"),
+                                    # app_commands.Choice(name = "llama-13b", value = "llama-13b"),
+                                    # app_commands.Choice(name = "oasst-pythia-12b", value = "oasst-pythia-12b"),
+                                    # app_commands.Choice(name = "fastchat-t5-3b", value = "fastchat-t5-3b")
                                     ])
     async def chatbot(self, interaction: discord.Interaction, prompt: str, model: app_commands.Choice[str]):
         await interaction.response.defer()
@@ -326,8 +326,8 @@ class AI(commands.Cog):
                     for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**{model.name}:** {half}")
                 else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**{model.name}:** {response}")
                 return
-            api_key = os.getenv("FOX_API_KEY")
-            api_url = "https://api.hypere.app/v1/chat/completions"
+            api_key = os.getenv("CATTO_GPT")
+            api_url = "https://api.cattto.repl.co/v1/chat/completions"
             headers = {
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {api_key}"
