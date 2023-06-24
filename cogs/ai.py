@@ -5,8 +5,8 @@ import revChatGPT
 from revChatGPT.V1 import AsyncChatbot as GPTChatbot
 from Bard import Chatbot as BardChatbot
 import EdgeGPT
-from EdgeGPT import Chatbot as BingChatbot
-from ImageGen import ImageGenAsync
+from EdgeGPT.EdgeGPT import Chatbot as BingChatbot, ConversationStyle
+from EdgeGPT.ImageGen import ImageGenAsync
 import json
 import io
 import os
@@ -236,9 +236,9 @@ class AI(commands.Cog):
         await interaction.response.defer()
         try:
             bot = await BingChatbot.create()
-            if conversation_style == None or conversation_style.value == "balanced": style = EdgeGPT.ConversationStyle.balanced
-            elif conversation_style.value == "creative": style = EdgeGPT.ConversationStyle.creative
-            elif conversation_style.value == "precise": style = EdgeGPT.ConversationStyle.precise
+            if conversation_style == None or conversation_style.value == "balanced": style = ConversationStyle.balanced
+            elif conversation_style.value == "creative": style = ConversationStyle.creative
+            elif conversation_style.value == "precise": style = ConversationStyle.precise
             response = await bot.ask(prompt = prompt, conversation_style = style)
             response = str(response).split("[{'type': 'TextBlock', 'text': ")[1].split(", 'wrap': True}")[0].replace("\\n", "\n").replace("\\'", "'").replace('\\"', '"')[1:-1]
             limit = 1800
@@ -311,21 +311,6 @@ class AI(commands.Cog):
     async def chatbot(self, interaction: discord.Interaction, prompt: str, model: app_commands.Choice[str]):
         await interaction.response.defer()
         try:
-            if model.value == "gpt-4":
-                chatbot = GPTChatbot(config={
-                                    "email": os.getenv("CHATGPT_EMAIL"),
-                                    "password": os.getenv("CHATGPT_PASS")
-                                    })
-                response = ""
-                async for data in chatbot.ask(prompt, model=model.value):
-                    response = data["message"]
-                limit = 1800
-                total_text = len(prompt) + len(response)
-                if total_text > limit:
-                    result = [response[i: i + limit] for i in range(0, len(response), limit)]
-                    for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**{model.name}:** {half}")
-                else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**{model.name}:** {response}")
-                return
             api_key = os.getenv("CATTO_GPT")
             api_url = "https://api.cattto.repl.co/v1/chat/completions"
             headers = {
