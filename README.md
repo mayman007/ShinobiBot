@@ -4,21 +4,17 @@
   </a>
 </p>
 
-
-# **Shinobi Bot**
-<h3 align="center">【Multipurpose Discord Bot】Tickets｜Logging｜Anti-Spam｜Giveaways｜Suggestions｜Moderation｜Games｜ChatGPT｜100+ commands</h3>
-
 <p align="center">
 <a href="https://github.com/Rapptz/discord.py/">
-   <img src="https://img.shields.io/badge/discord.py-v2.2.2-blue?" alt="discord.py"/>
-</a>
-<a href="https://github.com/Rapptz/discord.py/">
-   <img src="https://img.shields.io/pypi/pyversions/discord.py.svg" alt="discord.py supported versions"/>
+   <img src="https://img.shields.io/badge/discord.py-v2.3-blue?" alt="discord.py"/>
 </a>
 <a href="https://discord.gg/YScaCDY7PN">
 <img src="https://img.shields.io/discord/1111697702535839756?color=5865F2&logo=discord&logoColor=white" alt="Support Server" />
 </a>
 </p>
+
+<h1 align="center"><b>Shinobi Bot</b></h1>
+<h3 align="center">【Multipurpose Discord Bot】Tickets｜Logging｜Anti-Spam｜Giveaways｜Suggestions｜Moderation｜Games｜AI｜100+ commands</h3>
 
 
 ## Content
