@@ -292,6 +292,8 @@ class AI(commands.Cog):
     async def chatgpt_ask(self, interaction: discord.Interaction, prompt: str, model: app_commands.Choice[str] = None):
         await interaction.response.send_message("Wanna chat with GPT and other AI models? Use </chatbot:1112553506457526353>!", ephemeral = True)
 
+
+    # Chatbot command
     @app_commands.command(name = "chatbot", description = "Chat with powerful AI models.")
     @app_commands.describe(prompt = "The question you wanna ask.", model = "Choose the AI model you wanna chat with.")
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
@@ -306,10 +308,16 @@ class AI(commands.Cog):
                                     # app_commands.Choice(name = "fastchat-t5-3b", value = "fastchat-t5-3b")
                                     ])
     async def chatbot(self, interaction: discord.Interaction, prompt: str, model: app_commands.Choice[str]):
-        await interaction.response.defer()
-        try:
-            api_key = os.getenv("CATTO_GPT")
-            api_url = "https://api.cattto.repl.co/v1/chat/completions"
+        async def get_response(provider):
+            if provider == "CATTO":
+                api_key = os.getenv("CATTO_GPT")
+                api_url = "https://api.cattto.repl.co/v1/chat/completions"
+            elif provider == "CHURCHLESS":
+                api_key = os.getenv("CHURCHLESS_AUTH")
+                api_url = "https://free.churchless.tech/v1/chat/completions"
+            elif provider == "FOX":
+                api_key = os.getenv("FOX_API_KEY")
+                api_url = "https://api.hypere.app/v1/chat/completions"
             headers = {
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {api_key}"
@@ -328,7 +336,6 @@ class AI(commands.Cog):
                     }
                 ]
             }
-
             async with aiohttp.ClientSession() as session:
                 async with session.post(api_url, headers = headers, data = json.dumps(data)) as response:
                     response = await response.text()
@@ -340,14 +347,23 @@ class AI(commands.Cog):
                 result = [response[i: i + limit] for i in range(0, len(response), limit)]
                 for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**{model.name}:** {half}")
             else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**{model.name}:** {response}")
+
+        await interaction.response.defer()
+        try: await get_response("CATTO")
         except Exception as e:
-            global error, error_channel
-            error = f"{model.value}: {e}"
-            error_channel = self.bot.get_channel(int(os.getenv("ERROR_CHANNEL_ID")))
-            embed = discord.Embed(title = "Error",
-                                  description = f"Sorry, an unexpected error has occured, do you want to send the error message to the developer?",
-                                  color = discord.Color.red())
-            await interaction.followup.send(embed = embed, view = errorButtons())
+            print(f"CATTO: {e}")
+            try: await get_response(f"CHURCHLESS: {e}")
+            except Exception as e:
+                print(e)
+                try: await get_response(f"FOX: {e}")
+                except Exception as e:
+                    global error, error_channel
+                    error = f"{model.value}: {e}"
+                    error_channel = self.bot.get_channel(int(os.getenv("ERROR_CHANNEL_ID")))
+                    embed = discord.Embed(title = "Error",
+                                          description = f"Sorry, an unexpected error has occured, do you want to send the error message to the developer?",
+                                          color = discord.Color.red())
+                    await interaction.followup.send(embed = embed, view = errorButtons())
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(AI(bot))
