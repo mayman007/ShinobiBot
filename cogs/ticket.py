@@ -4,6 +4,20 @@ from discord import app_commands, utils
 import os
 from datetime import datetime
 import aiosqlite
+import time
+
+async def add_user_to_channel(channel_id, user_id):
+    async with aiosqlite.connect("db/tickets_user.db") as db:
+        await db.execute("CREATE TABLE IF NOT EXISTS users (user INTEGER, channel INTEGER)")  # Tabloyu oluştur (varsa)
+        await db.commit()  # Değişiklikleri kaydet
+
+        await db.execute("INSERT INTO users (user, channel) VALUES (?, ?)", (user_id, channel_id))
+        await db.commit()  # Değişiklikleri kaydet
+
+async def remove_user_permissions(channel, user_id):
+    user = channel.guild.get_member(user_id)
+    if user:
+        await channel.set_permissions(user, overwrite=None)
 
 
 class ticket_launcher(discord.ui.View):
@@ -21,6 +35,7 @@ class ticket_launcher(discord.ui.View):
                 interaction.user: discord.PermissionOverwrite(view_channel = True, read_message_history = True, send_messages = True, attach_files = True, embed_links = True),
                 interaction.guild.me: discord.PermissionOverwrite(view_channel = True, send_messages = True, read_message_history = True)
             }
+            
             async with aiosqlite.connect("db/tickets_role.db") as db:
                 async with db.cursor() as cursor:
                     await cursor.execute("CREATE TABLE IF NOT EXISTS roles (role INTEGER, guild ID)") # Create the table if not exists
@@ -40,17 +55,45 @@ class ticket_launcher(discord.ui.View):
                 category = await guild.create_category("tickets") #Creates the category
             try:
                 channel = await interaction.guild.create_text_channel(name = f"ticket-for-{interaction.user.name}-{interaction.user.discriminator}", overwrites = overwrites, reason = f"Ticket for {interaction.user}", category = category)
+                await add_user_to_channel(channel.id, interaction.user.id)
+                        
             except: return await interaction.response.send_message("Ticket creation failed! Make sure I have `Manage Channels` permissions!", ephemeral = True)
             await channel.send(ticket_sentence, view = main())
             await interaction.response.send_message(f"I've opened a ticket for you at {channel.mention}!", ephemeral = True)
 
 class confirm(discord.ui.View):
     def __init__(self) -> None:
-        super().__init__(timeout = None)
-    @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.red, custom_id = "confirm")
+        super().__init__(timeout=None)
+    
+    @discord.ui.button(label="Confirm", style=discord.ButtonStyle.red, custom_id="confirm")
     async def confirm_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        try: await interaction.channel.delete()
-        except: await interaction.response.send_message("Channel deletion failed! Make sure I have `Manage Channels` permissions!", ephemeral = True)
+        await interaction.response.send_message("This ticket will be closed in 5 second", ephemeral=True)
+        time.sleep(3)
+        channel = interaction.channel
+       
+        async with aiosqlite.connect("db/tickets_user.db") as db:
+                    async with db.cursor() as cursor:
+                        await cursor.execute("SELECT user FROM users WHERE channel = ?", (channel.id,))
+                        data = await cursor.fetchone()
+        
+        await remove_user_permissions(interaction.channel, data[0]) 
+
+        
+        now = datetime.now()
+        timestamp = now.strftime("%Y%m%d%H%M%S")  # Zaman damgasını formatlıyoruz
+        guild = interaction.guild
+        category2 = discord.utils.get(guild.categories, name = "ticketarchive")
+        if category2 is None: #If there's no category matching with the `name`
+            category2 = await guild.create_category("ticketarchive") #Creates the category
+        try:
+            new_channel_name = f"archive-{interaction.channel.name}-{timestamp}"
+            #await interaction.channel.edit(category = category2, name= new_channel_name)
+            await interaction.channel.edit(category = category2, name= new_channel_name)
+        except:
+            await interaction.response.send_message("Channel rename failed! Make sure I have `Manage Channels` permissions!", ephemeral=True)
+
+
+
 
 class main(discord.ui.View):
     def __init__(self) -> None:
