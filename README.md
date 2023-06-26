@@ -96,7 +96,7 @@ Giveaways, Suggestions System, Fun commands and much more! Shinobi Bot offers a 
 
 <ol>
 <li>
-Create a new bot from https://discord.com/developers/applications and save your bot token and application ID
+Create a new bot from https://discord.com/developers/applications and copy your bot token and application ID
 </li>
 
 <li>
@@ -123,7 +123,7 @@ pip install -r requirements.txt
 
 <li>
 
-Create .env file and fill it with your bot token in a variable named `BOT_TOKEN` and application ID in a variable named `APP_ID`
+Copy .env.example to .env and fill the needed variables
 </li>
 
 <li>
