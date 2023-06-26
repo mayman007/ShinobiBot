@@ -50,7 +50,7 @@ class AI(commands.Cog):
     @app_commands.describe(prompt = "Describe the image.")
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     async def midjourney(self, interaction: discord.Interaction, prompt: str):
-        await interaction.response.send_message("Wanna generate images using powerful models? Use /imagine!", ephemeral = True)
+        await interaction.response.send_message("Wanna generate images using powerful models? Use </imagine:1122943777326256413>!", ephemeral = True)
 
     # Imagine
     @app_commands.command(name = "imagine", description = "Generate images using powerful Stable Diffusion models.")
@@ -77,13 +77,6 @@ class AI(commands.Cog):
                                   app_commands.Choice(name = "Cyberpunk", value = "Style.CYBERPUNK"),
                                   app_commands.Choice(name = "Vibrant", value = "Style.VIBRANT"),
                                   app_commands.Choice(name = "Cinematic Render", value = "Style.CINEMATIC_RENDER"),
-                                  app_commands.Choice(name = "Surrealism", value = "Style.SURREALISM"),
-                                  app_commands.Choice(name = "Logo", value = "Style.LOGO"),
-                                  app_commands.Choice(name = "GTA", value = "Style.GTA"),
-                                  app_commands.Choice(name = "Samurai", value = "Style.SAMURAI"),
-                                  app_commands.Choice(name = "Disney", value = "Style.DISNEY"),
-                                  app_commands.Choice(name = "Comic Book", value = "Style.COMIC_BOOK"),
-                                  app_commands.Choice(name = "Comic V2", value = "Style.COMIC_V2"),
                                   app_commands.Choice(name = "Sketch", value = "Style.SKETCH"),
                                   app_commands.Choice(name = "Fantasy", value = "Style.FANTASY"),
                                   app_commands.Choice(name = "Futuristic", value = "Style.FUTURISTIC"),
@@ -94,6 +87,13 @@ class AI(commands.Cog):
                                   app_commands.Choice(name = "Picasso", value = "Style.PICASSO"),
                                   app_commands.Choice(name = "Pixel Art", value = "Style.PIXEL_ART"),
                                   app_commands.Choice(name = "Neon", value = "Style.NEON"),
+                                  app_commands.Choice(name = "Comic Book", value = "Style.COMIC_BOOK"),
+                                  app_commands.Choice(name = "Comic V2", value = "Style.COMIC_V2"),
+                                  app_commands.Choice(name = "Surrealism", value = "Style.SURREALISM"),
+                                  app_commands.Choice(name = "Logo", value = "Style.LOGO"),
+                                  app_commands.Choice(name = "GTA", value = "Style.GTA"),
+                                  app_commands.Choice(name = "Samurai", value = "Style.SAMURAI"),
+                                  app_commands.Choice(name = "Disney", value = "Style.DISNEY"),
                                   ])
     @app_commands.choices(ratio = [app_commands.Choice(name = "16x9", value = "Ratio.RATIO_16X9"),
                                   app_commands.Choice(name = "1x1", value = "Ratio.RATIO_1X1"),
