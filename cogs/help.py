@@ -40,7 +40,7 @@ class Dropdown(discord.ui.Select):
             em = discord.Embed(title = "**Shinobi Bot Help**",
                            description = "Hello! Welcome to the help page.\n\nUse </feedback:1027218853127794780> to send your feedback directly to the developers.\nUse `/help <category> <command>` for more info on a command.\nUse the dropdown menu below to select a category.\n\n",
                            color = 0x2F3136)
-            em.add_field(name = "**Who are you?**", value = "I'm a bot developed by Shinobi7k#8010. I'm a multipurpose bot than can do _almost_ anything. You can get more info using the dropdown menu below.\n\nI'm also open source. You can see my code on [GitHub](https://github.com/Shinobi7k/ShinobiBot)!")
+            em.add_field(name = "**Who are you?**", value = "I'm a bot developed by @shinobi7k. I'm a multipurpose bot than can do _almost_ anything. You can get more info using the dropdown menu below.\n\nI'm also open source. You can see my code on [GitHub](https://github.com/Shinobi7k/ShinobiBot)!")
             em.add_field(name = "**Features**", value = "- Advanced Ticket System\n- Anti-Spam System\n- Logging System\n- Suggestions\n- Moderation\n- Games\n- Utility")
             await interaction.message.edit(embed = em)
             await interaction.response.defer()
@@ -96,7 +96,7 @@ class Dropdown(discord.ui.Select):
         # Artificial Intelligence page
         elif self.values[0] == "Artificial Intelligence":
             embed = discord.Embed(title = "**Artificial Intelligence**", description = "Use famous AI tools", color = 0x2F3136)
-            embed.add_field(name = "**Commands**", value = "> </chatbot:1112553506457526353> , </bard:1090416058382438440> , </bing ask:1088508793110933524> , </bing image_creator:1088508793110933524> , </dalle:1089010855695368253> , </midjourney:1092615807990767669>")
+            embed.add_field(name = "**Commands**", value = "> </chatbot:1112553506457526353> , </bard:1090416058382438440> , </bing ask:1088508793110933524> , </bing image_creator:1088508793110933524> , </dalle:1089010855695368253> , </imagine:1122943777326256413>")
             embed.set_footer(text = "Use /help artificial-intelligence <command> for information on a command.")
             await interaction.message.edit(embed = embed)
             await interaction.response.defer()
@@ -150,7 +150,7 @@ class Help(commands.GroupCog, name = "help"):
         em = discord.Embed(title = "**Shinobi Bot Help**",
                            description = "Hello! Welcome to the help page.\n\nUse </feedback:1027218853127794780> to send your feedback directly to the developers.\nUse `/help <category> <command>` for more info on a command.\nUse the dropdown menu below to select a category.\n\n",
                            color = 0x2F3136)
-        em.add_field(name = "**Who are you?**", value = "I'm a bot developed by Shinobi7k#8010. I'm a multipurpose bot than can do _almost_ anything. You can get more info using the dropdown menu below.\n\nI'm also open source. You can see my code on [GitHub](https://github.com/Shinobi7k/ShinobiBot)!")
+        em.add_field(name = "**Who are you?**", value = "I'm a bot developed by @shinobi7k. I'm a multipurpose bot than can do _almost_ anything. You can get more info using the dropdown menu below.\n\nI'm also open source. You can see my code on [GitHub](https://github.com/Shinobi7k/ShinobiBot)!")
         em.add_field(name = "**Features**", value = "- Advanced Ticket System\n- Anti-Spam System\n- Logging System\n- Suggestions\n- Moderation\n- Games\n- Utility")
         global author
         author = interaction.user
@@ -478,7 +478,7 @@ class Help(commands.GroupCog, name = "help"):
         app_commands.Choice(name = "bing ask", value = "bing ask"),
         app_commands.Choice(name = "bard", value = "bard"),
         app_commands.Choice(name = "dalle", value = "dalle"),
-        app_commands.Choice(name = "midjourney", value = "midjourney"),
+        app_commands.Choice(name = "imagine", value = "imagine"),
         app_commands.Choice(name = "bing image_creator", value = "bing image_creator")
         ])
     async def utility(self, interaction: discord.Interaction, command: app_commands.Choice[str]):
@@ -505,10 +505,10 @@ class Help(commands.GroupCog, name = "help"):
             em.add_field(name = "**Example:**", value = "> `/dalle a white cat 5 512x512`")
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
-        elif command.value == "midjourney":
-            em = discord.Embed(title = "__**MidJourney**__", description = "Create an image using Midjourney-like model.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> midjourney <prompt> [style] [ratio]")
-            em.add_field(name = "**Example:**", value = "> `/midjourney a white dog`")
+        elif command.value == "imagine":
+            em = discord.Embed(title = "__**Imagine**__", description = "Create images using powerful Stable Diffusion models.", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> imagine <prompt> <model> <style> <ratio> <negative> <cfg>")
+            em.add_field(name = "**Example:**", value = "> `/imagine white cat Creative Cyberpunk 16x9`")
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
         elif command.value == "bing image_creator":
