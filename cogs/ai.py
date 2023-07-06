@@ -54,163 +54,28 @@ class AI(commands.Cog):
 
     # Imagine
     @app_commands.command(name = "imagine", description = "Generate images using powerful Stable Diffusion models.")
-    @app_commands.describe(prompt = "Describe the image.",
-                           model = "Choose the model.",
-                           style = "Choose the style.",
-                           ratio = "Choose the ratio.",
-                           negative = "What you DO NOT want to generate.",
-                           cfg = "Creativity scale. Must be between 1 and 16. Default is 7.")
+    @app_commands.describe(prompt = "Describe the image.")
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
-    @app_commands.choices(model = [app_commands.Choice(name = "Imagine V4 Beta", value = "Model.V4_BETA"),
-                                  app_commands.Choice(name = "Imagine V3", value = "Model.V3"),
-                                  app_commands.Choice(name = "Imagine V1", value = "Model.V1"),
-                                  app_commands.Choice(name = "Creative", value = "Model.CREATIVE"),
-                                  app_commands.Choice(name = "Portrait", value = "Model.PORTRAIT"),
-                                  app_commands.Choice(name = "Realistic", value = "Model.REALISTIC"),
-                                  app_commands.Choice(name = "Anime", value = "Model.ANIME"),
-                                  ])
-    @app_commands.choices(style = [app_commands.Choice(name = "No Style", value = "Style.NO_STYLE"),
-                                  app_commands.Choice(name = "Cosmic", value = "Style.COSMIC"),
-                                  app_commands.Choice(name = "Chromatic", value = "Style.CHROMATIC"),
-                                  app_commands.Choice(name = "Anime V2", value = "Style.ANIME_V2"),
-                                  app_commands.Choice(name = "Candyland", value = "Style.CANDYLAND"),
-                                  app_commands.Choice(name = "Cyberpunk", value = "Style.CYBERPUNK"),
-                                  app_commands.Choice(name = "Vibrant", value = "Style.VIBRANT"),
-                                  app_commands.Choice(name = "Cinematic Render", value = "Style.CINEMATIC_RENDER"),
-                                  app_commands.Choice(name = "Sketch", value = "Style.SKETCH"),
-                                  app_commands.Choice(name = "Fantasy", value = "Style.FANTASY"),
-                                  app_commands.Choice(name = "Futuristic", value = "Style.FUTURISTIC"),
-                                  app_commands.Choice(name = "Icon", value = "Style.ICON"),
-                                  app_commands.Choice(name = "Illustration", value = "Style.ILLUSTRATION"),
-                                  app_commands.Choice(name = "Japanese Art", value = "Style.JAPANESE_ART"),
-                                  app_commands.Choice(name = "Kawaii Chibi", value = "Style.KAWAII_CHIBI"),
-                                  app_commands.Choice(name = "Picasso", value = "Style.PICASSO"),
-                                  app_commands.Choice(name = "Pixel Art", value = "Style.PIXEL_ART"),
-                                  app_commands.Choice(name = "Neon", value = "Style.NEON"),
-                                  app_commands.Choice(name = "Comic Book", value = "Style.COMIC_BOOK"),
-                                  app_commands.Choice(name = "Comic V2", value = "Style.COMIC_V2"),
-                                  app_commands.Choice(name = "Surrealism", value = "Style.SURREALISM"),
-                                  app_commands.Choice(name = "Logo", value = "Style.LOGO"),
-                                  app_commands.Choice(name = "GTA", value = "Style.GTA"),
-                                  app_commands.Choice(name = "Samurai", value = "Style.SAMURAI"),
-                                  app_commands.Choice(name = "Disney", value = "Style.DISNEY"),
-                                  ])
-    @app_commands.choices(ratio = [app_commands.Choice(name = "16x9", value = "Ratio.RATIO_16X9"),
-                                  app_commands.Choice(name = "1x1", value = "Ratio.RATIO_1X1"),
-                                  app_commands.Choice(name = "3x2", value = "Ratio.RATIO_3X2"),
-                                  app_commands.Choice(name = "4x3", value = "Ratio.RATIO_4X3"),
-                                  app_commands.Choice(name = "9x16", value = "Ratio.RATIO_9X16")
-                                  ])
-    async def imagine(self,
-                      interaction: discord.Interaction,
-                      prompt: str,
-                      model: app_commands.Choice[str],
-                      style: app_commands.Choice[str],
-                      ratio: app_commands.Choice[str],
-                      negative: str = None,
-                      cfg: float = None):
-
-        if cfg == None: cfg = 7
-        elif not cfg in range(1, 17): return await interaction.response.send_message("cfg must be between 1 and 16.", ephemeral=True)
-
-        if model.value == "Model.V4_BETA": model.value = Model.V4_BETA
-        elif model.value == "Model.V3": model.value = Model.V3
-        elif model.value == "Model.V1": model.value = Model.V1
-        elif model.value == "Model.CREATIVE": model.value = Model.CREATIVE
-        elif model.value == "Model.PORTRAIT": model.value = Model.PORTRAIT
-        elif model.value == "Model.REALISTIC": model.value = Model.REALISTIC
-        elif model.value == "Model.ANIME": model.value = Model.ANIME
-
-        if style.value == "Style.NO_STYLE": style.value = Style.NO_STYLE
-        elif style.value == "Style.COSMIC": style.value = Style.COSMIC
-        elif style.value == "Style.CHROMATIC": style.value = Style.CHROMATIC
-        elif style.value == "Style.ANIME_V2": style.value = Style.ANIME_V2
-        elif style.value == "Style.CANDYLAND": style.value = Style.CANDYLAND
-        elif style.value == "Style.CYBERPUNK": style.value = Style.CYBERPUNK
-        elif style.value == "Style.VIBRANT": style.value = Style.VIBRANT
-        elif style.value == "Style.CINEMATIC_RENDER": style.value = Style.CINEMATIC_RENDER
-        elif style.value == "Style.SURREALISM": style.value = Style.SURREALISM
-        elif style.value == "Style.LOGO": style.value = Style.LOGO
-        elif style.value == "Style.GTA": style.value = Style.GTA
-        elif style.value == "Style.SAMURAI": style.value = Style.SAMURAI
-        elif style.value == "Style.DISNEY": style.value = Style.DISNEY
-        elif style.value == "Style.COMIC_BOOK": style.value = Style.COMIC_BOOK
-        elif style.value == "Style.COMIC_V2": style.value = Style.COMIC_V2
-        elif style.value == "Style.SKETCH": style.value = Style.SKETCH
-        elif style.value == "Style.FANTASY": style.value = Style.FANTASY
-        elif style.value == "Style.FUTURISTIC": style.value = Style.FUTURISTIC
-        elif style.value == "Style.ICON": style.value = Style.ICON
-        elif style.value == "Style.ILLUSTRATION": style.value = Style.ILLUSTRATION
-        elif style.value == "Style.JAPANESE_ART": style.value = Style.JAPANESE_ART
-        elif style.value == "Style.KAWAII_CHIBI": style.value = Style.KAWAII_CHIBI
-        elif style.value == "Style.PICASSO": style.value = Style.PICASSO
-        elif style.value == "Style.PIXEL_ART": style.value = Style.PIXEL_ART
-        elif style.value == "Style.NEON": style.value = Style.NEON
-
-        if ratio.value == "Ratio.RATIO_16X9": ratio.value = Ratio.RATIO_16X9
-        elif ratio.value == "Ratio.RATIO_1X1": ratio.value = Ratio.RATIO_1X1
-        elif ratio.value == "Ratio.RATIO_3X2": ratio.value = Ratio.RATIO_3X2
-        elif ratio.value == "Ratio.RATIO_4X3": ratio.value = Ratio.RATIO_4X3
-        elif ratio.value == "Ratio.RATIO_9X16": ratio.value = Ratio.RATIO_9X16
-
-        if negative == None: negative = ""
-
+    async def imagine(self, interaction: discord.Interaction, prompt: str):
         await interaction.response.defer()
-        imagine = AsyncImagine()
-        img_data = await imagine.sdprem(
-            prompt=prompt,
-            model=model.value,
-            style=style.value,
-            ratio=ratio.value,
-            negative=negative,
-            # seed=4294967295,
-            cfg=cfg,
-            high_result=True
-        )
-
-        if img_data is None:
-            e = f"MidJourney error: while generating the image"
-            global error, error_channel
-            error = f"Midjourney: {e}"
-            error_channel = self.bot.get_channel(int(os.getenv("ERROR_CHANNEL_ID")))
-            embed = discord.Embed(title = "Error",
-                                description = f"Sorry, an unexpected error has occured, do you want to send the error message to the developer?",
-                                color = discord.Color.red())
-            await interaction.followup.send(embed = embed, view = errorButtons())
-            return await imagine.close()
-        img_data = await imagine.upscale(img_data)
-        if img_data is None:
-            e = f"MidJourney error: while upscaling the image"
-            global error2, error_channel2
-            error2 = f"Midjourney: {e}"
-            error_channel2 = self.bot.get_channel(int(os.getenv("ERROR_CHANNEL_ID")))
-            embed = discord.Embed(title = "Error",
-                                description = f"Sorry, an unexpected error has occured, do you want to send the error message to the developer?",
-                                color = discord.Color.red())
-            await interaction.followup.send(embed = embed, view = errorButtons())
-            return await imagine.close()
-
         try:
-            with io.BytesIO(img_data) as file:
-                file = discord.File(file, "image.png")
+            API_URL = "https://api-inference.huggingface.co/models/prompthero/openjourney"
+            headers = {"Authorization": f"Bearer {os.getenv('HUGGINGFACE_TOKEN')}"}
+            payload = {"inputs": f"{prompt}, mdjrny-v4 style"}
+            print(1)
+            async with aiohttp.ClientSession(headers = headers) as session:
+                print(2)
+                async with session.post(API_URL, json = payload) as response:
+                    print(3)
+                    image_bytes =  await response.read()
+                    print(4)
+            with io.BytesIO(image_bytes) as file: # converts to file-like object
+                print(5)
+                await interaction.followup.send(f"Prompt: {prompt.strip()}", file = discord.File(file, "image.png"))
+                print(6)
         except Exception as e:
-            global error3, error_channel3
-            error3 = f"Midjourney: {e}"
-            error_channel3 = self.bot.get_channel(int(os.getenv("ERROR_CHANNEL_ID")))
-            embed = discord.Embed(title = "Error",
-                                description = f"Sorry, an unexpected error has occured, do you want to send the error message to the developer?",
-                                color = discord.Color.red())
-            await interaction.followup.send(embed = embed, view = errorButtons())
-            return await imagine.close()
-        await imagine.close()
-        info = ""
-        info = info + f"- Prompt: `{prompt}`"
-        info = info + f"\n- Model: `{model.name}`"
-        info = info + f" \n- Style: `{style.name}`"
-        info = info + f"\n- Ratio: `{ratio.name}`"
-        if negative != "": info = info + f"\n- Negative: `{negative}`"
-        info = info + f"\n- CFG: `{cfg}`"
-        await interaction.followup.send(info, file=file)
+            print(f"Imagine error: {e}")
+            await interaction.followup.send("Sorry, an unexpected error has occured.", ephemeral = True)
 
     # Dall-E
     @app_commands.command(name = "dalle", description = "Generate images using Dall-E.")
