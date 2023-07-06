@@ -506,9 +506,9 @@ class Help(commands.GroupCog, name = "help"):
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
         elif command.value == "imagine":
-            em = discord.Embed(title = "__**Imagine**__", description = "Create images using powerful Stable Diffusion models.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> imagine <prompt> <model> <style> <ratio> <negative> <cfg>")
-            em.add_field(name = "**Example:**", value = "> `/imagine white cat Creative Cyberpunk 16x9`")
+            em = discord.Embed(title = "__**Imagine**__", description = "Create images using Stable Diffusion.", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> imagine <prompt>")
+            em.add_field(name = "**Example:**", value = "> `/imagine white cat`")
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
         elif command.value == "bing image_creator":
