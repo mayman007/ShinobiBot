@@ -150,48 +150,76 @@ class suggestConfirm(discord.ui.View):
 class suggVotes(discord.ui.View):
     def __init__(self, *, timeout = None):
         super().__init__(timeout = timeout)
-    @discord.ui.button(label = "Upvote", style = discord.ButtonStyle.blurple, emoji = "🔼")
+    @discord.ui.button(label = "Upvote", style = discord.ButtonStyle.blurple, emoji = "🔼", custom_id = "sugg_upvote_button")
     async def sugg_upvote(self, interaction: discord.Interaction, button: discord.ui.Button):
-        global upvotes, downvotes, upvoted_users, downvoted_users
-        if interaction.user in upvoted_users:
-            upvotes = upvotes - 1
-            upvoted_users.remove(interaction.user)
-            await interaction.response.send_message("Upvote removed.", ephemeral = True)
-        elif interaction.user in downvoted_users:
-            downvotes = downvotes - 1
-            downvoted_users.remove(interaction.user)
-            upvotes = upvotes + 1
-            upvoted_users.append(interaction.user)
-            await interaction.response.send_message("Upvoted.", ephemeral = True)
-        else:
-            upvotes = upvotes + 1
-            upvoted_users.append(interaction.user)
-            await interaction.response.send_message("Upvoted.", ephemeral = True)
-        suggestEmbed = discord.Embed(title = "Suggestion", description = suggestion, color = 0xffd700)
-        suggestEmbed.set_author(name = f"Suggested by {sugg_author}", icon_url = sugg_avatar)
+        async with aiosqlite.connect("db/suggestions.db") as db:
+            async with db.cursor() as cursor:
+                await cursor.execute("SELECT * FROM suggestions WHERE sugg_id = ?", (interaction.message.id,))
+                data = await cursor.fetchone()
+                upvoted_users = []
+                downvoted_users = []
+                if data[1] != "[]":
+                    upvoted_users = []
+                    for user_id in data[1][1:-1].split(", "):
+                        upvoted_users.append(int(user_id))
+                if data[2] != "[]":
+                    downvoted_users = []
+                    for user_id in data[2][1:-1].split(", "):
+                        downvoted_users.append(int(user_id))
+                if interaction.user.id in upvoted_users:
+                    upvoted_users.remove(interaction.user.id)
+                    await interaction.response.send_message("Upvote removed.", ephemeral = True)
+                elif interaction.user.id in downvoted_users:
+                    downvoted_users.remove(interaction.user.id)
+                    upvoted_users.append(interaction.user.id)
+                    await interaction.response.send_message("Upvoted.", ephemeral = True)
+                else:
+                    upvoted_users.append(interaction.user.id)
+                    await interaction.response.send_message("Upvoted.", ephemeral = True)
+                await cursor.execute("UPDATE suggestions SET upvoted_users = ?, downvoted_users = ? WHERE sugg_id = ?", (str(upvoted_users), str(downvoted_users), interaction.message.id,))
+                await db.commit()
+        upvotes = len(upvoted_users)
+        downvotes = len(downvoted_users)
+        author = interaction.guild.get_member(data[4])
+        suggestEmbed = discord.Embed(title = "Suggestion", description = data[3], color = 0xffd700)
+        suggestEmbed.set_author(name = f"Suggested by {author}", icon_url = author.display_avatar.url)
         suggestEmbed.set_footer(text = f"{upvotes} Upvotes | {downvotes} Downvotes")
         view = suggVotes()
         await interaction.message.edit(embed = suggestEmbed, view = view)
     #cancel button
-    @discord.ui.button(label = "Downvote", style = discord.ButtonStyle.blurple, emoji = "🔽")
+    @discord.ui.button(label = "Downvote", style = discord.ButtonStyle.blurple, emoji = "🔽", custom_id = "sugg_downvote_button")
     async def sugg_downvote(self, interaction: discord.Interaction, button: discord.ui.Button):
-        global upvotes, downvotes, downvoted_users, upvoted_users
-        if interaction.user in downvoted_users:
-            downvotes = downvotes - 1
-            downvoted_users.remove(interaction.user)
-            await interaction.response.send_message("Downvote removed.", ephemeral = True)
-        elif interaction.user in upvoted_users:
-            upvotes = upvotes - 1
-            upvoted_users.remove(interaction.user)
-            downvotes = downvotes + 1
-            downvoted_users.append(interaction.user)
-            await interaction.response.send_message("Downvoted.", ephemeral = True)
-        else:
-            downvotes = downvotes + 1
-            downvoted_users.append(interaction.user)
-            await interaction.response.send_message("Downvoted.", ephemeral = True)
-        suggestEmbed = discord.Embed(title = "Suggestion", description = suggestion, color = 0xffd700)
-        suggestEmbed.set_author(name = f"Suggested by {sugg_author}", icon_url = sugg_avatar)
+        async with aiosqlite.connect("db/suggestions.db") as db:
+            async with db.cursor() as cursor:
+                await cursor.execute("SELECT * FROM suggestions WHERE sugg_id = ?", (interaction.message.id,))
+                data = await cursor.fetchone()
+                upvoted_users = []
+                downvoted_users = []
+                if data[1] != "[]":
+                    upvoted_users = []
+                    for user_id in data[1][1:-1].split(", "):
+                        upvoted_users.append(int(user_id))
+                if data[2] != "[]":
+                    downvoted_users = []
+                    for user_id in data[2][1:-1].split(", "):
+                        downvoted_users.append(int(user_id))
+                if interaction.user.id in downvoted_users:
+                    downvoted_users.remove(interaction.user.id)
+                    await interaction.response.send_message("Downvote removed.", ephemeral = True)
+                elif interaction.user.id in upvoted_users:
+                    upvoted_users.remove(interaction.user.id)
+                    downvoted_users.append(interaction.user.id)
+                    await interaction.response.send_message("Downvoted.", ephemeral = True)
+                else:
+                    downvoted_users.append(interaction.user.id)
+                    await interaction.response.send_message("Downvoted.", ephemeral = True)
+                await cursor.execute("UPDATE suggestions SET upvoted_users = ?, downvoted_users = ? WHERE sugg_id = ?", (str(upvoted_users), str(downvoted_users), interaction.message.id,))
+                await db.commit()
+        upvotes = len(upvoted_users)
+        downvotes = len(downvoted_users)
+        author = interaction.guild.get_member(data[4])
+        suggestEmbed = discord.Embed(title = "Suggestion", description = data[3], color = 0xffd700)
+        suggestEmbed.set_author(name = f"Suggested by {author}", icon_url = author.display_avatar.url)
         suggestEmbed.set_footer(text = f"{upvotes} Upvotes | {downvotes} Downvotes")
         view = suggVotes()
         await interaction.message.edit(embed = suggestEmbed, view = view)
@@ -402,20 +430,16 @@ class Settings(commands.Cog):
                         await asyncio.sleep(3)
                         await msg.delete()
                         channel = self.bot.get_channel(rev_ch_id)
-                        global suggestion, sugg_author, sugg_avatar, upvotes, downvotes, upvoted_users, downvoted_users
-                        upvoted_users = []
-                        downvoted_users = []
-                        upvotes = 0
-                        downvotes = 0
-                        suggestion = message.content
-                        sugg_author = message.author
-                        sugg_avatar = message.author.avatar.url
-                        suggestEmbed = discord.Embed(title = "Suggestion", description = suggestion, color = 0xffd700)
-                        suggestEmbed.set_author(name = f"Suggested by {sugg_author}", icon_url = sugg_avatar)
-                        suggestEmbed.set_footer(text = f"{upvotes} Upvotes | {downvotes} Downvotes")
+                        suggestEmbed = discord.Embed(title = "Suggestion", description = message.content, color = 0xffd700)
+                        suggestEmbed.set_author(name = f"Suggested by {message.author}", icon_url = message.author.display_avatar.url)
+                        suggestEmbed.set_footer(text = f"0 Upvotes | 0 Downvotes")
                         view = suggVotes()
                         msg = await channel.send(embed = suggestEmbed, view = view)
                         await msg.create_thread(name = "Suggestion Discussion")
-
+        async with aiosqlite.connect("db/suggestions.db") as db:
+            async with db.cursor() as cursor:
+                await cursor.execute("CREATE TABLE IF NOT EXISTS suggestions (sugg_id INTEGER, upvoted_users TEXT, downvoted_users TEXT, msg_content TEXT, msg_author_id INTEGER)")
+                await cursor.execute("INSERT INTO suggestions (sugg_id, upvoted_users, downvoted_users, msg_content, msg_author_id) VALUES (?, ?, ?, ?, ?)", (msg.id, "[]", "[]", message.content, message.author.id))
+                await db.commit()
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Settings(bot))
