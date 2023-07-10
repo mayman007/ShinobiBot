@@ -61,13 +61,12 @@ class ticket_launcher(discord.ui.View):
             await channel.send(ticket_sentence, view = main())
             await interaction.response.send_message(f"I've opened a ticket for you at {channel.mention}!", ephemeral = True)
 
-class confirm(discord.ui.View):
+class ArchiveConfirm(discord.ui.View):
     def __init__(self) -> None:
         super().__init__(timeout=None)
-    
     @discord.ui.button(label="Confirm", style=discord.ButtonStyle.red, custom_id="confirm")
-    async def confirm_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message("This ticket will be closed in 5 second", ephemeral=True)
+    async def archive_confirm_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("This ticket will be archived in 5 second", ephemeral=True)
         time.sleep(3)
         channel = interaction.channel
        
@@ -75,10 +74,8 @@ class confirm(discord.ui.View):
                     async with db.cursor() as cursor:
                         await cursor.execute("SELECT user FROM users WHERE channel = ?", (channel.id,))
                         data = await cursor.fetchone()
-        
         await remove_user_permissions(interaction.channel, data[0]) 
 
-        
         now = datetime.now()
         timestamp = now.strftime("%Y%m%d%H%M%S")  # Zaman damgasını formatlıyoruz
         guild = interaction.guild
@@ -92,16 +89,26 @@ class confirm(discord.ui.View):
         except:
             await interaction.response.send_message("Channel rename failed! Make sure I have `Manage Channels` permissions!", ephemeral=True)
 
-
-
+class CloseConfirm(discord.ui.View):
+    def __init__(self) -> None:
+        super().__init__(timeout = None)
+    @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.red, custom_id = "confirm")
+    async def close_confirm_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        try: await interaction.channel.delete()
+        except: await interaction.response.send_message("Channel deletion failed! Make sure I have `Manage Channels` permissions!", ephemeral = True)
 
 class main(discord.ui.View):
     def __init__(self) -> None:
         super().__init__(timeout = None)
+    @discord.ui.button(label = "Archive Ticket", style = discord.ButtonStyle.blurple, custom_id = "archive")
+    async def archive(self, interaction: discord.Interaction, button: discord.ui.Button):
+        embed = discord.Embed(title = "Are you sure you want to archive this ticket?", color = discord.Colour.blurple())
+        await interaction.response.send_message(embed = embed, view = ArchiveConfirm(), ephemeral = True)
+
     @discord.ui.button(label = "Close Ticket", style = discord.ButtonStyle.red, custom_id = "close")
     async def close(self, interaction: discord.Interaction, button: discord.ui.Button):
         embed = discord.Embed(title = "Are you sure you want to close this ticket?", color = discord.Colour.blurple())
-        await interaction.response.send_message(embed = embed, view = confirm(), ephemeral = True)
+        await interaction.response.send_message(embed = embed, view = CloseConfirm(), ephemeral = True)
 
 class transcript(discord.ui.View):
     def __init__(self) -> None:
@@ -147,15 +154,16 @@ class Ticket(commands.GroupCog, name = "ticket"):
     @app_commands.checks.has_permissions(manage_channels = True)
     async def launch(self, interaction: discord.Interaction):
         embed = discord.Embed(title = "Ticket!", description = "If you need support, click the button below and create a ticket!", color = discord.Colour.blue())
-        await interaction.response.send_message(embed = embed, view = ticket_launcher())
+        await interaction.response.send_message("Ticket system is online!", ephemeral = True)
+        await interaction.channel.send(embed = embed, view = ticket_launcher())
 
     #close ticket
     @app_commands.command(name = "close", description = "Closes the ticket.")
     @app_commands.checks.has_permissions(manage_channels = True)
     async def close(self, interaction: discord.Interaction):
         if "ticket-for-" in interaction.channel.name:
-            embed = discord.Embed(title = "> Are you sure that you want to close this ticket?", color = discord.Colour.blurple())
-            await interaction.response.send_message(embed = embed, view = confirm(), ephemeral = True)
+            embed = discord.Embed(title = "> Are you sure that you want to archive this ticket?", color = discord.Colour.blurple())
+            await interaction.response.send_message(embed = embed, view = ArchiveConfirm(), ephemeral = True)
         else:
             await interaction.response.send_message("> This isn't a ticket!", ephemeral = True)
 
