@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from discord import app_commands, utils
+from discord import ui, app_commands, utils
 import os
 from datetime import datetime
 import aiosqlite
@@ -19,15 +19,22 @@ async def remove_user_permissions(channel, user_id):
     if user:
         await channel.set_permissions(user, overwrite=None)
 
+class ticketModal(ui.Modal, title = "Send Your Feedback"):
+    issue = ui.TextInput(label = "What is your issue?", style = discord.TextStyle.short, placeholder = "Describe your issue.", required = True, max_length = 1000)
+    async def on_submit(self, interaction: discord.Interaction):
+        embed = discord.Embed(title = "Issue", description = self.issue, timestamp = datetime.now())
+        embed.set_author(name = interaction.user, icon_url = interaction.user.avatar)
+        await ticket_channel.send(ticket_sentence, embed = embed, view = main())
+        await interaction.response.send_message(f"I've opened a ticket for you at {ticket_channel.mention}!", ephemeral = True)
 
-class ticket_launcher(discord.ui.View):
+class ticket_launcher(ui.View):
     def __init__(self) -> None:
         super().__init__(timeout = None)
         self.cooldown = commands.CooldownMapping.from_cooldown(1, 600, commands.BucketType.member)
 
-    @discord.ui.button(label = "Create a Ticket", style = discord.ButtonStyle.blurple, custom_id = "ticket_button", emoji = "📩")
-    async def ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
-        ticket = utils.get(interaction.guild.text_channels, name = f"ticket-for-{interaction.user.name.lower().replace(' ', '-')}-{interaction.user.discriminator}")
+    @ui.button(label = "Create a Ticket", style = discord.ButtonStyle.blurple, custom_id = "ticket_button", emoji = "📩")
+    async def ticket(self, interaction: discord.Interaction, button: ui.Button):
+        ticket = utils.get(interaction.guild.text_channels, name = f"ticket-for-{interaction.user.name.replace(' ', '-')}")
         if ticket is not None: await interaction.response.send_message(f"You already have a ticket open at {ticket.mention}!", ephemeral = True)
         else:
             overwrites = {
@@ -35,7 +42,6 @@ class ticket_launcher(discord.ui.View):
                 interaction.user: discord.PermissionOverwrite(view_channel = True, read_message_history = True, send_messages = True, attach_files = True, embed_links = True),
                 interaction.guild.me: discord.PermissionOverwrite(view_channel = True, send_messages = True, read_message_history = True)
             }
-            
             async with aiosqlite.connect("db/tickets_role.db") as db:
                 async with db.cursor() as cursor:
                     await cursor.execute("CREATE TABLE IF NOT EXISTS roles (role INTEGER, guild ID)") # Create the table if not exists
@@ -43,6 +49,7 @@ class ticket_launcher(discord.ui.View):
                     data = await cursor.fetchone()
                     if data: ticket_role = data[0]
                     else: ticket_role = None
+            global ticket_channel, ticket_sentence
             if not ticket_role == None:
                 ticket_role = interaction.guild.get_role(ticket_role)
                 overwrites[ticket_role] = discord.PermissionOverwrite(view_channel = True, read_message_history = True, send_messages = True, attach_files = True, embed_links = True)
@@ -50,22 +57,20 @@ class ticket_launcher(discord.ui.View):
             else:
                 ticket_sentence = f"{interaction.user.mention} created a ticket!"
             guild = interaction.guild
-            category = discord.utils.get(guild.categories, name = "tickets")
+            category = utils.get(guild.categories, name = "tickets")
             if category is None: #If there's no category matching with the `name`
                 category = await guild.create_category("tickets") #Creates the category
             try:
-                channel = await interaction.guild.create_text_channel(name = f"ticket-for-{interaction.user.name}-{interaction.user.discriminator}", overwrites = overwrites, reason = f"Ticket for {interaction.user}", category = category)
-                await add_user_to_channel(channel.id, interaction.user.id)
-                        
+                ticket_channel = await interaction.guild.create_text_channel(name = f"ticket-for-{interaction.user.name}", overwrites = overwrites, reason = f"Ticket for {interaction.user}", category = category)
+                await add_user_to_channel(ticket_channel.id, interaction.user.id)
             except: return await interaction.response.send_message("Ticket creation failed! Make sure I have `Manage Channels` permissions!", ephemeral = True)
-            await channel.send(ticket_sentence, view = main())
-            await interaction.response.send_message(f"I've opened a ticket for you at {channel.mention}!", ephemeral = True)
+            await interaction.response.send_modal(ticketModal())
 
-class ArchiveConfirm(discord.ui.View):
+class ArchiveConfirm(ui.View):
     def __init__(self) -> None:
         super().__init__(timeout=None)
-    @discord.ui.button(label="Confirm", style=discord.ButtonStyle.red, custom_id="confirm")
-    async def archive_confirm_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @ui.button(label="Confirm", style=discord.ButtonStyle.red, custom_id="confirm")
+    async def archive_confirm_button(self, interaction: discord.Interaction, button: ui.Button):
         await interaction.response.send_message("This ticket will be archived in 5 second", ephemeral=True)
         time.sleep(3)
         channel = interaction.channel
@@ -89,32 +94,32 @@ class ArchiveConfirm(discord.ui.View):
         except:
             await interaction.response.send_message("Channel rename failed! Make sure I have `Manage Channels` permissions!", ephemeral=True)
 
-class CloseConfirm(discord.ui.View):
+class CloseConfirm(ui.View):
     def __init__(self) -> None:
         super().__init__(timeout = None)
-    @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.red, custom_id = "confirm")
-    async def close_confirm_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @ui.button(label = "Confirm", style = discord.ButtonStyle.red, custom_id = "confirm")
+    async def close_confirm_button(self, interaction: discord.Interaction, button: ui.Button):
         try: await interaction.channel.delete()
         except: await interaction.response.send_message("Channel deletion failed! Make sure I have `Manage Channels` permissions!", ephemeral = True)
 
-class main(discord.ui.View):
+class main(ui.View):
     def __init__(self) -> None:
         super().__init__(timeout = None)
-    @discord.ui.button(label = "Archive Ticket", style = discord.ButtonStyle.blurple, custom_id = "archive")
-    async def archive(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @ui.button(label = "Archive Ticket", style = discord.ButtonStyle.blurple, custom_id = "archive")
+    async def archive(self, interaction: discord.Interaction, button: ui.Button):
         embed = discord.Embed(title = "Are you sure you want to archive this ticket?", color = discord.Colour.blurple())
         await interaction.response.send_message(embed = embed, view = ArchiveConfirm(), ephemeral = True)
 
-    @discord.ui.button(label = "Close Ticket", style = discord.ButtonStyle.red, custom_id = "close")
-    async def close(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @ui.button(label = "Close Ticket", style = discord.ButtonStyle.red, custom_id = "close")
+    async def close(self, interaction: discord.Interaction, button: ui.Button):
         embed = discord.Embed(title = "Are you sure you want to close this ticket?", color = discord.Colour.blurple())
         await interaction.response.send_message(embed = embed, view = CloseConfirm(), ephemeral = True)
 
-class transcript(discord.ui.View):
+class transcript(ui.View):
     def __init__(self) -> None:
         super().__init__(timeout = None)
-    @discord.ui.button(label = "Transcript", style = discord.ButtonStyle.blurple, custom_id = "transcript")
-    async def transcript(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @ui.button(label = "Transcript", style = discord.ButtonStyle.blurple, custom_id = "transcript")
+    async def transcript(self, interaction: discord.Interaction, button: ui.Button):
         await interaction.response.defer()
         if os.path.exists(f"{interaction.channel.id}.md"):
             return await interaction.followup.send(f"A transcript is already being generated!", ephemeral = True)
