@@ -8,5 +8,3 @@ beautifulsoup4==4.11.2
 EdgeGPT==0.11.6
 git+https://github.com/dsdanielpark/Bard-API.git 
 python-dotenv==1.0.0
-imaginepy==2.0.1
-pillow==9.5.0
