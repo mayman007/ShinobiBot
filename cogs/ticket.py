@@ -167,7 +167,17 @@ class Ticket(commands.GroupCog, name = "ticket"):
     @app_commands.checks.has_permissions(manage_channels = True)
     async def close(self, interaction: discord.Interaction):
         if "ticket-for-" in interaction.channel.name:
-            embed = discord.Embed(title = "> Are you sure that you want to archive this ticket?", color = discord.Colour.blurple())
+            embed = discord.Embed(title = "Are you sure that you want to close this ticket?", color = discord.Colour.blurple())
+            await interaction.response.send_message(embed = embed, view = CloseConfirm(), ephemeral = True)
+        else:
+            await interaction.response.send_message("> This isn't a ticket!", ephemeral = True)
+
+    #archive ticket
+    @app_commands.command(name = "archive", description = "Archives the ticket.")
+    @app_commands.checks.has_permissions(manage_channels = True)
+    async def archive(self, interaction: discord.Interaction):
+        if "ticket-for-" in interaction.channel.name:
+            embed = discord.Embed(title = "Are you sure that you want to archive this ticket?", color = discord.Colour.blurple())
             await interaction.response.send_message(embed = embed, view = ArchiveConfirm(), ephemeral = True)
         else:
             await interaction.response.send_message("> This isn't a ticket!", ephemeral = True)
