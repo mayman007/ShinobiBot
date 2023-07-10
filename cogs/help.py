@@ -80,7 +80,7 @@ class Dropdown(discord.ui.Select):
         # Tickets page
         elif self.values[0] == "Tickets":
             embed = discord.Embed(title = "**Tickets**", description = "Create and moderate tickets", color = 0x2F3136)
-            embed.add_field(name = "**Commands**", value = "> </ticket launch:1020114423026810906> , </ticket close:1020114423026810906> , </ticket add:1020114423026810906> , </ticket remove:1020114423026810906> , </ticket role:1020114423026810906> , </ticket transcript:1020114423026810906>")
+            embed.add_field(name = "**Commands**", value = "> </ticket launch:1020114423026810906> , </ticket close:1020114423026810906> , </ticket archive:1020114423026810906> , </ticket add:1020114423026810906> , </ticket remove:1020114423026810906> , </ticket role:1020114423026810906> , </ticket transcript:1020114423026810906>")
             embed.set_footer(text = "Use /help tickets <command> for information on a command.")
             await interaction.message.edit(embed = embed)
             await interaction.response.defer()
@@ -659,6 +659,7 @@ class Help(commands.GroupCog, name = "help"):
     @app_commands.choices(command = [
         app_commands.Choice(name = "launch", value = "launch"),
         app_commands.Choice(name = "close", value = "close"),
+        app_commands.Choice(name = "archive", value = "archive"),
         app_commands.Choice(name = "add", value = "add"),
         app_commands.Choice(name = "remove", value = "remove"),
         app_commands.Choice(name = "role", value = "role"),
@@ -675,6 +676,12 @@ class Help(commands.GroupCog, name = "help"):
             em = discord.Embed(title = "__**Ticket Close**__", description = "Closes a ticket.", color = 0x2F3136)
             em.add_field(name = "**Syntax:**", value = "> ticket close")
             em.add_field(name = "**Example:**", value = "> `/ticket close`")
+            em.set_footer(text = "<> means requird, [] means optional")
+            await interaction.response.send_message(embed = em)
+        elif command.value == "archive":
+            em = discord.Embed(title = "__**Ticket Archive**__", description = "Archives a ticket.", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> ticket archive")
+            em.add_field(name = "**Example:**", value = "> `/ticket archive`")
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
         elif command.value == "add":
