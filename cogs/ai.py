@@ -197,7 +197,14 @@ class AI(commands.Cog):
             session_cookie = os.getenv("BARD_COOKIE")
             bot = BardChatbot(token=session_cookie)
             response = await bot.get_answer(prompt)
+            images = response['images']
             response = response['content']
+            if images != set():
+                bard_images_counter = 0
+                response = f"{response}\n\n"
+                for image in images:
+                    bard_images_counter += 1
+                    response += f"\nImage {bard_images_counter}: {image}"
             limit = 1800
             total_text = len(prompt) + len(response)
             if total_text > limit:
