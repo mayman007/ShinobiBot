@@ -71,6 +71,8 @@ class ArchiveConfirm(ui.View):
         super().__init__(timeout=None)
     @ui.button(label="Confirm", style=discord.ButtonStyle.red, custom_id="confirm")
     async def archive_confirm_button(self, interaction: discord.Interaction, button: ui.Button):
+        if interaction.channel.name.startswith("archive-") and interaction.channel.category.name.startswith("ticketarchive"):
+            return await interaction.response.send_message("This ticket is already archived!", ephemeral=True)
         await interaction.response.send_message("This ticket will be archived in 5 second", ephemeral=True)
         time.sleep(3)
         channel = interaction.channel
