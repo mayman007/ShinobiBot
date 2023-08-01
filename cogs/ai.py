@@ -1,15 +1,13 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from bardapi import BardAsync as BardChatbot # install the git version for all the features that i use
+from Bard import AsyncChatbot as BardChatbot
 from EdgeGPT.EdgeGPT import Chatbot as BingChatbot, ConversationStyle
 from EdgeGPT.ImageGen import ImageGenAsync
 import json
 import io
 import os
 import aiohttp
-from imaginepy import AsyncImagine
-from imaginepy.constants import *
 
 
 class errorButtons(discord.ui.View):
@@ -194,9 +192,10 @@ class AI(commands.Cog):
     async def bard(self, interaction: discord.Interaction, prompt: str):
         await interaction.response.defer()
         try:
-            session_cookie = os.getenv("BARD_COOKIE")
-            bot = BardChatbot(token=session_cookie)
-            response = await bot.get_answer(prompt)
+            Secure_1PSID = os.getenv("BARD_SECURE_1PSID")
+            Secure_1PSIDTS = os.getenv("BARD_SECURE_1PSIDTS")
+            chatbot = await BardChatbot.create(Secure_1PSID, Secure_1PSIDTS)
+            response = await chatbot.ask(prompt)
             images = response['images']
             response = response['content']
             if images != set():
