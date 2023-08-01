@@ -163,7 +163,8 @@ class AI(commands.Cog):
     async def bing_chat(self, interaction: discord.Interaction, prompt: str, conversation_style: app_commands.Choice[str] = None):
         await interaction.response.defer()
         try:
-            bot = await BingChatbot.create()
+            cookies = json.loads(open("bing_cookies_*.json", encoding="utf-8").read()) # https://github.com/acheong08/EdgeGPT#collect-cookies
+            bot = await BingChatbot.create(cookies=cookies)
             if conversation_style == None or conversation_style.value == "balanced": style = ConversationStyle.balanced
             elif conversation_style.value == "creative": style = ConversationStyle.creative
             elif conversation_style.value == "precise": style = ConversationStyle.precise
