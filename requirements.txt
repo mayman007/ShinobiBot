@@ -5,6 +5,6 @@ wikipedia==1.4.0
 lxml==4.9.2
 aiosqlite==0.18.0
 beautifulsoup4==4.11.2
-EdgeGPT==0.11.6
+EdgeGPT==0.12.1
 GoogleBard==2.1.0
 python-dotenv==1.0.0
