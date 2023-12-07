@@ -7,6 +7,7 @@ import praw
 import aiohttp
 from bs4 import BeautifulSoup
 import os
+import io
 
 # Next button on meme button
 class nextMeme(discord.ui.View):
@@ -44,6 +45,18 @@ class Fun(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print("Fun is online.")
+
+    # aghpb
+    @app_commands.command(name = "aghpb", description = "Anime girl holding programming book.")
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
+    async def aghpb(self, interaction: discord.Interaction):
+            url = "https://api.devgoldy.xyz/aghpb/v1/random"
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as response:
+                    img = await response.read()
+                    with io.BytesIO(img) as file:
+                        file = discord.File(file, "aghpb.png")
+            await interaction.response.send_message(file=file)
 
     # geekjoke
     @app_commands.command(name = "geekjoke", description = "Get a random geek joke.")
