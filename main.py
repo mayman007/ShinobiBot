@@ -4,6 +4,7 @@ import aiohttp
 from discord.ext import commands
 from cogs.ticket import ticket_launcher, main
 from cogs.settings import suggVotes
+from cogs.utility import pollButtons
 from datetime import datetime
 import logging
 import logging.handlers
@@ -39,6 +40,7 @@ class MyBot(commands.Bot):
             self.add_view(ticket_launcher())
             self.add_view(main())
             self.add_view(suggVotes())
+            self.add_view(pollButtons())
             self.added = True
             await bot.change_presence(activity = discord.Game(name = "/help start")) # Setting `Playing` status
         if not os.path.exists("db"): os.makedirs("db") # Create db dir if not there
