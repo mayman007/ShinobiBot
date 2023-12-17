@@ -426,20 +426,20 @@ class Settings(commands.Cog):
                         rev_ch_id = data2[0]
                         await message.delete()
                         emb = discord.Embed(title = f"Thanks **{message.author}**", description = "Your suggetion was sent.", colour = discord.Colour.gold())
-                        msg = await message.channel.send(embed = emb)
+                        thx_msg = await message.channel.send(embed = emb)
                         await asyncio.sleep(3)
-                        await msg.delete()
+                        await thx_msg.delete()
                         channel = self.bot.get_channel(rev_ch_id)
                         suggestEmbed = discord.Embed(title = "Suggestion", description = message.content, color = 0xffd700)
                         suggestEmbed.set_author(name = f"Suggested by {message.author}", icon_url = message.author.display_avatar.url)
                         suggestEmbed.set_footer(text = f"0 Upvotes | 0 Downvotes")
                         view = suggVotes()
-                        msg = await channel.send(embed = suggestEmbed, view = view)
-                        await msg.create_thread(name = "Suggestion Discussion")
+                        sugg_msg = await channel.send(embed = suggestEmbed, view = view)
+                        await sugg_msg.create_thread(name = "Suggestion Discussion")
         async with aiosqlite.connect("db/suggestions.db") as db:
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS suggestions (sugg_id INTEGER, upvoted_users TEXT, downvoted_users TEXT, msg_content TEXT, msg_author_id INTEGER)")
-                await cursor.execute("INSERT INTO suggestions (sugg_id, upvoted_users, downvoted_users, msg_content, msg_author_id) VALUES (?, ?, ?, ?, ?)", (msg.id, "[]", "[]", message.content, message.author.id))
+                await cursor.execute("INSERT INTO suggestions (sugg_id, upvoted_users, downvoted_users, msg_content, msg_author_id) VALUES (?, ?, ?, ?, ?)", (sugg_msg.id, "[]", "[]", message.content, message.author.id))
                 await db.commit()
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Settings(bot))
