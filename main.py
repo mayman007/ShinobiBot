@@ -162,13 +162,15 @@ class feedbackModal(ui.Modal, title = "Send Your Feedback"):
             embed = discord.Embed(title = f"User: {interaction.user}\nServer: {interaction.guild.name}\n{invite}", description = f"**{self.ftitle}**", timestamp = datetime.now())
             embed.add_field(name = "Description", value = self.fdes)
             embed.add_field(name = "Solution", value = self.fsol)
-            embed.set_author(name = interaction.user, icon_url = interaction.user.avatar)
+            try: embed.set_author(name = interaction.user, icon_url = interaction.user.avatar)
+            except: embed.set_author(name = interaction.user)
             await channel.send(embed = embed)
             await interaction.response.send_message("Your feedback has been sent succesfully!", ephemeral = True)
         except:
             embed = discord.Embed(title = f"User: {interaction.user}\nServer: {interaction.guild.name}\n{invite}", description = f"**{self.ftitle}**", timestamp = datetime.now())
             embed.add_field(name = "Description", value = self.fdes)
-            embed.set_author(name = interaction.user, icon_url = interaction.user.avatar)
+            try: embed.set_author(name = interaction.user, icon_url = interaction.user.avatar)
+            except: embed.set_author(name = interaction.user)
             await channel.send(embed = embed)
             await interaction.response.send_message("Your feedback has been sent succesfully!", ephemeral = True)
 

@@ -79,7 +79,8 @@ class pollButtons(discord.ui.View):
                     await interaction.response.send_message("Voted.", ephemeral = True)
                 await db.commit()
         emb = discord.Embed(title = poll_title, description = poll_description)
-        emb.set_author(name = f"Poll by {poll_author}", icon_url = poll_avatar)
+        if poll_avatar != "no avatar": emb.set_author(name = f"Poll by {poll_author}", icon_url = poll_avatar)
+        else: emb.set_author(name = f"Poll by {poll_author}")
         emb.set_footer(text = f"{upvotes} Yes | {downvotes} No")
         view = pollButtons()
         await interaction.message.edit(embed = emb, view = view)
@@ -275,20 +276,21 @@ class Utility(commands.Cog):
             emb = discord.Embed(title = title, description = description, color = 0x000000)
             await interaction.response.send_message(embed = emb)
         elif footer != None and thumbnail == None and color == None:
-            icon = interaction.user.avatar.url
             emb = discord.Embed(title = title, description = description, color = 0x000000)
-            emb.set_footer(text = footer, icon_url = icon)
+            try: emb.set_footer(text = footer, icon_url = interaction.user.avatar.url)
+            except: emb.set_footer(text = footer)
             await interaction.response.send_message(embed = emb)
         elif footer != None and thumbnail != None and color == None:
-            icon = interaction.user.avatar.url
             emb = discord.Embed(title = title, description = description, color = 0x000000)
-            emb.set_thumbnail(url = icon)
-            emb.set_footer(text = footer, icon_url = icon)
+            try: emb.set_thumbnail(url = interaction.user.avatar.url)
+            except: pass
+            try: emb.set_footer(text = footer, icon_url = interaction.user.avatar.url)
+            except: emb.set_footer(text = footer)
             await interaction.response.send_message(embed = emb)
         elif thumbnail != None and footer == None and color == None:
-            icon = interaction.user.avatar.url
             emb = discord.Embed(title = title, description = description, color = 0x000000)
-            emb.set_thumbnail(url = icon)
+            try: emb.set_thumbnail(url = interaction.user.avatar.url)
+            except: pass
             await interaction.response.send_message(embed = emb)
         elif color != None:
             if color.value == "dark theme": true_color = discord.Colour.dark_theme()
@@ -305,20 +307,21 @@ class Utility(commands.Cog):
                 emb = discord.Embed(title = title, description = description, color = true_color)
                 await interaction.response.send_message(embed = emb)
             elif footer != None and thumbnail == None:
-                icon = interaction.user.avatar.url
                 emb = discord.Embed(title = title, description = description, color = true_color)
-                emb.set_footer(text = footer, icon_url = icon)
+                try: emb.set_footer(text = footer, icon_url = interaction.user.avatar.url)
+                except: emb.set_footer(text = footer)
                 await interaction.response.send_message(embed = emb)
             elif thumbnail != None and footer == None:
-                icon = interaction.user.avatar.url
                 emb = discord.Embed(title = title, description = description, color = true_color)
-                emb.set_thumbnail(url = icon)
+                try: emb.set_thumbnail(url = interaction.user.avatar.url)
+                except: pass
                 await interaction.response.send_message(embed = emb)
             else:
-                icon = interaction.user.avatar.url
                 emb = discord.Embed(title = title, description = description, color = true_color)
-                emb.set_footer(text = footer, icon_url = icon)
-                emb.set_thumbnail(url = icon)
+                try: emb.set_footer(text = footer, icon_url = interaction.user.avatar.url)
+                except: emb.set_footer(text = footer)
+                try: emb.set_thumbnail(url = interaction.user.avatar.url)
+                except: pass
                 await interaction.response.send_message(embed = emb)
 
     #nick commands
@@ -341,7 +344,8 @@ class Utility(commands.Cog):
     @app_commands.describe(time = "Giveaway's time.", prize = "Giveaway's prize.")
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     async def giveaway(self, interaction: discord.Interaction, time: str, prize: str):
-        icon = str(interaction.guild.icon.url)
+        try: icon = str(interaction.guild.icon.url)
+        except: icon = "no icon"
         if time:
             get_time = {
             "s": 1, "m": 60, "h": 3600, "d": 86400,
@@ -363,7 +367,7 @@ class Utility(commands.Cog):
         emb = discord.Embed(title = "__*🎉GIVEAWAY🎉*__",
                             description = f"Click 🎉 to enter!\nHosted by: {give_author}\nPrize: **{give_prize}**\nParticipators: **0**\nEnds at: {give_timer}",
                             colour = 0xff0000)
-        emb.set_thumbnail(url = give_icon)
+        if icon != "no icon": emb.set_thumbnail(url = give_icon)
         view = giveawayButton()
         await interaction.response.send_message("Giveaway Created!", ephemeral = True)
         msg = await interaction.channel.send(embed = emb, view = view)
@@ -426,10 +430,10 @@ class Utility(commands.Cog):
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     async def serverlink(self, interaction: discord.Interaction):
         name = str(interaction.guild.name)
-        icon = str(interaction.guild.icon.url)
         link = await interaction.channel.create_invite(max_age = 300)
         embed = discord.Embed(title = name, color = 0x2F3136)
-        embed.set_thumbnail(url = icon)
+        try: embed.set_thumbnail(url = interaction.guild.icon.url)
+        except: pass
         embed.add_field(name = "Invite Link", value = link, inline = True)
         await interaction.response.send_message(embed = embed)
 
@@ -464,16 +468,19 @@ class Utility(commands.Cog):
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(manage_messages = True)
     async def poll(self, interaction: discord.Interaction, title: str, description: str):
+        try: user_avatar = interaction.user.avatar.url
+        except: user_avatar = "no avatar"
         view = pollButtons()
         emb = discord.Embed(title = title, description = description)
-        emb.set_author(name = f"Poll by {interaction.user.display_name}", icon_url = interaction.user.avatar.url)
+        if user_avatar != "no avatar": emb.set_author(name = f"Poll by {interaction.user.display_name}", icon_url = interaction.user.avatar.url)
+        else: emb.set_author(name = f"Poll by {interaction.user.display_name}")
         emb.set_footer(text = f"0 Yes | 0 No")
         await interaction.response.send_message("Poll Created!", ephemeral=True)
         poll_msg = await interaction.channel.send(embed = emb, view = view)
         async with aiosqlite.connect("db/polls.db") as db:
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS polls (poll_id INTEGER, poll_title TEXT, poll_description TEXT, poll_author TEXT, poll_avatar TEXT, upvotes INTEGER, downvotes INTEGER, upvote_users TEXT, downvote_users TEXT)")
-                await cursor.execute("INSERT INTO polls (poll_id, poll_title, poll_description, poll_author, poll_avatar, upvotes, downvotes, upvote_users, downvote_users) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (poll_msg.id, title, description, interaction.user.display_name, interaction.user.avatar.url, 0, 0, "[]", "[]"))
+                await cursor.execute("INSERT INTO polls (poll_id, poll_title, poll_description, poll_author, poll_avatar, upvotes, downvotes, upvote_users, downvote_users) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (poll_msg.id, title, description, interaction.user.display_name, user_avatar, 0, 0, "[]", "[]"))
                 await db.commit()
 
 async def setup(bot: commands.Bot) -> None:

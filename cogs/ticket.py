@@ -23,7 +23,8 @@ class ticketModal(ui.Modal, title = "Send Your Feedback"):
     issue = ui.TextInput(label = "What is your issue?", style = discord.TextStyle.short, placeholder = "Describe your issue.", required = True, max_length = 1000)
     async def on_submit(self, interaction: discord.Interaction):
         embed = discord.Embed(title = "Issue", description = self.issue, timestamp = datetime.now())
-        embed.set_author(name = interaction.user, icon_url = interaction.user.avatar)
+        try: embed.set_author(name = interaction.user, icon_url = interaction.user.avatar)
+        except: embed.set_author(name = interaction.user)
         await ticket_channel.send(ticket_sentence, embed = embed, view = main())
         await interaction.response.send_message(f"I've opened a ticket for you at {ticket_channel.mention}!", ephemeral = True)
 
