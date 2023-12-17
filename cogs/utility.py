@@ -15,27 +15,31 @@ from datetime import datetime
 class giveawayButton(discord.ui.View):
     def __init__(self, *, timeout = None):
         super().__init__(timeout = timeout)
-    @discord.ui.button(label = "Participate", style = discord.ButtonStyle.blurple, emoji = "🎉")
+    @discord.ui.button(label = "Participate", style = discord.ButtonStyle.blurple, emoji = "🎉", custom_id="giveaway_button")
     async def giveaway_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        global give_clicked, give_author, give_prize, give_timer, give_icon
-        if interaction.user in give_clicked:
-            give_clicked.remove(interaction.user)
-            emb = discord.Embed(title = "__*🎉GIVEAWAY🎉*__",
-                                description = f"Click 🎉 to enter!\nHosted by: {give_author}\nPrize: **{give_prize}**\nParticipators: **{len(give_clicked)}**\nEnds at: {give_timer}",
-                                colour = 0xff0000)
-            emb.set_thumbnail(url = give_icon)
-            view = giveawayButton()
-            await interaction.message.edit(embed = emb, view = view)
-            await interaction.response.send_message("You've left the giveaway.", ephemeral = True)
-        else:
-            give_clicked.append(interaction.user)
-            emb = discord.Embed(title = "__*🎉GIVEAWAY🎉*__",
-                                description = f"Click 🎉 to enter!\nHosted by: {give_author}\nPrize: **{give_prize}**\nParticipators: **{len(give_clicked)}**\nEnds at: {give_timer}",
-                                colour = 0xff0000)
-            emb.set_thumbnail(url = give_icon)
-            view = giveawayButton()
-            await interaction.message.edit(embed = emb, view = view)
-            await interaction.response.send_message("You've Participated!", ephemeral = True)
+        async with aiosqlite.connect("db/giveaways.db") as db:
+            async with db.cursor() as cursor:
+                await cursor.execute("SELECT * FROM giveaways WHERE give_id = ?", (interaction.message.id,))
+                data = await cursor.fetchone()
+                give_author = data[1]
+                give_prize = data[2]
+                give_timer = data[3]
+                give_icon = data[4]
+                give_clicked = ast.literal_eval(data[5])
+                if interaction.user.mention in give_clicked:
+                    give_clicked.remove(interaction.user.mention)
+                    await interaction.response.send_message("You've left the giveaway.", ephemeral = True)
+                else:
+                    give_clicked.append(interaction.user.mention)
+                    await interaction.response.send_message("You've Participated!", ephemeral = True)
+                await cursor.execute("UPDATE giveaways SET give_clicked = ? WHERE give_id = ?", (str(give_clicked), interaction.message.id,))
+                await db.commit()
+        emb = discord.Embed(title = "__*🎉GIVEAWAY🎉*__",
+                            description = f"Click 🎉 to enter!\nHosted by: {give_author}\nPrize: **{give_prize}**\nParticipators: **{len(give_clicked)}**\nEnds at: {give_timer}",
+                            colour = 0xff0000)
+        if give_icon != "no icon": emb.set_thumbnail(url = give_icon)
+        view = giveawayButton()
+        await interaction.message.edit(embed = emb, view = view)
 
 # poll buttons
 class pollButtons(discord.ui.View):
@@ -56,9 +60,6 @@ class pollButtons(discord.ui.View):
                 downvotes = data[6]
                 upvote_users = ast.literal_eval(data[7])
                 downvote_users = ast.literal_eval(data[8])
-                print("==== Yes ====")
-                print(f"upvote_users {upvote_users}")
-                print(f"downvote_users {downvote_users}")
 
                 if interaction.user.id in upvote_users:
                     upvotes = upvotes - 1
@@ -100,9 +101,6 @@ class pollButtons(discord.ui.View):
                 downvotes = data[6]
                 upvote_users = ast.literal_eval(data[7])
                 downvote_users = ast.literal_eval(data[8])
-                print("==== No ====")
-                print(f"upvote_users {upvote_users}")
-                print(f"downvote_users {downvote_users}")
 
                 if interaction.user.id in downvote_users:
                     downvotes = downvotes - 1
@@ -350,7 +348,6 @@ class Utility(commands.Cog):
             get_time = {
             "s": 1, "m": 60, "h": 3600, "d": 86400,
             "w": 604800, "mo": 2592000, "y": 31104000 }
-            timer = time
             a = time[-1]
             b = get_time.get(a)
             c = time[:-1]
@@ -358,34 +355,39 @@ class Utility(commands.Cog):
             except: return await interaction.response.send_message("> Type time and time unit [s,m,h,d,w,mo,y] correctly.", ephemeral = True)
             try: sleep = int(b) * int(c)
             except: return await interaction.response.send_message("> Type time and time unit [s,m,h,d,w,mo,y] correctly.", ephemeral = True)
-        global give_clicked, give_author, give_prize, give_timer, give_icon
-        give_clicked = []
-        give_author = interaction.user.mention
-        give_prize = prize
         give_timer = f"<t:{int(datetime.timestamp(datetime.now())) + int(sleep)}:F>"
-        give_icon = icon
         emb = discord.Embed(title = "__*🎉GIVEAWAY🎉*__",
-                            description = f"Click 🎉 to enter!\nHosted by: {give_author}\nPrize: **{give_prize}**\nParticipators: **0**\nEnds at: {give_timer}",
+                            description = f"Click 🎉 to enter!\nHosted by: {interaction.user.mention}\nPrize: **{prize}**\nParticipators: **0**\nEnds at: {give_timer}",
                             colour = 0xff0000)
-        if icon != "no icon": emb.set_thumbnail(url = give_icon)
+        if icon != "no icon": emb.set_thumbnail(url = icon)
         view = giveawayButton()
         await interaction.response.send_message("Giveaway Created!", ephemeral = True)
         msg = await interaction.channel.send(embed = emb, view = view)
+        async with aiosqlite.connect("db/giveaways.db") as db:
+            async with db.cursor() as cursor:
+                await cursor.execute("CREATE TABLE IF NOT EXISTS giveaways (give_id INTEGER, give_author TEXT, give_prize TEXT, give_timer TEXT, give_icon TEXT, give_clicked TEXT)")
+                await cursor.execute("INSERT INTO giveaways (give_id, give_author, give_prize, give_timer, give_icon, give_clicked) VALUES (?, ?, ?, ?, ?, ?)", (msg.id, interaction.user.mention, prize, give_timer, icon, "[]"))
+                await db.commit()
         await asyncio.sleep(int(sleep))
+        async with aiosqlite.connect("db/giveaways.db") as db:
+            async with db.cursor() as cursor:
+                await cursor.execute("SELECT * FROM giveaways WHERE give_id = ?", (msg.id,))
+                data = await cursor.fetchone()
+                give_clicked = ast.literal_eval(data[5])
         #Check if User list is not empty
         if len(give_clicked) <= 0:
             emptyEmbed = discord.Embed(title = "__*🎉GIVEAWAY🎉*__",
-                                       description = f"No one participated in the giveaway\nHosted by: {give_author}\nPrize: **{give_prize}**\nEnded at: {give_timer}")
-            emptyEmbed.set_thumbnail(url = give_icon)
+                                       description = f"No one participated in the giveaway\nHosted by: {interaction.user.mention}\nPrize: **{prize}**\nEnded at: {give_timer}")
+            emptyEmbed.set_thumbnail(url = icon)
             await msg.edit(embed = emptyEmbed, view = None)
         else:
             winner = random.choice(give_clicked)
             emb = discord.Embed(title = "__*🎉GIVEAWAY🎉*__",
-                            description = f"Click 🎉 to enter!\nHosted by: {give_author}\nPrize: **{give_prize}**\nParticipators: **{len(give_clicked)}**\nEnded at: {give_timer}",
+                            description = f"Click 🎉 to enter!\nHosted by: {interaction.user.mention}\nPrize: **{prize}**\nParticipators: **{len(give_clicked)}**\nEnded at: {give_timer}",
                             colour = 0xff0000)
-            emb.set_thumbnail(url = give_icon)
-            await msg.edit(content = f"__***🎉Giveway ended, {winner.name} won!🎉***__", view = None, embed = emb)
-            await msg.reply(f"> **Congratulations {winner.mention} On Winning {prize} 🎉🎉**")
+            emb.set_thumbnail(url = icon)
+            await msg.edit(content = f"__***🎉Giveway ended, {winner} won!🎉***__", view = None, embed = emb)
+            await msg.reply(f"> **Congratulations {winner} On Winning {prize} 🎉🎉**")
 
     #tax
     @app_commands.command(name = "tax", description = "Calculates ProBot's taxes.")
