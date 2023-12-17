@@ -61,26 +61,6 @@ formatter = logging.Formatter("[{asctime}] [{levelname:<8}] {name}: {message}", 
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-# Errors buttons
-class errorButtons(discord.ui.View):
-    def __init__(self, *, timeout = 180):
-        super().__init__(timeout = timeout)
-    @discord.ui.button(label = "Yes", style = discord.ButtonStyle.green)
-    async def edits_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
-        await error_channel.send(error_message)
-        for child in self.children:
-            child.disabled = True
-        await interaction.message.edit(view = self)
-        await interaction.response.send_message("Error sent to the developer.")
-    @discord.ui.button(label = "No", style = discord.ButtonStyle.red)
-    async def edits_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
-        for child in self.children:
-            child.disabled = True
-        await interaction.message.edit(view = self)
-        await interaction.response.send_message("Cancelled.")
-
 # Errors handling
 @bot.tree.error
 async def on_app_command_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
@@ -96,13 +76,9 @@ async def on_app_command_error(interaction: discord.Interaction, error: app_comm
         per_error = discord.Embed(title = f"I'm Missing Permissions!", description = f"I don't have {missing_perm} permission.", colour = discord.Colour.light_grey())
         await interaction.response.send_message(embed = per_error, ephemeral = True)
     else:
-        global error_message, error_channel
-        error_message = error
         error_channel = bot.get_channel(int(os.getenv("ERROR_CHANNEL_ID")))
-        embed = discord.Embed(title = "Error",
-                            description = f"Sorry, an unexpected error has occured, do you want to send the error message to the developer?",
-                            color = discord.Color.red())
-        await interaction.response.send_message(embed = embed, view = errorButtons())
+        await error_channel.send(error)
+        await interaction.response.send_message(f"Sorry, an error had occured.\nIf you are facing any issues with me you can always send your </feedback:1027218853127794780>.", ephemeral = True)
         raise error
 
 # User info context menu
