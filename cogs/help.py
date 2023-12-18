@@ -106,7 +106,7 @@ class Dropdown(discord.ui.Select):
         elif self.values[0] == "Anime & Manga":
             embed = discord.Embed(title = "**Anime & Manga**", description = "Commands for weebs", color = 0x2F3136)
             embed.add_field(name = "**Commands**", value = "> </anime:1186399224695361668> , </manga:1186399224695361669> , </character:1186399224695361670> , </aghpb:1182285037043990609>")
-            embed.set_footer(text = "Use /help artificial-intelligence <command> for information on a command.")
+            embed.set_footer(text = "Use /help anime <command> for information on a command.")
             await interaction.message.edit(embed = embed)
             await interaction.response.defer()
 
