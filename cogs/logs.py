@@ -503,7 +503,6 @@ class ConfirmDisableAll(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.danger)
     async def confirm_disable_all(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         await interaction.response.defer()
         logs_files_list = ["joins", "leaves", "messages_edits", "messages_deletes", "role_create", "role_delete", "role_updates", "role_given", "role_remove",
                            "channel_create", "channel_delete", "channel_updates", "member_ban", "member_unban", "member_timeout" ,"nickname_change", "server_updates"]
@@ -515,9 +514,6 @@ class ConfirmDisableAll(discord.ui.View):
                     data = await cursor.fetchone()
                     if data: await cursor.execute("DELETE FROM log WHERE guild = ?", (interaction.guild.id,))
                 await db.commit()
-        for child in self.children:
-            child.disabled = True
-        await interaction.message.edit(view = self)
         await interaction.followup.send("All logs have been disabled successfully.")
     # cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.gray)
@@ -536,7 +532,7 @@ class DisableAll(discord.ui.View):
     async def disable_all(self, interaction: discord.Interaction, button: discord.ui.Button):
         if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         embed = discord.Embed(title = "Disabling all logs", description = "Are you sure that you want to disable all logs in this server?", color = discord.Colour.red())
-        await interaction.response.send_message(embed = embed, view = ConfirmDisableAll())
+        await interaction.response.send_message(embed = embed, view = ConfirmDisableAll(), ephemeral=True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
