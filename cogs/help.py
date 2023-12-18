@@ -145,7 +145,7 @@ class Help(commands.GroupCog, name = "help"):
 
     #help start
     @app_commands.command(name = "start", description = "Shinobi Bot's help command.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def sbhelp(self, interaction: discord.Interaction):
         em = discord.Embed(title = "**Shinobi Bot Help**",
                            description = "Hello! Welcome to the help page.\n\nUse </feedback:1027218853127794780> to send your feedback directly to the developers.\nUse `/help <category> <command>` for more info on a command.\nUse the dropdown menu below to select a category.\n\n",
@@ -163,7 +163,7 @@ class Help(commands.GroupCog, name = "help"):
     #moderation commands help
     @app_commands.command(name = "moderation", description = "Shinobi Bot's moderation catogery help.")
     @app_commands.describe(command = "Choose a command to get info about it.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.choices(command = [
         app_commands.Choice(name = "mute", value = "mute"),
         app_commands.Choice(name = "multimute", value = "multimute"),
@@ -322,7 +322,7 @@ class Help(commands.GroupCog, name = "help"):
     #utility commands help
     @app_commands.command(name = "utility", description = "Shinobi Bot's utility catogery help.")
     @app_commands.describe(command = "Choose a command to get info about it.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.choices(command = [
         app_commands.Choice(name = "poll", value = "poll"),
         app_commands.Choice(name = "invite", value = "invite"),
@@ -456,7 +456,7 @@ class Help(commands.GroupCog, name = "help"):
     # AI commands help
     @app_commands.command(name = "artificial-intelligence", description = "Shinobi Bot's artificial intelligence catogery help.")
     @app_commands.describe(command = "Choose a command to get info about it.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.choices(command = [
         app_commands.Choice(name = "chatbot", value = "chatbot"),
         app_commands.Choice(name = "bing ask", value = "bing ask"),
@@ -505,7 +505,7 @@ class Help(commands.GroupCog, name = "help"):
     #logs commands help
     @app_commands.command(name = "logs", description = "Shinobi Bot's logs catogery help.")
     @app_commands.describe(command = "Choose a command to get info about it.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.choices(command = [
         app_commands.Choice(name = "show_settings", value = "show_settings"),
         app_commands.Choice(name = "joins", value = "joins"),
@@ -639,7 +639,7 @@ class Help(commands.GroupCog, name = "help"):
     #ticket commands help
     @app_commands.command(name = "tickets", description = "Shinobi Bot's ticket catogery help.")
     @app_commands.describe(command = "Choose a command to get info about it.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.choices(command = [
         app_commands.Choice(name = "launch", value = "launch"),
         app_commands.Choice(name = "close", value = "close"),
@@ -696,7 +696,7 @@ class Help(commands.GroupCog, name = "help"):
     #antispam commands help
     @app_commands.command(name = "antispam", description = "Shinobi Bot's anti-spam catogery help.")
     @app_commands.describe(command = "Choose a command to get info about it.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.choices(command = [
         app_commands.Choice(name = "enable", value = "enable"),
         app_commands.Choice(name = "disable", value = "disable"),
@@ -732,7 +732,7 @@ class Help(commands.GroupCog, name = "help"):
     #settings commands help
     @app_commands.command(name = "settings", description = "Shinobi Bot's settings catogery help.")
     @app_commands.describe(command = "Choose a command to get info about it.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.choices(command = [
         app_commands.Choice(name = "lock", value = "lock"),
         app_commands.Choice(name = "lockall", value = "lockall"),
@@ -814,7 +814,7 @@ class Help(commands.GroupCog, name = "help"):
     #fun commands help
     @app_commands.command(name = "fun", description = "Shinobi Bot's fun catogery help.")
     @app_commands.describe(command = "Choose a command to get info about it.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.choices(command = [
         app_commands.Choice(name = "meme", value = "meme"),
         app_commands.Choice(name = "rate", value = "rate"),
@@ -913,7 +913,7 @@ class Help(commands.GroupCog, name = "help"):
     #games commands help
     @app_commands.command(name = "games", description = "Shinobi Bot's games catogery help.")
     @app_commands.describe(command = "Choose a command to get info about it.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.choices(command = [
         app_commands.Choice(name = "connect4", value = "connect4"),
         app_commands.Choice(name = "tictactoe", value = "tictactoe"),
@@ -943,7 +943,7 @@ class Help(commands.GroupCog, name = "help"):
     #serverinformation commands help
     @app_commands.command(name = "serverinformation", description = "Shinobi Bot's server information catogery help.")
     @app_commands.describe(command = "Choose a command to get info about it.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.choices(command = [
         app_commands.Choice(name = "server", value = "server"),
         app_commands.Choice(name = "owner", value = "owner"),

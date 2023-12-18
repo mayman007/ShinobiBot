@@ -189,7 +189,7 @@ class Ticket(commands.GroupCog, name = "ticket"):
     @app_commands.command(name = "add", description = "Adds a member to the ticket.")
     @app_commands.describe(member = "The member you want to add to the ticket.")
     @app_commands.default_permissions(manage_channels = True)
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(manage_channels = True)
     async def add(self, interaction: discord.Interaction, member: discord.Member):
         if "ticket-for-" in interaction.channel.name:
@@ -202,7 +202,7 @@ class Ticket(commands.GroupCog, name = "ticket"):
     @app_commands.command(name = "remove", description = "Removes a member from the ticket.")
     @app_commands.describe(member = "The member you want to remove from the ticket.")
     @app_commands.default_permissions(manage_channels = True)
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(manage_channels = True)
     async def remove(self, interaction: discord.Interaction, member: discord.Member):
         async with aiosqlite.connect("db/tickets_role.db") as db:
@@ -238,7 +238,7 @@ class Ticket(commands.GroupCog, name = "ticket"):
     @app_commands.describe(action = "Do you want to add or remove a current role?", role = "The role you want to add.")
     @app_commands.choices(action = [app_commands.Choice(name = "add role", value = "add"), app_commands.Choice(name = "remove current role", value = "remove")])
     @app_commands.default_permissions(manage_channels = True)
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(manage_channels = True)
     async def ticketrole(self, interaction: discord.Interaction, action: app_commands.Choice[str], role: discord.Role = None):
         async with aiosqlite.connect("db/tickets_role.db") as db: # Open the db
@@ -267,7 +267,7 @@ class Ticket(commands.GroupCog, name = "ticket"):
 
     # transcript
     @app_commands.command(name = "transcript", description = "Generates a transcript for a ticket.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def transcript(self, interaction: discord.Interaction): 
         if "ticket-for-" in interaction.channel.name:
             await interaction.response.defer()

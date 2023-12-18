@@ -20,7 +20,7 @@ class Antispam(commands.GroupCog, name = "antispam"):
     # Anti-Spam enable command
     @app_commands.command(name = "enable", description = "Enables Anti-Spam System.")
     @app_commands.checks.has_permissions(manage_channels = True)
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def enable(self, interaction: discord.Interaction):
         async with aiosqlite.connect("db/antispam.db") as db:
             async with db.cursor() as cursor:
@@ -38,7 +38,7 @@ class Antispam(commands.GroupCog, name = "antispam"):
     # Anti-Spam disable command
     @app_commands.command(name = "disable", description = "Disables Anti-Spam System.")
     @app_commands.checks.has_permissions(manage_channels = True)
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def disable(self, interaction: discord.Interaction):
         async with aiosqlite.connect("db/antispam.db") as db:
             async with db.cursor() as cursor:
@@ -64,7 +64,7 @@ class Antispam(commands.GroupCog, name = "antispam"):
                                         app_commands.Choice(name = "kick", value = "kick"),
                                         app_commands.Choice(name = "ban", value = "ban")
                                         ])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def punishment(self, interaction: discord.Interaction, punishment: app_commands.Choice[str]):
         async with aiosqlite.connect("db/antispam.db") as db:
             async with db.cursor() as cursor:
@@ -81,7 +81,7 @@ class Antispam(commands.GroupCog, name = "antispam"):
     @app_commands.command(name = "whitelist", description = "Whitelist a channel.")
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(channel = "The channel to whitelist.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def whitelist(self, interaction: discord.Interaction, channel: discord.TextChannel):
         async with aiosqlite.connect("db/antispam.db") as db:
             async with db.cursor() as cursor:

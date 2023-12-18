@@ -32,7 +32,7 @@ class Moderation(commands.Cog):
     #clear command
     @app_commands.command(name = "clear", description = "Clears messages.")
     @app_commands.describe(amount = "Number of messages to clear (default amount is 1).")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(manage_messages = True)
     async def clear(self, interaction: discord.Interaction, amount: int = 1):
         await interaction.response.send_message(f"Deleted {amount} message(s)", ephemeral = True)
@@ -41,7 +41,7 @@ class Moderation(commands.Cog):
     #warn commands
     @app_commands.command(name = "warn", description = "Warn a member.")
     @app_commands.describe(member = "Member to warn.", reason = "Reason of warn.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(moderate_members = True)
     async def warn(self, interaction: discord.Interaction, member : discord.Member, reason: str = None):
         #check author role
@@ -67,7 +67,7 @@ class Moderation(commands.Cog):
     #Multi-Warn
     @app_commands.command(name = "multiwarn", description = "Warns multiple members. (maximum 5 members.)")
     @app_commands.describe(member1 = "First Member to warn.", member2 = "Second Member to warn.", member3 = "Third Member to warn.", member4 = "Fourth Member to warn.", reason = "Reason of warn.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(moderate_members = True)
     async def multiwarn(self, interaction: discord.Interaction, member1: discord.Member, member2: discord.Member, member3: discord.Member = None, member4: discord.Member = None, reason: str = None):
         await interaction.response.defer()
@@ -105,7 +105,7 @@ class Moderation(commands.Cog):
     #unwarn commands
     @app_commands.command(name = "unwarn", description = "Unwarn a member.")
     @app_commands.describe(member = "Member to unwarn.", amount = "Number of warnings to remove (default is 1 warn).")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(moderate_members = True)
     async def unwarn(self, interaction: discord.Interaction, member: discord.Member, amount: int = None):
         #check if member = author
@@ -137,7 +137,7 @@ class Moderation(commands.Cog):
     #warnings list commands
     @app_commands.command(name = "warnings", description = "Get list of warnings for the user.")
     @app_commands.describe(member = "Member to view their warnings.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(moderate_members = True)
     async def warnings(self, interaction: discord.Interaction, member: discord.Member):
         async with aiosqlite.connect("db/warnings.db") as db: # Open the db
@@ -151,7 +151,7 @@ class Moderation(commands.Cog):
     #timeout command
     @app_commands.command(name = "timeout", description = "Timeouts members. (maximum 5 members.)")
     @app_commands.describe(member = "Member to timeout.", time = "Time of the timeout.", reason = "Reason to timeout.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(moderate_members = True)
     async def timeout(self, interaction: discord.Interaction, member : discord.Member, time: str, reason: str = None):
         #check author role
@@ -190,7 +190,7 @@ class Moderation(commands.Cog):
     #Multi-Timeout
     @app_commands.command(name = "multitimeout", description = "Timeouts multiple members. (maximum 5 members.)")
     @app_commands.describe(time = "Time of timeout.", member1 = "First Member to timeout.", member2 = "Second Member to timeout.", member3 = "Third Member to timeout.", member4 = "Fourth Member to timeout.", reason = "Reason of timeout.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(moderate_members = True)
     async def multitimeout(self, interaction: discord.Interaction, time: str, member1: discord.Member, member2: discord.Member, member3: discord.Member = None, member4: discord.Member = None, reason: str = None):
         await interaction.response.defer()
@@ -242,7 +242,7 @@ class Moderation(commands.Cog):
     #kick command
     @app_commands.command(name = "kick", description = "Kicks a member.")
     @app_commands.describe(member = "Member to kick.", reason = "Reason to kick.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(kick_members = True)
     async def kick(self, interaction: discord.Interaction, member : discord.Member, reason: str = None):
         #check author role
@@ -261,7 +261,7 @@ class Moderation(commands.Cog):
     #Multi-Kick
     @app_commands.command(name = "multikick", description = "Kicks multiple members. (maximum 5 members.)")
     @app_commands.describe(member1 = "First Member to kick.", member2 = "Second Member to kick.", member3 = "Third Member to kick.", member4 = "Fourth Member to kick.", reason = "Reason of kick.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(moderate_members = True)
     async def multikick(self, interaction: discord.Interaction, member1: discord.Member, member2: discord.Member, member3: discord.Member = None, member4: discord.Member = None, reason: str = None):
         await interaction.response.defer()
@@ -292,7 +292,7 @@ class Moderation(commands.Cog):
     #ban command
     @app_commands.command(name = "ban", description = "Bans a member.")
     @app_commands.describe(member = "Member to ban.", reason = "Reason to ban.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(ban_members = True)
     async def ban(self, interaction: discord.Interaction, member: discord.Member, reason: str = None):
         #check author role
@@ -311,7 +311,7 @@ class Moderation(commands.Cog):
     #Multi-Ban
     @app_commands.command(name = "multiban", description = "Bans multiple members. (maximum 5 members.)")
     @app_commands.describe(member1 = "First Member to ban.", member2 = "Second Member to ban.", member3 = "Third Member to ban.", member4 = "Fourth Member to ban.", reason = "Reason of ban.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(moderate_members = True)
     async def multiban(self, interaction: discord.Interaction, member1: discord.Member, member2: discord.Member, member3: discord.Member = None, member4: discord.Member = None, reason: str = None):
         await interaction.response.defer()
@@ -341,7 +341,7 @@ class Moderation(commands.Cog):
 
     #unban all command
     @app_commands.command(name = "unbanall", description = "Unban all banned users.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(ban_members = True)
     @guild_only()  # Might not need ()
     async def unbanall(self, interaction: discord.Interaction):
@@ -357,7 +357,7 @@ class Moderation(commands.Cog):
     #unban command
     @app_commands.command(name = "unban", description = "Unban banned member.")
     @app_commands.describe(id = "ID of the banned member.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(ban_members = True)
     @guild_only()  # Might not need ()
     async def unban(self, interaction: discord.Interaction, id: int):
@@ -374,7 +374,7 @@ class Moderation(commands.Cog):
     @app_commands.command(name = "mute", description = "Mutes a member.")
     @app_commands.describe(member = "Member to mute.", time = "Time of the mute.", reason = "Reason to mute.")
     @commands.guild_only()
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(manage_roles = True)
     async def mute(self, interaction: discord.Interaction, member: discord.Member, time: str = None , reason: str = None):
         if interaction.user.top_role <= member.top_role: # Check user role
@@ -415,7 +415,7 @@ class Moderation(commands.Cog):
     #Multi-Mute
     @app_commands.command(name = "multimute", description = "Mutes multiple members. (maximum 5 members.)")
     @app_commands.describe(member1 = "First Member to mute.", member2 = "Second Member to mute.", member3 = "Third Member to mute.", member4 = "Fourth Member to mute.", time = "Time of mute.", reason = "Reason of mute.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(moderate_members = True)
     async def multimute(self, interaction: discord.Interaction, member1: discord.Member, member2: discord.Member, member3: discord.Member = None, member4: discord.Member = None, time: str = None, reason: str = None):
         await interaction.response.defer() # Cause it will take time looping through all members
@@ -469,7 +469,7 @@ class Moderation(commands.Cog):
     #unmute command
     @app_commands.command(name = "unmute", description = "Unmutes a member.")
     @app_commands.describe(member = "Member to unmute.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(manage_roles = True)
     async def unmute(self, interaction: discord.Interaction, member: discord.Member):
         mutedRole = discord.utils.find(lambda r: r.name == "SB-Muted", interaction.guild.roles) # Get role
@@ -485,7 +485,7 @@ class Moderation(commands.Cog):
     # #JAIL COMMAND!!!!!
     # @app_commands.command(name = "jail", description = "Jails a member.")
     # @app_commands.describe(member = "Member to jail.", time = "Time of the jail.", reason = "Reason to jail.")
-    # @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    # @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     # @app_commands.checks.has_permissions(manage_roles = True)
     # async def jail(self, interaction: discord.Interaction, member: discord.Member, time: str = None, reason: str = None):
     #     #check author role
@@ -563,7 +563,7 @@ class Moderation(commands.Cog):
     # #UNJAIL command
     # @app_commands.command(name = "unjail", description = "Unjails a member.")
     # @app_commands.describe(member = "Member to unjail.")
-    # @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    # @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     # @app_commands.checks.has_permissions(manage_roles = True)
     # async def unjail(self, interaction: discord.Interaction, member: discord.Member):
     #     # channel = discord.utils.get(ctx.guild.channels, name=f"jail-{member.name}-{member.discriminator}") # doesn't work
@@ -594,7 +594,7 @@ class Moderation(commands.Cog):
     #role command
     @app_commands.command(name = "addrole", description = "Adds a role to a member.")
     @app_commands.describe(member = "Memebr to give the role.", role = "The role to give.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(manage_roles = True)
     async def role(self, interaction: discord.Interaction, member: discord.Member, role: discord.Role):
         #check author role
@@ -614,7 +614,7 @@ class Moderation(commands.Cog):
     #remove role command
     @app_commands.command(name = "removerole", description = "Removes a role from a member.")
     @app_commands.describe(member = "Memebr to remove the role from.", role = "The role to remove.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(manage_roles = True)
     async def delrole(self, interaction: discord.Interaction, member: discord.Member, role: discord.Role):
         #check author role

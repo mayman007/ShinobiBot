@@ -177,7 +177,7 @@ class RPS(commands.Cog):
     #rps command
     @app_commands.command(name = "rps", description = "Play Rock Paper Scissors.")
     @app_commands.describe(player2 = "Player to challenge (default is the bot).")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def rps(self, interaction: discord.Interaction, player2: discord.Member = None):
         global enemy, player1, rpsGame, playerbot
         playerbot = self.bot.user

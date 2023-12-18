@@ -105,7 +105,7 @@ class Fun(commands.Cog):
 
     #wyr command
     @app_commands.command(name = "wyr", description = "Would you rather...")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def wyr(self, interaction: discord.Interaction):
         async with aiohttp.ClientSession() as session:
             async with session.get("http://either.io/") as r:
@@ -126,7 +126,7 @@ class Fun(commands.Cog):
     #emojify
     @app_commands.command(name = "emojify", description = "Convert your words to emojis!")
     @app_commands.describe(text = "Text you want to transform into emojis.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def emojify(self, interaction: discord.Interaction, text: str):
         emojis = []
         for s in text.lower():
@@ -143,7 +143,7 @@ class Fun(commands.Cog):
     #rate command
     @app_commands.command(name = "rate", description = "Rates.")
     @app_commands.describe(someone = "Someone to rate.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def rate(self, interaction: discord.Interaction, someone: discord.Member = None):
         if someone == None: text = "Your"
         else: text = someone.mention
@@ -154,7 +154,7 @@ class Fun(commands.Cog):
 
     #meme reddit
     @app_commands.command(name = "meme", description = "Memes.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def meme(self, interaction: discord.Interaction):
         reddit = praw.Reddit(
                     client_id = os.getenv("REDDIT_CLIENT_ID"),
@@ -179,7 +179,7 @@ class Fun(commands.Cog):
     #choose command
     @app_commands.command(name = "choose", description = "Chooses. (maximum 5 choices.)")
     @app_commands.describe(choice1 = "Choice 1.", choice2 = "Choice 2.", choice3 = "Choice 3.", choice4 = "Choice 4.", choice5 = "Choice 5.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def choose(self, interaction: discord.Interaction, choice1: str, choice2: str, choice3: str = None, choice4: str = None, choice5: str = None):
         if choice3 == None:
             opt = [choice1,choice2]
@@ -209,7 +209,7 @@ class Fun(commands.Cog):
 
     #coinflip
     @app_commands.command(name = "coinflip", description = "Flip a coin.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def coinflip(self, interaction: discord.Interaction):
         """ Coinflip! """
         coinsides = ["Heads", "Tails"]
@@ -217,7 +217,7 @@ class Fun(commands.Cog):
 
     #f
     @app_commands.command(name = "f", description = "Press f to pay respect.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def f(self, interaction: discord.Interaction, someone_or_something: str = None):
         """ Press F to pay respect """
         hearts = ["❤", "💛", "💚", "💙", "💜"]
@@ -227,14 +227,14 @@ class Fun(commands.Cog):
     #reverse
     @app_commands.command(name = "reverse", description = "Reverses your words.")
     @app_commands.describe(your_words = "Words to reverse.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def reverse(self, interaction: discord.Interaction, your_words: str):
         t_rev = your_words[::-1].replace("@", "@\u200B").replace("&", "&\u200B")
         await interaction.response.send_message(f"🔁 {t_rev}")
 
     #slot
     @app_commands.command(name = "slot", description = "A slot game.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def slot(self, interaction: discord.Interaction):
         """ Roll the slot machine """
         emojis = "🍎🍊🍐🍋🍉🍇🍓🍒"

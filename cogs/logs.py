@@ -557,7 +557,7 @@ class Logs(commands.GroupCog, name = "log"):
     # show settings command
     @app_commands.command(name = "show_settings", description = "Show current settings for all logs commands.")
     @app_commands.checks.has_permissions(manage_channels = True)
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def show_settings(self, interaction: discord.Interaction):
         log_channels_list = []
         logs_files_list = ["channel_create", "channel_delete", "channel_updates", "member_ban", "member_unban", "member_timeout", "nickname_change",
@@ -597,7 +597,7 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(switch = "Enable/Disable log.", channel = "Channel to send the log.")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def joins(self, interaction: discord.Interaction, switch: app_commands.Choice[str], channel: discord.TextChannel = None):
         if switch.value == "disable":
             async with aiosqlite.connect("db/log_joins.db") as db: # Open the db
@@ -627,7 +627,7 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(switch = "Enable/Disable log.", channel = "Channel to send the log.")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def leaves(self, interaction: discord.Interaction, switch: app_commands.Choice[str], channel: discord.TextChannel = None):
         if switch.value == "disable":
             async with aiosqlite.connect("db/log_leaves.db") as db: # Open the db
@@ -657,7 +657,7 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(switch = "Enable/Disable log.", channel = "Channel to send the log.")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def msg_edits(self, interaction: discord.Interaction, switch: app_commands.Choice[str], channel: discord.TextChannel = None):
         if switch.value == "disable":
             async with aiosqlite.connect("db/log_messages_edits.db") as db: # Open the db
@@ -687,7 +687,7 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(switch = "Enable/Disable log.", channel = "Channel to send the log.")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def msg_deletes(self, interaction: discord.Interaction, switch: app_commands.Choice[str], channel: discord.TextChannel = None):
         if switch.value == "disable":
             async with aiosqlite.connect("db/log_messages_deletes.db") as db: # Open the db
@@ -717,7 +717,7 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(switch = "Enable/Disable log.", channel = "Channel to send the log.")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def role_create(self, interaction: discord.Interaction, switch: app_commands.Choice[str], channel: discord.TextChannel = None):
         if switch.value == "disable":
             async with aiosqlite.connect("db/log_role_create.db") as db: # Open the db
@@ -747,7 +747,7 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(switch = "Enable/Disable log.", channel = "Channel to send the log.")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def role_delete(self, interaction: discord.Interaction, switch: app_commands.Choice[str], channel: discord.TextChannel = None):
         if switch.value == "disable":
             async with aiosqlite.connect("db/log_role_delete.db") as db: # Open the db
@@ -777,7 +777,7 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(switch = "Enable/Disable log.", channel = "Channel to send the log.")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def role_update(self, interaction: discord.Interaction, switch: app_commands.Choice[str], channel: discord.TextChannel = None):
         if switch.value == "disable":
             async with aiosqlite.connect("db/log_role_updates.db") as db: # Open the db
@@ -807,7 +807,7 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(switch = "Enable/Disable log.", channel = "Channel to send the log.")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def role_given(self, interaction: discord.Interaction, switch: app_commands.Choice[str], channel: discord.TextChannel = None):
         if switch.value == "disable":
             async with aiosqlite.connect("db/log_role_given.db") as db: # Open the db
@@ -837,7 +837,7 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(switch = "Enable/Disable log.", channel = "Channel to send the log.")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def role_remove(self, interaction: discord.Interaction, switch: app_commands.Choice[str], channel: discord.TextChannel = None):
         if switch.value == "disable":
             async with aiosqlite.connect("db/log_role_remove.db") as db: # Open the db
@@ -867,7 +867,7 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(switch = "Enable/Disable log.", channel = "Channel to send the log.")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def memebr_ban(self, interaction: discord.Interaction, switch: app_commands.Choice[str], channel: discord.TextChannel = None):
         if switch.value == "disable":
             async with aiosqlite.connect("db/log_member_ban.db") as db: # Open the db
@@ -897,7 +897,7 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(switch = "Enable/Disable log.", channel = "Channel to send the log.")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def memebr_unban(self, interaction: discord.Interaction, switch: app_commands.Choice[str], channel: discord.TextChannel = None):
         if switch.value == "disable":
             async with aiosqlite.connect("db/log_member_unban.db") as db: # Open the db
@@ -927,7 +927,7 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(switch = "Enable/Disable log.", channel = "Channel to send the log.")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def memebr_timeout(self, interaction: discord.Interaction, switch: app_commands.Choice[str], channel: discord.TextChannel = None):
         if switch.value == "disable":
             async with aiosqlite.connect("db/log_member_timeout.db") as db: # Open the db
@@ -957,7 +957,7 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(switch = "Enable/Disable log.", channel = "Channel to send the log.")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def nickname_change(self, interaction: discord.Interaction, switch: app_commands.Choice[str], channel: discord.TextChannel = None):
         if switch.value == "disable":
             async with aiosqlite.connect("db/log_nickname_change.db") as db: # Open the db
@@ -987,7 +987,7 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(switch = "Enable/Disable log.", channel = "Channel to send the log.")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def channel_create(self, interaction: discord.Interaction, switch: app_commands.Choice[str], channel: discord.TextChannel = None):
         if switch.value == "disable":
             async with aiosqlite.connect("db/log_channel_create.db") as db: # Open the db
@@ -1017,7 +1017,7 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(switch = "Enable/Disable log.", channel = "Channel to send the log.")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def channel_delete(self, interaction: discord.Interaction, switch: app_commands.Choice[str], channel: discord.TextChannel = None):
         if switch.value == "disable":
             async with aiosqlite.connect("db/log_channel_delete.db") as db: # Open the db
@@ -1047,7 +1047,7 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(switch = "Enable/Disable log.", channel = "Channel to send the log.")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def channel_updates(self, interaction: discord.Interaction, switch: app_commands.Choice[str], channel: discord.TextChannel = None):
         if switch.value == "disable":
             async with aiosqlite.connect("db/log_channel_updates.db") as db: # Open the db
@@ -1077,7 +1077,7 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.describe(switch = "Enable/Disable log.", channel = "Channel to send the log.")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def server_updates(self, interaction: discord.Interaction, switch: app_commands.Choice[str], channel: discord.TextChannel = None):
         if switch.value == "disable":
             async with aiosqlite.connect("db/log_server_updates.db") as db: # Open the db

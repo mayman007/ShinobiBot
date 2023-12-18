@@ -148,7 +148,7 @@ class Utility(commands.Cog):
 
     #ping command
     @app_commands.command(name = "ping", description = "Checks Shinobi bot's response time.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def ping(self, interaction: discord.Interaction):
         await interaction.response.send_message(f">>> _**Pong!**_\n{round(self.bot.latency * 1000)}ms")
 
@@ -175,7 +175,7 @@ class Utility(commands.Cog):
     #wikipedia search
     @app_commands.command(name = "wikipedia", description = "A wikipedia scraper.")
     @app_commands.describe(search = "Whatever you want to search.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def search(self, interaction: discord.Interaction, search: str):
         #usually returns a list, so we turn it into a string, suggestion = true includes suggestions
         searchsearch = str(wikipedia.search(search, suggestion = True)).replace('(', '').replace(')', '').replace("'", "").replace('[', '').replace(']', '')
@@ -202,7 +202,7 @@ class Utility(commands.Cog):
     #translate command
     @app_commands.command(name = "translate", description = "A translator.")
     @app_commands.describe(to_language = "The language you want to translate to.", to_translate = "Whatever you want to translate.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def translate(self, interaction: discord.Interaction, to_language: str, to_translate: str):
         translated = GoogleTranslator(source = 'auto', target = to_language).translate(to_translate)
         em = discord.Embed(title = "Translated", color = 0x2F3136)
@@ -213,7 +213,7 @@ class Utility(commands.Cog):
     #calculator command
     @app_commands.command(name = "calculator", description = "Makes calculations for you.")
     @app_commands.describe(first_number = "The first number.", operator = "The operator (+, -, ×, ÷).", second_number = "The second number.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def calculator(self, interaction: discord.Interaction, first_number: int, operator: str, second_number: int):
         if operator == "+":
             await interaction.response.send_message(f"Result: **{first_number+second_number}**")
@@ -242,7 +242,7 @@ class Utility(commands.Cog):
         app_commands.Choice(name = "random", value = "random")
         ])
     @app_commands.choices(thumbnail = [app_commands.Choice(name = "enable", value = "enable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def embed(self, interaction: discord.Interaction, title: str, description: str, footer: str = None, color: app_commands.Choice[str] = None, thumbnail: app_commands.Choice[str] = None):
         if footer == None and color == None and thumbnail == None:
             emb = discord.Embed(title = title, description = description, color = 0x000000)
@@ -299,7 +299,7 @@ class Utility(commands.Cog):
     #nick commands
     @app_commands.command(name = "nick", description = "Changes the nickname.")
     @app_commands.describe(member = "Member to change their nickname.", nick = "The new nickname.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(manage_nicknames = True)
     async def nick(self, interaction: discord.Interaction, member: discord.Member, nick: str):
         if interaction.user.top_role <= member.top_role:
@@ -314,7 +314,7 @@ class Utility(commands.Cog):
     #giveaway
     @app_commands.command(name = "giveaway", description = "Set a giveaway.")
     @app_commands.describe(time = "Giveaway's time.", prize = "Giveaway's prize.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def giveaway(self, interaction: discord.Interaction, time: str, prize: str):
         try: icon = str(interaction.guild.icon.url)
         except: icon = "no icon"
@@ -366,7 +366,7 @@ class Utility(commands.Cog):
     #tax
     @app_commands.command(name = "tax", description = "Calculates ProBot's taxes.")
     @app_commands.describe(amount = "The amount of credits.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def tax(self, interaction: discord.Interaction, amount: int):
         price = int(amount) / 0.95
         price2 = int(amount) * 0.95
@@ -379,7 +379,7 @@ class Utility(commands.Cog):
     #timer
     @app_commands.command(name = "timer", description = "A stopwatch for you.")
     @app_commands.describe(time = "The time you want to set.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def timer(self, interaction: discord.Interaction, time: str):
         get_time = {
         "s": 1, "m": 60, "h": 3600, "d": 86400,
@@ -403,7 +403,7 @@ class Utility(commands.Cog):
 
     #server link
     @app_commands.command(name = "serverlink", description = "Gets an invite link for the server.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def serverlink(self, interaction: discord.Interaction):
         name = str(interaction.guild.name)
         link = await interaction.channel.create_invite(max_age = 300)
@@ -415,7 +415,7 @@ class Utility(commands.Cog):
 
     #bot invite link
     @app_commands.command(name = "invite", description = "Gets an invite link for the bot.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def invite(self, interaction: discord.Interaction):
         view=Invite()
         view.add_item(discord.ui.Button(label = "Invite", style = discord.ButtonStyle.link,
@@ -430,7 +430,7 @@ class Utility(commands.Cog):
 
     # vote command
     @app_commands.command(name = "vote", description = "Vote Shinobi Bot!")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def vote(self, interaction: discord.Interaction):
         view = Vote()
         view.add_item(discord.ui.Button(label = "top.gg", style = discord.ButtonStyle.link, url = "https://top.gg/bot/855437723166703616/vote"))
@@ -441,7 +441,7 @@ class Utility(commands.Cog):
     #poll command
     @app_commands.command(name = "poll", description = "Make a poll.")
     @app_commands.describe(title = "The title of the poll.", description = "The description of the poll.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.checks.has_permissions(manage_messages = True)
     async def poll(self, interaction: discord.Interaction, title: str, description: str):
         try: user_avatar = interaction.user.avatar.url

@@ -53,7 +53,7 @@ class Serverinfo(commands.Cog):
 
     #roles list
     @app_commands.command(name = "roles", description = "A list of roles.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def roles(self, interaction: discord.Interaction):
         roles = ', '.join([str(r.name) for r in interaction.guild.roles])
         embed = discord.Embed(title = interaction.guild.name, color = 0x00000)
@@ -62,7 +62,7 @@ class Serverinfo(commands.Cog):
 
     #server info command
     @app_commands.command(name = "server", description = "Shows information about the server.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def server(self, interaction: discord.Interaction):
         embed = discord.Embed(color = 0x2F3136)
         embed.add_field(name = "**🆔 Server ID**", value = interaction.guild.id)
@@ -79,7 +79,7 @@ class Serverinfo(commands.Cog):
 
     #owner info
     @app_commands.command(name = "owner", description = "Shows server's owner.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def owner(self, interaction: discord.Interaction):
         owner = str(interaction.guild.owner)
         name = str(interaction.guild.name)
@@ -91,7 +91,7 @@ class Serverinfo(commands.Cog):
 
     #id info
     @app_commands.command(name = "id", description = "Shows server's id.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def id(self, interaction: discord.Interaction):
         id = str(interaction.guild.id)
         name = str(interaction.guild.name)
@@ -103,7 +103,7 @@ class Serverinfo(commands.Cog):
 
     #member count info
     @app_commands.command(name = "members", description = "Shows member's count.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def members(self, interaction: discord.Interaction):
         memberCount = str(interaction.guild.member_count)
         onlineCount = sum(member.status != discord.Status.offline and not member.bot for member in interaction.guild.members)
@@ -116,7 +116,7 @@ class Serverinfo(commands.Cog):
 
     #channels count info
     @app_commands.command(name = "channels", description = "Shows channel's count.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def channelscount(self, interaction: discord.Interaction):
         name = str(interaction.guild.name)
         embed = discord.Embed(title = name, color = 0x2F3136)
@@ -127,7 +127,7 @@ class Serverinfo(commands.Cog):
 
     #server icon
     @app_commands.command(name = "icon", description = "Shows server's icon.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def icon(self, interaction: discord.Interaction):
         try: icon = str(interaction.guild.icon.url)
         except: return await interaction.response.send_message("Server has no icon.")
@@ -142,7 +142,7 @@ class Serverinfo(commands.Cog):
     #userinfo command
     @app_commands.command(name = "user", description = "Shows information about you or another user.")
     @app_commands.describe(member = "A member to show their info.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def user(self, interaction: discord.Interaction, member: discord.Member = None):
         if member is None: member = interaction.user
         date_format = "%a, %d %b %Y %I:%M %p"
@@ -164,7 +164,7 @@ class Serverinfo(commands.Cog):
     #banner command
     @app_commands.command(name = "banner", description = "Shows member's banner.")
     @app_commands.describe(member = "Member you want to show their banner.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def banner(self, interaction: discord.Interaction, member: discord.Member = None):
         if member == None: member = interaction.user
         #check if user has a banner and fetch it
@@ -185,7 +185,7 @@ class Serverinfo(commands.Cog):
     #avatar
     @app_commands.command(name = "avatar", description = "Shows member's avatar.")
     @app_commands.describe(member = "Member you want to show their avatar.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def avatar(self, interaction: discord.Interaction, member: discord.Member = None):
         if not member: member = interaction.user
         userAvatar = member.avatar.url

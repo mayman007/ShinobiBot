@@ -196,7 +196,7 @@ class Connect4(commands.Cog):
   	#CONNECT4
 	@app_commands.command(name = "connect4", description = "play connect 4.")
 	@app_commands.describe(player2 = "Player to challenge.")
-	@app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+	@app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
 	async def connect4(self, interaction: discord.Interaction, player2: discord.Member):
 		"""
 		Play connect4 with another player

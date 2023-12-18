@@ -46,14 +46,14 @@ class AI(commands.Cog):
     # MidJourney
     @app_commands.command(name = "midjourney", description = "Generate images using Midjourney-like model.")
     @app_commands.describe(prompt = "Describe the image.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def midjourney(self, interaction: discord.Interaction, prompt: str):
         await interaction.response.send_message("Wanna generate images using powerful models? Use </imagine:1122943777326256413>!", ephemeral = True)
 
     # Imagine
     @app_commands.command(name = "imagine", description = "Generate images using powerful Stable Diffusion models.")
     @app_commands.describe(prompt = "Describe the image.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def imagine(self, interaction: discord.Interaction, prompt: str):
         await interaction.response.defer()
         try:
@@ -78,7 +78,7 @@ class AI(commands.Cog):
     # Dall-E
     @app_commands.command(name = "dalle", description = "Generate images using Dall-E.")
     @app_commands.describe(prompt = "Describe the image.", number_of_images = "default is 1.", size = "default is 1024x1024.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.choices(size = [app_commands.Choice(name = "256x256", value = "256x256"),
                                   app_commands.Choice(name = "512x512 ", value = "512x512"),
                                   app_commands.Choice(name = "1024x1024", value = "1024x1024")])
@@ -128,7 +128,7 @@ class AI(commands.Cog):
     # Bing Image Creator
     @bing.command(name = "image_creator", description = "Generate images using Bing Image Creator.")
     @app_commands.describe(prompt = "Describe the image.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def bing_image_creator(self, interaction: discord.Interaction, prompt: str):
         await interaction.response.defer()
         try:
@@ -156,7 +156,7 @@ class AI(commands.Cog):
     # Bing Ask
     @bing.command(name = "ask", description = "Ask Bing AI.")
     @app_commands.describe(prompt = "The question you wanna ask.", conversation_style = "default is balanced")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.choices(conversation_style = [app_commands.Choice(name = "creative", value = "creative"),
                                                 app_commands.Choice(name = "balanced", value = "balanced"),
                                                 app_commands.Choice(name = "precise", value = "precise")])
@@ -189,7 +189,7 @@ class AI(commands.Cog):
     # Bard
     @app_commands.command(name = "bard", description = "Ask Bard.")
     @app_commands.describe(prompt = "The question you wanna ask.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def bard(self, interaction: discord.Interaction, prompt: str):
         await interaction.response.defer()
         try:
@@ -226,7 +226,7 @@ class AI(commands.Cog):
     # ChatGPT Ask
     @chatgpt.command(name = "ask", description = "Ask ChatGPT-4.")
     @app_commands.describe(prompt = "The question you wanna ask.", model = "Default is GPT-4 unless if it has issues. (Only GPT-4 saves conversations)")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.choices(model = [app_commands.Choice(name = "GPT-4", value = "gpt-4"),
                                    app_commands.Choice(name = "GPT-3.5-Turbo", value = "gpt-3.5-turbo")])
     async def chatgpt_ask(self, interaction: discord.Interaction, prompt: str, model: app_commands.Choice[str] = None):
@@ -236,7 +236,7 @@ class AI(commands.Cog):
     # Chatbot command
     @app_commands.command(name = "chatbot", description = "Chat with powerful AI models.")
     @app_commands.describe(prompt = "The question you wanna ask.", model = "Choose the AI model you wanna chat with.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.choices(model = [
                                     app_commands.Choice(name = "gpt-4", value = "gpt-4"),
                                     app_commands.Choice(name = "gpt-3.5-turbo", value = "gpt-3.5-turbo"),

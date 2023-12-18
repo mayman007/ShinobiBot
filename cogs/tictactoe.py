@@ -122,7 +122,7 @@ class tictactoe(commands.Cog):
     # tictactoe command
     @app_commands.command(name = "tictactoe", description = "Play TicTacToe.")
     @app_commands.describe(enemy = "Player to challenge.")
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def tictactoe(self, interation: discord.Interaction, enemy: discord.Member):
         await interation.response.send_message(f"Tic Tac Toe: {interation.user.mention} goes first **X**", view = TicTacToe())
         global player1, player2

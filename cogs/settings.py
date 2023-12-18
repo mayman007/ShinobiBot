@@ -238,7 +238,7 @@ class Settings(commands.Cog):
     @app_commands.command(name = "prvchannel", description = "Makes a temprory private channel.")
     @app_commands.describe(time = "Time of the channel before it gets deleted.", channel_name = "Channel's name.")
     @app_commands.checks.has_permissions(manage_channels = True)
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def prvchannel(self, interaction: discord.Interaction, time: str, channel_name: str):
         guild = interaction.guild
         category = discord.utils.get(interaction.guild.categories)
@@ -272,7 +272,7 @@ class Settings(commands.Cog):
     @app_commands.command(name = "hide", description = "Hide a channel.")
     @app_commands.describe(channel = "Channel to hide (default is current channel).")
     @app_commands.checks.has_permissions(manage_channels = True)
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def hidechat(self, interaction: discord.Interaction, channel: discord.TextChannel = None):
         channel = channel or interaction.channel
         overwrite = channel.overwrites_for(interaction.guild.default_role)
@@ -287,7 +287,7 @@ class Settings(commands.Cog):
     #hide all
     @app_commands.command(name = "hideall", description = "Hide all channels in the server.")
     @app_commands.checks.has_permissions(manage_channels = True)
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def hideall(self, interaction: discord.Interaction):
         hideall_em = discord.Embed(title = "Confirm", description = "Are you sure that you want to hide all your channels?")
         view = hideallConfirm()
@@ -297,7 +297,7 @@ class Settings(commands.Cog):
     @app_commands.command(name = "show", description = "Show a hidden channel.")
     @app_commands.describe(channel = "Channel to unhide (default is current channel).")
     @app_commands.checks.has_permissions(manage_channels = True)
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def showchat(self, interaction: discord.Interaction, channel: discord.TextChannel = None):
         channel = channel or interaction.channel
         overwrite = channel.overwrites_for(interaction.guild.default_role)
@@ -311,7 +311,7 @@ class Settings(commands.Cog):
     #show all
     @app_commands.command(name = "showall", description = "Unhide all channels in the server.")
     @app_commands.checks.has_permissions(manage_channels = True)
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def showall(self, interaction: discord.Interaction):
         hideall_em = discord.Embed(title = "Confirm", description = "Are you sure that you want to unhide all your channels?")
         view = showallConfirm()
@@ -321,7 +321,7 @@ class Settings(commands.Cog):
     @app_commands.command(name = "lock", description = "Lockes a channel.")
     @app_commands.describe(channel = "Channel to lock (default is current channel).")
     @app_commands.checks.has_permissions(manage_channels = True)
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def lock(self, interaction: discord.Interaction, channel: discord.TextChannel = None):
         channel = channel or interaction.channel
         overwrite = channel.overwrites_for(interaction.guild.default_role)
@@ -335,7 +335,7 @@ class Settings(commands.Cog):
     #lock all
     @app_commands.command(name = "lockall", description = "Lockes all the channels.")
     @app_commands.checks.has_permissions(manage_channels = True)
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def lockall(self, interaction: discord.Interaction):
         lockall_em = discord.Embed(title = "Confirm", description = "Are you sure that you want to lock all your channels?")
         view = lockallConfirm()
@@ -345,7 +345,7 @@ class Settings(commands.Cog):
     @app_commands.command(name = "unlock", description = "Unlocks a locked channel.")
     @app_commands.describe(channel = "Channel to unlock (default is current channel).")
     @app_commands.checks.has_permissions(manage_channels=True)
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def unlock(self, interaction: discord.Interaction, channel: discord.TextChannel = None):
         channel = channel or interaction.channel
         overwrite = channel.overwrites_for(interaction.guild.default_role)
@@ -359,7 +359,7 @@ class Settings(commands.Cog):
     #unlock all
     @app_commands.command(name = "unlockall", description = "unlockes all the channels.")
     @app_commands.checks.has_permissions(manage_channels = True)
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def unlockall(self, interaction: discord.Interaction):
         unlockall_em = discord.Embed(title = "Confirm", description = "Are you sure that you want to unlock all your channels?")
         view = unlockallConfirm()
@@ -371,7 +371,7 @@ class Settings(commands.Cog):
     @app_commands.describe(suggestions_channel = "Set a channel that members will sent their suggetions to.", switch = "Enable/Disable Suggetions System",
                            review_channel = "Set a private channel for admins to review the suggetions. (or make it the same suggestions channel if you want.)")
     @app_commands.choices(switch = [app_commands.Choice(name = "enable", value = "enable"), app_commands.Choice(name = "disable", value = "disable")])
-    @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def suggestions(self, interaction: discord.Interaction, switch: app_commands.Choice[str], suggestions_channel: discord.TextChannel = None, review_channel: discord.TextChannel = None):
             if switch.value == "disable":
                 async with aiosqlite.connect("db/suggestions.db") as db: # Open the db
