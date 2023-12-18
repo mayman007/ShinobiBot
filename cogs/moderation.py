@@ -16,7 +16,7 @@ class unbanallConfirm(discord.ui.View):
         await interaction.response.defer()
         for ban_entry in bans:
             await interaction.guild.unban(user = ban_entry.user)
-        unbanall_embed = discord.Embed(title = "✅ ┃ Unban All! ┃ ✅", description = f"{author.mention} has unbanned all banned users! (total {len(bans)})", colour = discord.Colour.green())
+        unbanall_embed = discord.Embed(title = "✅ ┃ Unban All! ┃ ✅", description = f"{interaction.message.interaction.user.mention} has unbanned all banned users! (total {len(bans)})", colour = discord.Colour.green())
         await interaction.followup.send(embed = unbanall_embed)
 
 # Moderation Class
@@ -346,9 +346,7 @@ class Moderation(commands.Cog):
     @guild_only()  # Might not need ()
     async def unbanall(self, interaction: discord.Interaction):
         await interaction.response.defer()
-        global author
         global bans
-        author = interaction.user
         bans = [ban_entry async for ban_entry in interaction.guild.bans()]   # list of discord.BanEntry
         for ban_entry in bans:
             await interaction.guild.unban(user = ban_entry.user)

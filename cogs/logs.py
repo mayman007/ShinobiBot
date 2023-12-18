@@ -10,7 +10,7 @@ class editsConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def edits_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != edits_log_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/log_messages_edits.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
@@ -27,7 +27,7 @@ class editsConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def edits_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != edits_log_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -39,7 +39,7 @@ class deletesConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def deletes_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != deletes_log_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/log_messages_deletes.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
@@ -56,7 +56,7 @@ class deletesConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def deletes_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != deletes_log_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -68,7 +68,7 @@ class joinsConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def joins_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != joins_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/log_joins.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
@@ -85,7 +85,7 @@ class joinsConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def joins_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != joins_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -97,7 +97,7 @@ class leavesConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def leaves_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != leaves_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/log_leaves.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
@@ -114,7 +114,7 @@ class leavesConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def leaves_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != leaves_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -126,7 +126,7 @@ class roleCreateConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def role_create_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != roles_create_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/log_role_create.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
@@ -143,7 +143,7 @@ class roleCreateConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def role_create_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != roles_create_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -155,7 +155,7 @@ class roleDeleteConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def role_delete_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != roles_delete_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/log_role_delete.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
@@ -172,7 +172,7 @@ class roleDeleteConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def role_delete_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != roles_delete_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -184,7 +184,7 @@ class roleUpdatesConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def role_update_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != roles_updates_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/log_role_updates.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
@@ -201,7 +201,7 @@ class roleUpdatesConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def role_update_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != roles_updates_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -213,7 +213,7 @@ class roleGivenConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def role_given_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != roles_given_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/log_role_given.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
@@ -230,7 +230,7 @@ class roleGivenConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def role_given_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != roles_given_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -242,7 +242,7 @@ class roleRemoveConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def role_leave_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != roles_removed_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/log_role_remove.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
@@ -259,7 +259,7 @@ class roleRemoveConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def role_remove_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != roles_removed_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -271,7 +271,7 @@ class memberBanConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def member_ban_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != member_ban_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/log_member_ban.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
@@ -288,7 +288,7 @@ class memberBanConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def member_ban_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != member_ban_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -300,7 +300,7 @@ class memberUnbanConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def member_unban_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != member_unban_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/log_member_unban.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
@@ -317,7 +317,7 @@ class memberUnbanConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def member_unban_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != member_unban_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -329,7 +329,7 @@ class memberTimeoutConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def member_timeout_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != member_timeout_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/log_member_timeout.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
@@ -346,7 +346,7 @@ class memberTimeoutConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def member_timeout_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != member_timeout_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -358,7 +358,7 @@ class nicknameChangeConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def nickname_change_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != nickname_change_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/log_nickname_change.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
@@ -375,7 +375,7 @@ class nicknameChangeConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def nickname_change_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != nickname_change_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -387,7 +387,7 @@ class channelCreateConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def channel_create_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != channel_create_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/log_channel_create.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
@@ -404,7 +404,7 @@ class channelCreateConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def channel_create_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != channel_create_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -416,7 +416,7 @@ class channelDeleteConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def channel_delete_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != channel_delete_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/log_channel_delete.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
@@ -433,7 +433,7 @@ class channelDeleteConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def channel_delete_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != channel_delete_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -445,7 +445,7 @@ class channelUpdatesConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def channel_updates_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != channel_updates_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/log_channel_updates.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
@@ -462,7 +462,7 @@ class channelUpdatesConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def channel_updates_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != channel_updates_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -474,7 +474,7 @@ class serverUpdatesConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def server_updates_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != server_updates_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/log_server_updates.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
@@ -491,7 +491,7 @@ class serverUpdatesConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def server_updates_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != server_updates_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -503,7 +503,7 @@ class ConfirmDisableAll(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.danger)
     async def confirm_disable_all(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != disable_all_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         await interaction.response.defer()
         logs_files_list = ["joins", "leaves", "messages_edits", "messages_deletes", "role_create", "role_delete", "role_updates", "role_given", "role_remove",
                            "channel_create", "channel_delete", "channel_updates", "member_ban", "member_unban", "member_timeout" ,"nickname_change", "server_updates"]
@@ -522,7 +522,7 @@ class ConfirmDisableAll(discord.ui.View):
     # cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.gray)
     async def cancel_disable_all(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != disable_all_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
         await interaction.message.edit(view = self)
@@ -534,7 +534,7 @@ class DisableAll(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Disable All", style = discord.ButtonStyle.red)
     async def disable_all(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != disable_all_author: return await interaction.response.send_message("This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("This is not for you!", ephemeral = True)
         embed = discord.Embed(title = "Disabling all logs", description = "Are you sure that you want to disable all logs in this server?", color = discord.Colour.red())
         await interaction.response.send_message(embed = embed, view = ConfirmDisableAll())
         for child in self.children:
@@ -563,8 +563,6 @@ class Logs(commands.GroupCog, name = "log"):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     async def show_settings(self, interaction: discord.Interaction):
-        global disable_all_author
-        disable_all_author = interaction.user
         log_channels_list = []
         logs_files_list = ["channel_create", "channel_delete", "channel_updates", "member_ban", "member_unban", "member_timeout", "nickname_change",
                            "messages_edits", "messages_deletes", "role_create", "role_delete", "role_updates", "role_given", "role_remove",
@@ -620,9 +618,7 @@ class Logs(commands.GroupCog, name = "log"):
                 await db.commit()
         if switch.value == "enable":
             if channel == None: return await interaction.response.send_message("You must include a channel to set the log.", ephemeral = True)
-            global joins_author
             global joins_channel
-            joins_author = interaction.user
             joins_channel = channel.id
             view = joinsConfirm()
             em = discord.Embed(title = "Confirmation",
@@ -652,9 +648,7 @@ class Logs(commands.GroupCog, name = "log"):
                 await db.commit()
         if switch.value == "enable":
             if channel == None: return await interaction.response.send_message("You must include a channel to set the log.", ephemeral = True)
-            global leaves_author
             global leaves_channel
-            leaves_author = interaction.user
             leaves_channel = channel.id
             view = leavesConfirm()
             em = discord.Embed(title = "Confirmation",
@@ -684,9 +678,7 @@ class Logs(commands.GroupCog, name = "log"):
                 await db.commit()
         if switch.value == "enable":
             if channel == None: return await interaction.response.send_message("You must include a channel to set the log.", ephemeral = True)
-            global edits_log_author
             global edits_log_channel
-            edits_log_author = interaction.user
             edits_log_channel = channel.id
             view = editsConfirm()
             em = discord.Embed(title = "Confirmation",
@@ -716,9 +708,7 @@ class Logs(commands.GroupCog, name = "log"):
                 await db.commit()
         if switch.value == "enable":
             if channel == None: return await interaction.response.send_message("You must include a channel to set the log.", ephemeral = True)
-            global deletes_log_author
             global deletes_log_channel
-            deletes_log_author = interaction.user
             deletes_log_channel = channel.id
             view = deletesConfirm()
             em = discord.Embed(title = "Confirmation",
@@ -748,9 +738,7 @@ class Logs(commands.GroupCog, name = "log"):
                 await db.commit()
         if switch.value == "enable":
             if channel == None: return await interaction.response.send_message("You must include a channel to set the log.", ephemeral = True)
-            global roles_create_author
             global roles_create_channel
-            roles_create_author = interaction.user
             roles_create_channel = channel.id
             view = roleCreateConfirm()
             em = discord.Embed(title = "Confirmation",
@@ -780,9 +768,7 @@ class Logs(commands.GroupCog, name = "log"):
                 await db.commit()
         if switch.value == "enable":
             if channel == None: return await interaction.response.send_message("You must include a channel to set the log.", ephemeral = True)
-            global roles_delete_author
             global roles_delete_channel
-            roles_delete_author = interaction.user
             roles_delete_channel = channel.id
             view = roleDeleteConfirm()
             em = discord.Embed(title = "Confirmation",
@@ -812,9 +798,7 @@ class Logs(commands.GroupCog, name = "log"):
                 await db.commit()
         if switch.value == "enable":
             if channel == None: return await interaction.response.send_message("You must include a channel to set the log.", ephemeral = True)
-            global roles_updates_author
             global roles_updates_channel
-            roles_updates_author = interaction.user
             roles_updates_channel = channel.id
             view = roleUpdatesConfirm()
             em = discord.Embed(title = "Confirmation",
@@ -844,9 +828,7 @@ class Logs(commands.GroupCog, name = "log"):
                 await db.commit()
         if switch.value == "enable":
             if channel == None: return await interaction.response.send_message("You must include a channel to set the log.", ephemeral = True)
-            global roles_given_author
             global roles_given_channel
-            roles_given_author = interaction.user
             roles_given_channel = channel.id
             view = roleGivenConfirm()
             em = discord.Embed(title = "Confirmation",
@@ -876,9 +858,7 @@ class Logs(commands.GroupCog, name = "log"):
                 await db.commit()
         if switch.value == "enable":
             if channel == None: return await interaction.response.send_message("You must include a channel to set the log.", ephemeral = True)
-            global roles_removed_author
             global roles_removed_channel
-            roles_removed_author = interaction.user
             roles_removed_channel = channel.id
             view = roleRemoveConfirm()
             em = discord.Embed(title = "Confirmation",
@@ -908,9 +888,7 @@ class Logs(commands.GroupCog, name = "log"):
                 await db.commit()
         if switch.value == "enable":
             if channel == None: return await interaction.response.send_message("You must include a channel to set the log.", ephemeral = True)
-            global member_ban_author
             global member_ban_channel
-            member_ban_author = interaction.user
             member_ban_channel = channel.id
             view = memberBanConfirm()
             em = discord.Embed(title = "Confirmation",
@@ -940,9 +918,7 @@ class Logs(commands.GroupCog, name = "log"):
                 await db.commit()
         if switch.value == "enable":
             if channel == None: return await interaction.response.send_message("You must include a channel to set the log.", ephemeral = True)
-            global member_unban_author
             global member_unban_channel
-            member_unban_author = interaction.user
             member_unban_channel = channel.id
             view = memberUnbanConfirm()
             em = discord.Embed(title = "Confirmation",
@@ -972,9 +948,7 @@ class Logs(commands.GroupCog, name = "log"):
                 await db.commit()
         if switch.value == "enable":
             if channel == None: return await interaction.response.send_message("You must include a channel to set the log.", ephemeral = True)
-            global member_timeout_author
             global member_timeout_channel
-            member_timeout_author = interaction.user
             member_timeout_channel = channel.id
             view = memberTimeoutConfirm()
             em = discord.Embed(title = "Confirmation",
@@ -1004,9 +978,7 @@ class Logs(commands.GroupCog, name = "log"):
                 await db.commit()
         if switch.value == "enable":
             if channel == None: return await interaction.response.send_message("You must include a channel to set the log.", ephemeral = True)
-            global nickname_change_author
             global nickname_change_channel
-            nickname_change_author = interaction.user
             nickname_change_channel = channel.id
             view = nicknameChangeConfirm()
             em = discord.Embed(title = "Confirmation",
@@ -1036,9 +1008,7 @@ class Logs(commands.GroupCog, name = "log"):
                 await db.commit()
         if switch.value == "enable":
             if channel == None: return await interaction.response.send_message("You must include a channel to set the log.", ephemeral = True)
-            global channel_create_author
             global channel_create_channel
-            channel_create_author = interaction.user
             channel_create_channel = channel.id
             view = channelCreateConfirm()
             em = discord.Embed(title = "Confirmation",
@@ -1068,9 +1038,7 @@ class Logs(commands.GroupCog, name = "log"):
                 await db.commit()
         if switch.value == "enable":
             if channel == None: return await interaction.response.send_message("You must include a channel to set the log.", ephemeral = True)
-            global channel_delete_author
             global channel_delete_channel
-            channel_delete_author = interaction.user
             channel_delete_channel = channel.id
             view = channelDeleteConfirm()
             em = discord.Embed(title = "Confirmation",
@@ -1100,9 +1068,7 @@ class Logs(commands.GroupCog, name = "log"):
                 await db.commit()
         if switch.value == "enable":
             if channel == None: return await interaction.response.send_message("You must include a channel to set the log.", ephemeral = True)
-            global channel_updates_author
             global channel_updates_channel
-            channel_updates_author = interaction.user
             channel_updates_channel = channel.id
             view = channelUpdatesConfirm()
             em = discord.Embed(title = "Confirmation",
@@ -1132,9 +1098,7 @@ class Logs(commands.GroupCog, name = "log"):
                 await db.commit()
         if switch.value == "enable":
             if channel == None: return await interaction.response.send_message("You must include a channel to set the log.", ephemeral = True)
-            global server_updates_author
             global server_updates_channel
-            server_updates_author = interaction.user
             server_updates_channel = channel.id
             view = serverUpdatesConfirm()
             em = discord.Embed(title = "Confirmation",

@@ -146,7 +146,7 @@ class feedbackButton(discord.ui.View):
         self.cooldown = commands.CooldownMapping.from_cooldown(1, 600, commands.BucketType.member)
     @discord.ui.button(label = "Send Feedback", style = discord.ButtonStyle.blurple)
     async def feedback_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != author: return await interaction.response.send_message("> This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("> This is not for you!", ephemeral = True)
         retry = self.cooldown.get_bucket(interaction.message).update_rate_limit()
         if retry: return await interaction.response.send_message(f"Slow down! Try again in {round(retry, 1)} seconds!", ephemeral = True)
         await interaction.response.send_modal(feedbackModal())
@@ -178,8 +178,6 @@ class feedbackModal(ui.Modal, title = "Send Your Feedback"):
 # Feedback command
 @bot.tree.command(name = "feedback", description = "Send your feedback directly to the developers.")
 async def feedback(interaction: discord.Interaction):
-    global author
-    author = interaction.user
     view = feedbackButton()
     embed = discord.Embed(title = "If you had faced any problems or have any suggestions, feel free to send your feedback!")
     await interaction.response.send_message(embed = embed, view = view, ephemeral = True)

@@ -15,7 +15,7 @@ class nextMeme(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Next Meme", style = discord.ButtonStyle.green)
     async def next_meme(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != author: return await interaction.response.send_message("> This is not your meme!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("> This is not your meme!", ephemeral = True)
         reddit = praw.Reddit(
                     client_id = os.getenv("REDDIT_CLIENT_ID"),
                     client_secret = os.getenv("REDDIT_CLIENT_SECRET"),
@@ -173,8 +173,6 @@ class Fun(commands.Cog):
             if ".gif" in url or ".mp4" in url: continue
             em = discord.Embed(title = name, colour = 0x2F3136)
             em.set_image(url = url)
-        global author
-        author = interaction.user
         view=nextMeme()
         await interaction.response.send_message(embed = em, view = view)
 

@@ -33,7 +33,7 @@ class Dropdown(discord.ui.Select):
         # selected options. We only want the first one.
 
         # Check user
-        if interaction.user != author: return await interaction.response.send_message("Use your own help command.", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("Use your own help command.", ephemeral = True)
 
         # Index page
         if self.values[0] == "Index":
@@ -152,8 +152,6 @@ class Help(commands.GroupCog, name = "help"):
                            color = 0x2F3136)
         em.add_field(name = "**Who are you?**", value = "I'm a bot developed by @shinobi7k. I'm a multipurpose bot than can do _almost_ anything. You can get more info using the dropdown menu below.\n\nI'm also open source. You can see my code on [GitHub](https://github.com/mayman007/ShinobiBot)!")
         em.add_field(name = "**Features**", value = "- Advanced Ticket System\n- Anti-Spam System\n- Logging System\n- Suggestions\n- Moderation\n- Games\n- Utility")
-        global author
-        author = interaction.user
         view = DropdownView()
         view.add_item(discord.ui.Button(label = "Invite Shinobi Bot", style = discord.ButtonStyle.link, url = "https://discord.com/oauth2/authorize?client_id=855437723166703616&permissions=8&scope=bot%20applications.commands"))
         view.add_item(discord.ui.Button(label = "Support Server", style = discord.ButtonStyle.link, url = "https://discord.gg/YScaCDY7PN"))

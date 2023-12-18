@@ -7,7 +7,7 @@ class Disavatar(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Server's Profile Avatar", style = discord.ButtonStyle.green)
     async def display_avatar(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != author:
+        if interaction.user != interaction.message.interaction.user:
             return await interaction.response.send_message("This avatar is not for you!", ephemeral = True)
         displayAvatar = user.display_avatar.url
         userAvatar = user.avatar.url
@@ -29,7 +29,7 @@ class Avatar(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Main Avatar", style = discord.ButtonStyle.blurple)
     async def main_avatar(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != author:
+        if interaction.user != interaction.message.interaction.user:
             return await interaction.response.send_message("This avatar is not for you!", ephemeral = True)
         userAvatar = user.avatar.url
         e = discord.Embed(title = "Avatar Link", url = userAvatar, color = 0x000000)
@@ -195,9 +195,7 @@ class Serverinfo(commands.Cog):
         try: e.set_footer(text = f"Requested by {interaction.user}", icon_url = interaction.user.avatar.url)
         except: e.set_footer(text = f"Requested by {interaction.user}")
         global user
-        global author
         user = member
-        author = interaction.user
         view = Disavatar()
         await interaction.response.send_message(embed = e, view = view)
 

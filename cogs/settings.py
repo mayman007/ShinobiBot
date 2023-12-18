@@ -11,7 +11,7 @@ class hideallConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def hideall_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != author: return await interaction.response.send_message("> This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("> This is not for you!", ephemeral = True)
         await interaction.response.defer()
         for channel in interaction.guild.channels:
             overwrite = channel.overwrites_for(interaction.guild.default_role)
@@ -25,7 +25,7 @@ class hideallConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def hideall_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != author:
+        if interaction.user != interaction.message.interaction.user:
             return await interaction.response.send_message("> This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
@@ -38,7 +38,7 @@ class showallConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def showall_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != author: return await interaction.response.send_message("> This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("> This is not for you!", ephemeral = True)
         await interaction.response.defer()
         for channel in interaction.guild.channels:
             overwrite = channel.overwrites_for(interaction.guild.default_role)
@@ -52,7 +52,7 @@ class showallConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def showall_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != author:
+        if interaction.user != interaction.message.interaction.user:
             return await interaction.response.send_message("> This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
@@ -65,7 +65,7 @@ class lockallConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def lockall_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != author: return await interaction.response.send_message("> This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("> This is not for you!", ephemeral = True)
         await interaction.response.defer()
         for channel in interaction.guild.channels:
             overwrite = channel.overwrites_for(interaction.guild.default_role)
@@ -79,7 +79,7 @@ class lockallConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def lockall_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != author:
+        if interaction.user != interaction.message.interaction.user:
             return await interaction.response.send_message("> This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
@@ -92,7 +92,7 @@ class unlockallConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def unlockall_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != author: return await interaction.response.send_message("> This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("> This is not for you!", ephemeral = True)
         await interaction.response.defer()
         for channel in interaction.guild.channels:
             overwrite = channel.overwrites_for(interaction.guild.default_role)
@@ -106,7 +106,7 @@ class unlockallConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def unlockall_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != author:
+        if interaction.user != interaction.message.interaction.user:
             return await interaction.response.send_message("> This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
@@ -119,7 +119,7 @@ class suggestConfirm(discord.ui.View):
         super().__init__(timeout = timeout)
     @discord.ui.button(label = "Confirm", style = discord.ButtonStyle.green)
     async def suggest_confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != suggest_author: return await interaction.response.send_message("> This is not for you!", ephemeral = True)
+        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("> This is not for you!", ephemeral = True)
         async with aiosqlite.connect("db/suggestions.db") as db: # Open the db
             async with db.cursor() as cursor:
                 await cursor.execute("CREATE TABLE IF NOT EXISTS channels (sugg_channel INTEGER, rev_channel INTEGER, guild ID)") # Create the table if not exists
@@ -139,7 +139,7 @@ class suggestConfirm(discord.ui.View):
     #cancel button
     @discord.ui.button(label = "Cancel", style = discord.ButtonStyle.red)
     async def suggest_cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != suggest_author:
+        if interaction.user != interaction.message.interaction.user:
             return await interaction.response.send_message("> This is not for you!", ephemeral = True)
         for child in self.children:
             child.disabled = True
@@ -289,8 +289,6 @@ class Settings(commands.Cog):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     async def hideall(self, interaction: discord.Interaction):
-        global author
-        author = interaction.user
         hideall_em = discord.Embed(title = "Confirm", description = "Are you sure that you want to hide all your channels?")
         view = hideallConfirm()
         await interaction.response.send_message(embed = hideall_em, view = view)
@@ -315,8 +313,6 @@ class Settings(commands.Cog):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     async def showall(self, interaction: discord.Interaction):
-        global author
-        author = interaction.user
         hideall_em = discord.Embed(title = "Confirm", description = "Are you sure that you want to unhide all your channels?")
         view = showallConfirm()
         await interaction.response.send_message(embed = hideall_em, view = view)
@@ -341,8 +337,6 @@ class Settings(commands.Cog):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     async def lockall(self, interaction: discord.Interaction):
-        global author
-        author = interaction.user
         lockall_em = discord.Embed(title = "Confirm", description = "Are you sure that you want to lock all your channels?")
         view = lockallConfirm()
         await interaction.response.send_message(embed = lockall_em, view = view)
@@ -367,8 +361,6 @@ class Settings(commands.Cog):
     @app_commands.checks.has_permissions(manage_channels = True)
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     async def unlockall(self, interaction: discord.Interaction):
-        global author
-        author = interaction.user
         unlockall_em = discord.Embed(title = "Confirm", description = "Are you sure that you want to unlock all your channels?")
         view = unlockallConfirm()
         await interaction.response.send_message(embed = unlockall_em, view = view)
@@ -396,10 +388,8 @@ class Settings(commands.Cog):
             elif switch.value == "enable":
                 if suggestions_channel == None or review_channel == None:
                     return await interaction.response.send_message("You must include a suggestions channel and a review channel.", ephemeral = True)
-                global suggest_author
                 global sugg_ch_id
                 global rev_ch_id
-                suggest_author = interaction.user
                 sugg_ch_id = suggestions_channel.id
                 rev_ch_id = review_channel.id
                 view = suggestConfirm()
