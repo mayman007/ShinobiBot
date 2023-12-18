@@ -172,34 +172,8 @@ class Utility(commands.Cog):
                     affirmation = data["affirmation"]
         await interaction.response.send_message(affirmation)
 
-    # quote
-    @app_commands.command(name = "quote", description = "Get a random quote from an anime.")
-    @app_commands.describe(title_or_character = "Get the quote from a specific anime or character.")
-    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
-    async def quote(self, interaction: discord.Interaction, title_or_character: str = None):
-        async with aiohttp.ClientSession() as session:
-            if title_or_character == None: url = "https://animechan.vercel.app/api/random"
-            else: url = f"https://animechan.vercel.app/api/random/anime?title={title_or_character}"
-            try:
-                async with session.get(url) as response:
-                    data = await response.json()
-                    anime = data["anime"]
-                    character = data["character"]
-                    quote = data["quote"]
-            except KeyError:
-                url = f"https://animechan.vercel.app/api/random/character?name={title_or_character}"
-                try:
-                    async with session.get(url) as response:
-                        data = await response.json()
-                        anime = data["anime"]
-                        character = data["character"]
-                        quote = data["quote"]
-                except KeyError:
-                    return await interaction.response.send_message(f"I coudn't find an anime or a character that is called {title_or_character}", ephemeral = True)
-            await interaction.response.send_message(f'_"{quote}"_\n- {character} ({anime})')
-
     #wikipedia search
-    @app_commands.command(name = "search", description = "A wikipedia searcher.")
+    @app_commands.command(name = "wikipedia", description = "A wikipedia scraper.")
     @app_commands.describe(search = "Whatever you want to search.")
     @app_commands.checks.cooldown(1, 10, key = lambda i: (i.user.id))
     async def search(self, interaction: discord.Interaction, search: str):
