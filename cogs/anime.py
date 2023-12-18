@@ -352,10 +352,9 @@ class Anime(commands.Cog):
             return await interaction.followup.send("No results found.")
         else:
             print(f"character_results_list[0]['image_url'] {character_results_list[0]['image_url']}")
-            embed = discord.Embed(title=character_results_list[0]['name'], description=f"""**⭐ Favorites:** {character_results_list[0]['favorites']}
-**👓 About:** {character_results_list[0]['about']}""")
+            embed = discord.Embed(title=character_results_list[0]['name'], description=f"About: {character_results_list[0]['about']}")
             embed.set_image(url = character_results_list[0]['image_url'])
-            embed.set_footer(text = f"Result 1 of 8")
+            embed.set_footer(text = f"⭐ Favorites: {character_results_list[0]['favorites']}")
             view = characterButtons()
             view.add_item(discord.ui.Button(label = "MAL", style = discord.ButtonStyle.link, url = character_results_list[0]['url']))
             my_msg = await interaction.channel.send(embed=embed, view=view)
