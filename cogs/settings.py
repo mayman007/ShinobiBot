@@ -426,10 +426,7 @@ class Settings(commands.Cog):
                         view = suggVotes()
                         sugg_msg = await channel.send(embed = suggestEmbed, view = view)
                         await sugg_msg.create_thread(name = "Suggestion Discussion")
-        async with aiosqlite.connect("db/suggestions.db") as db:
-            async with db.cursor() as cursor:
-                await cursor.execute("CREATE TABLE IF NOT EXISTS suggestions (sugg_id INTEGER, upvoted_users TEXT, downvoted_users TEXT, msg_content TEXT, msg_author_id INTEGER)")
-                await cursor.execute("INSERT INTO suggestions (sugg_id, upvoted_users, downvoted_users, msg_content, msg_author_id) VALUES (?, ?, ?, ?, ?)", (sugg_msg.id, "[]", "[]", message.content, message.author.id))
-                await db.commit()
+                        await cursor.execute("INSERT INTO suggestions (sugg_id, upvoted_users, downvoted_users, msg_content, msg_author_id) VALUES (?, ?, ?, ?, ?)", (sugg_msg.id, "[]", "[]", message.content, message.author.id))
+                        await db.commit()
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Settings(bot))
