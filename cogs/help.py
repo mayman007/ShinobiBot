@@ -14,6 +14,7 @@ class Dropdown(discord.ui.Select):
             discord.SelectOption(label = "Logging", description = "Shows logging commands", emoji = "📝"),
             discord.SelectOption(label = "Moderation", description = "Shows moderation commands.", emoji = "⚒️"),
             discord.SelectOption(label = "Artificial Intelligence", description = "Shows artificial intelligence commands.", emoji = "🤖"),
+            discord.SelectOption(label = "Anime & Manga", description = "Shows anime and manga commands", emoji = "📺"),
             discord.SelectOption(label = "Games", description = "Shows games commands", emoji = "🎮"),
             discord.SelectOption(label = "Utility", description = "Shows utility commands.", emoji = "🔧"),
             discord.SelectOption(label = "Channels Settings", description = "Shows channels settings commands", emoji = "⚙️"),
@@ -97,6 +98,14 @@ class Dropdown(discord.ui.Select):
         elif self.values[0] == "Artificial Intelligence":
             embed = discord.Embed(title = "**Artificial Intelligence**", description = "Use famous AI tools", color = 0x2F3136)
             embed.add_field(name = "**Commands**", value = "> </chatbot:1112553506457526353> , </bard:1090416058382438440> , </bing ask:1088508793110933524> , </bing image_creator:1088508793110933524> , </dalle:1089010855695368253> , </imagine:1122943777326256413>")
+            embed.set_footer(text = "Use /help artificial-intelligence <command> for information on a command.")
+            await interaction.message.edit(embed = embed)
+            await interaction.response.defer()
+
+        # Anime & Manga page
+        elif self.values[0] == "Anime & Manga":
+            embed = discord.Embed(title = "**Anime & Manga**", description = "Commands for weebs", color = 0x2F3136)
+            embed.add_field(name = "**Commands**", value = "> </anime:1186399224695361668> , </manga:1186399224695361669> , </character:1186399224695361670> , </aghpb:1182285037043990609>")
             embed.set_footer(text = "Use /help artificial-intelligence <command> for information on a command.")
             await interaction.message.edit(embed = embed)
             await interaction.response.defer()
@@ -499,6 +508,42 @@ class Help(commands.GroupCog, name = "help"):
             em = discord.Embed(title = "__**Bing Image Creator**__", description = "Create an image using Bing Image Creator.", color = 0x2F3136)
             em.add_field(name = "**Syntax:**", value = "> bing image_creator <prompt>")
             em.add_field(name = "**Example:**", value = "> `/bing image_creator a white cow`")
+            em.set_footer(text = "<> means requird, [] means optional")
+            await interaction.response.send_message(embed = em)
+
+    # Anime commands help
+    @app_commands.command(name = "anime", description = "Shinobi Bot's anime and manga catogery help.")
+    @app_commands.describe(command = "Choose a command to get info about it.")
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
+    @app_commands.choices(command = [
+        app_commands.Choice(name = "anime", value = "anime"),
+        app_commands.Choice(name = "manga", value = "manga"),
+        app_commands.Choice(name = "character", value = "character"),
+        app_commands.Choice(name = "aghpb", value = "aghpb")
+        ])
+    async def utility(self, interaction: discord.Interaction, command: app_commands.Choice[str]):
+        if command.value == "anime":
+            em = discord.Embed(title = "__**Anime**__", description = "Search Anime from MAL", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> anime <title>")
+            em.add_field(name = "**Example:**", value = "> `/anime steins`")
+            em.set_footer(text = "<> means requird, [] means optional")
+            await interaction.response.send_message(embed = em)
+        elif command.value == "manga":
+            em = discord.Embed(title = "__**Manga**__", description = "Search Manga from MAL", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> manga <title>")
+            em.add_field(name = "**Example:**", value = "> `/manga kaguya`")
+            em.set_footer(text = "<> means requird, [] means optional")
+            await interaction.response.send_message(embed = em)
+        elif command.value == "character":
+            em = discord.Embed(title = "__**Character**__", description = "Search Anime & Manga characters from MAL", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> character <name>")
+            em.add_field(name = "**Example:**", value = "> `/character okabe`")
+            em.set_footer(text = "<> means requird, [] means optional")
+            await interaction.response.send_message(embed = em)
+        elif command.value == "aghpb":
+            em = discord.Embed(title = "__**aghpb**__", description = "Anime girls holding programming books", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> aghpb")
+            em.add_field(name = "**Example:**", value = "> `/aghpb`")
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
 
