@@ -321,7 +321,7 @@ class Anime(commands.Cog):
                 await connection.commit()
 
     # Character Search
-    @app_commands.command(name = "character", description = "Search characters from MAL")
+    @app_commands.command(name = "character", description = "Search Anime & Manga characters from MAL")
     @app_commands.describe(name = "The name of the Character you're looking for")
     @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def character(self, interaction: discord.Interaction, name: str):
