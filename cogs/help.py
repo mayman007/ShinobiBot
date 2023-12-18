@@ -40,7 +40,7 @@ class Dropdown(discord.ui.Select):
             em = discord.Embed(title = "**Shinobi Bot Help**",
                            description = "Hello! Welcome to the help page.\n\nUse </feedback:1027218853127794780> to send your feedback directly to the developers.\nUse `/help <category> <command>` for more info on a command.\nUse the dropdown menu below to select a category.\n\n",
                            color = 0x2F3136)
-            em.add_field(name = "**Who are you?**", value = "I'm a bot developed by @shinobi7k. I'm a multipurpose bot than can do _almost_ anything. You can get more info using the dropdown menu below.\n\nI'm also open source. You can see my code on [GitHub](https://github.com/Shinobi7k/ShinobiBot)!")
+            em.add_field(name = "**Who are you?**", value = "I'm a bot developed by @shinobi7k. I'm a multipurpose bot than can do _almost_ anything. You can get more info using the dropdown menu below.\n\nI'm also open source. You can see my code on [GitHub](https://github.com/mayman007/ShinobiBot)!")
             em.add_field(name = "**Features**", value = "- Advanced Ticket System\n- Anti-Spam System\n- Logging System\n- Suggestions\n- Moderation\n- Games\n- Utility")
             await interaction.message.edit(embed = em)
             await interaction.response.defer()
@@ -56,7 +56,7 @@ class Dropdown(discord.ui.Select):
         # Utility page
         elif self.values[0] == "Utility":
             embed = discord.Embed(title = "**Utility**", description = "Utility commands contains varies types of commands to use", color = 0x2F3136)
-            embed.add_field(name = "**Commands**", value = "> </poll:1093371959825408075> , </ping:1093371959628283945> , </serverlink:1093371959825408072> , </invite:1093371959825408073> , </vote:1093371959825408074> , </timer:1093371959825408071> , </tax:1093371959825408070> , </nick:1093371959628283953> , </embed:1093371959628283952> , </calculator:1093371959628283951> , </giveaway:1093371959628283954> , </translate:1093371959628283950> , </search:1093371959628283949> , </quote:1093371959628283948> , </affirmation:1093371959628283947> , </advice:1093371959628283946>")
+            embed.add_field(name = "**Commands**", value = "> </poll:1093371959825408075> , </ping:1093371959628283945> , </serverlink:1093371959825408072> , </invite:1093371959825408073> , </vote:1093371959825408074> , </timer:1093371959825408071> , </tax:1093371959825408070> , </nick:1093371959628283953> , </embed:1093371959628283952> , </calculator:1093371959628283951> , </giveaway:1093371959628283954> , </translate:1093371959628283950> , </affirmation:1093371959628283947> , </advice:1093371959628283946>")
             embed.set_footer(text = "Use /help utility <command> for information on a command.")
             await interaction.message.edit(embed = embed)
             await interaction.response.defer()
@@ -150,7 +150,7 @@ class Help(commands.GroupCog, name = "help"):
         em = discord.Embed(title = "**Shinobi Bot Help**",
                            description = "Hello! Welcome to the help page.\n\nUse </feedback:1027218853127794780> to send your feedback directly to the developers.\nUse `/help <category> <command>` for more info on a command.\nUse the dropdown menu below to select a category.\n\n",
                            color = 0x2F3136)
-        em.add_field(name = "**Who are you?**", value = "I'm a bot developed by @shinobi7k. I'm a multipurpose bot than can do _almost_ anything. You can get more info using the dropdown menu below.\n\nI'm also open source. You can see my code on [GitHub](https://github.com/Shinobi7k/ShinobiBot)!")
+        em.add_field(name = "**Who are you?**", value = "I'm a bot developed by @shinobi7k. I'm a multipurpose bot than can do _almost_ anything. You can get more info using the dropdown menu below.\n\nI'm also open source. You can see my code on [GitHub](https://github.com/mayman007/ShinobiBot)!")
         em.add_field(name = "**Features**", value = "- Advanced Ticket System\n- Anti-Spam System\n- Logging System\n- Suggestions\n- Moderation\n- Games\n- Utility")
         global author
         author = interaction.user
@@ -333,13 +333,11 @@ class Help(commands.GroupCog, name = "help"):
         app_commands.Choice(name = "calculator", value = "calculator"),
         app_commands.Choice(name = "tax", value = "tax"),
         app_commands.Choice(name = "nick", value = "nick"),
-        app_commands.Choice(name = "search", value = "search"),
         app_commands.Choice(name = "translate", value = "translate"),
         app_commands.Choice(name = "giveaway", value = "giveaway"),
         app_commands.Choice(name = "embed", value = "embed"),
         app_commands.Choice(name = "timer", value = "timer"),
         app_commands.Choice(name = "ping", value = "ping"),
-        app_commands.Choice(name = "quote", value = "quote"),
         app_commands.Choice(name = "affirmation", value = "affirmation"),
         app_commands.Choice(name = "advice", value = "advice"),
         app_commands.Choice(name = "chatgpt", value = "chatgpt"),
@@ -391,12 +389,6 @@ class Help(commands.GroupCog, name = "help"):
             em.add_field(name = "**Example:**", value = "> `/nick @member tester`")
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
-        elif command.value == "search":
-            em = discord.Embed(title = "__**Search**__", description = "Searches wikipedia for you.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> search <your search>")
-            em.add_field(name = "**Example:**", value = "> `/search python programming`")
-            em.set_footer(text = "<> means requird, [] means optional")
-            await interaction.response.send_message(embed = em)
         elif command.value == "translate":
             em = discord.Embed(title = "__**Translate**__", description = "A translator.", color = 0x2F3136)
             em.add_field(name = "**Syntax:**", value = "> translate <language to translate> <words>")
@@ -425,12 +417,6 @@ class Help(commands.GroupCog, name = "help"):
             em = discord.Embed(title = "__**Ping**__", description = "Shows bot's latency.", color = 0x2F3136)
             em.add_field(name = "**Syntax:**", value = "> ping")
             em.add_field(name = "**Example:**", value = "> `/ping`")
-            em.set_footer(text = "<> means requird, [] means optional")
-            await interaction.response.send_message(embed = em)
-        elif command.value == "quote":
-            em = discord.Embed(title = "__**Quote**__", description = "Gets a random quote from an anime.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> quote [title or character]")
-            em.add_field(name = "**Example:**", value = "> `/quote sasuke`")
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
         elif command.value == "affirmation":
