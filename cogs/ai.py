@@ -80,7 +80,7 @@ class AI(commands.Cog):
             result = [response[i: i + limit] for i in range(0, len(response), limit)]
             image_already_sent = False
             for half in result:
-                if images_list == []:
+                if images_links == []:
                     await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bard:** {half}")
                 else:
                     if image_already_sent == False:
@@ -89,7 +89,7 @@ class AI(commands.Cog):
                     else:
                         await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bard:** {half}")
         else:
-            if images_list == []:
+            if images_links == []:
                 await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bard:** {response}")
             else:
                 await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bard:** {response}", files = images_list)
