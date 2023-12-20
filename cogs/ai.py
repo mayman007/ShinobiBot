@@ -26,7 +26,7 @@ class AI(commands.Cog):
     @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def imagine(self, interaction: discord.Interaction, prompt: str, model: app_commands.Choice[str] = None):
         await interaction.response.defer()
-        if model.value == "dalle" or model.value == None:
+        if model == None or model.value == "dalle":
             auth_cookie = os.getenv("BING_AUTH_COOKIE")
             async with ImageGenAsync(auth_cookie, quiet = True) as image_generator:
                 images_links = await image_generator.get_images(prompt)
