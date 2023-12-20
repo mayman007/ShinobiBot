@@ -20,13 +20,13 @@ class AI(commands.Cog):
 
     # Imagine
     @app_commands.command(name = "imagine", description = "Generate images using AI models")
-    @app_commands.describe(prompt = "Describe the image.")
+    @app_commands.describe(prompt = "Describe the image.", model = "The model to use (Default is Dalle-3).")
     @app_commands.choices(model = [app_commands.Choice(name = "Dalle-3", value = "dalle"),
                                   app_commands.Choice(name = "Stable Diffusion (Prototype)", value = "sd")])
     @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def imagine(self, interaction: discord.Interaction, prompt: str, model: app_commands.Choice[str] = None):
         await interaction.response.defer()
-        if model.value == "dalle":
+        if model.value == "dalle" or model.value == None:
             auth_cookie = os.getenv("BING_AUTH_COOKIE")
             async with ImageGenAsync(auth_cookie, quiet = True) as image_generator:
                 images_links = await image_generator.get_images(prompt)
@@ -61,18 +61,38 @@ class AI(commands.Cog):
         response = await chatbot.ask(prompt)
         images = response['images']
         response = response['content']
+        images_links = []
         if images != set():
-            bard_images_counter = 0
-            response = f"{response}\n\n"
             for image in images:
-                bard_images_counter += 1
-                response += f"\nImage {bard_images_counter}: {image}"
+                images_links.append(image)
+        if images_links != []:
+            images_list = []
+            for image_link in images_links:
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(image_link) as resp:
+                        img = await resp.read()
+                        with io.BytesIO(img) as file:
+                            file = discord.File(file, "image.png")
+                            images_list.append(file)
         limit = 1800
         total_text = len(prompt) + len(response)
         if total_text > limit:
             result = [response[i: i + limit] for i in range(0, len(response), limit)]
-            for half in result: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bard:** {half}")
-        else: await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bard:** {response}")
+            image_already_sent = False
+            for half in result:
+                if images_list == []:
+                    await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bard:** {half}")
+                else:
+                    if image_already_sent == False:
+                        await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bard:** {half}", files = images_list)
+                        image_already_sent = True
+                    else:
+                        await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bard:** {half}")
+        else:
+            if images_list == []:
+                await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bard:** {response}")
+            else:
+                await interaction.followup.send(f"**{interaction.user.display_name}:** {prompt}\n**Bard:** {response}", files = images_list)
 
 
 async def setup(bot: commands.Bot) -> None:
