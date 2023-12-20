@@ -97,7 +97,7 @@ class Dropdown(discord.ui.Select):
         # Artificial Intelligence page
         elif self.values[0] == "Artificial Intelligence":
             embed = discord.Embed(title = "**Artificial Intelligence**", description = "Use famous AI tools", color = 0x2F3136)
-            embed.add_field(name = "**Commands**", value = "> </chatbot:1112553506457526353> , </bard:1090416058382438440> , </bing ask:1088508793110933524> , </bing image_creator:1088508793110933524> , </dalle:1089010855695368253> , </imagine:1122943777326256413>")
+            embed.add_field(name = "**Commands**", value = "> </bard:1090416058382438440> , </imagine:1122943777326256413>")
             embed.set_footer(text = "Use /help artificial-intelligence <command> for information on a command.")
             await interaction.message.edit(embed = embed)
             await interaction.response.defer()
@@ -347,10 +347,6 @@ class Help(commands.GroupCog, name = "help"):
         app_commands.Choice(name = "ping", value = "ping"),
         app_commands.Choice(name = "affirmation", value = "affirmation"),
         app_commands.Choice(name = "advice", value = "advice"),
-        app_commands.Choice(name = "chatgpt", value = "chatgpt"),
-        app_commands.Choice(name = "bing", value = "bing"),
-        app_commands.Choice(name = "dalle", value = "dalle"),
-        app_commands.Choice(name = "bard", value = "bard"),
         ])
     async def utility(self, interaction: discord.Interaction, command: app_commands.Choice[str]):
         if command.value == "poll":
@@ -438,76 +434,25 @@ class Help(commands.GroupCog, name = "help"):
             em.add_field(name = "**Example:**", value = "> `/advice`")
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
-        elif command.value == "chatgpt":
-            em = discord.Embed(title = "__**ChatGPT**__", description = "Ask ChatGPT.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> chatgpt <prompt>")
-            em.add_field(name = "**Example:**", value = "> `/chatgpt hello`")
-            em.set_footer(text = "<> means requird, [] means optional")
-            await interaction.response.send_message(embed = em)
-        elif command.value == "bing":
-            em = discord.Embed(title = "__**Bing**__", description = "Ask Bing AI.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> bing <prompt>")
-            em.add_field(name = "**Example:**", value = "> `/bing hello`")
-            em.set_footer(text = "<> means requird, [] means optional")
-            await interaction.response.send_message(embed = em)
-        elif command.value == "dalle":
-            em = discord.Embed(title = "__**Dall-E**__", description = "Create an image using Dall-E AI.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> dalle <prompt>")
-            em.add_field(name = "**Example:**", value = "> `/dalle a white cat`")
-            em.set_footer(text = "<> means requird, [] means optional")
-            await interaction.response.send_message(embed = em)
-        elif command.value == "bard":
-            em = discord.Embed(title = "__**Bard**__", description = "Ask Bard.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> bard <prompt>")
-            em.add_field(name = "**Example:**", value = "> `/bard hello`")
-            em.set_footer(text = "<> means requird, [] means optional")
 
     # AI commands help
     @app_commands.command(name = "artificial-intelligence", description = "Shinobi Bot's artificial intelligence catogery help.")
     @app_commands.describe(command = "Choose a command to get info about it.")
     @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.choices(command = [
-        app_commands.Choice(name = "chatbot", value = "chatbot"),
-        app_commands.Choice(name = "bing ask", value = "bing ask"),
         app_commands.Choice(name = "bard", value = "bard"),
-        app_commands.Choice(name = "dalle", value = "dalle"),
-        app_commands.Choice(name = "imagine", value = "imagine"),
-        app_commands.Choice(name = "bing image_creator", value = "bing image_creator")
+        app_commands.Choice(name = "imagine", value = "imagine")
         ])
     async def utility(self, interaction: discord.Interaction, command: app_commands.Choice[str]):
-        if command.value == "chatbot":
-            em = discord.Embed(title = "__**Chatbot**__", description = "Chat with powerful AI models.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> Chatbot <prompt> <model>")
-            em.add_field(name = "**Example:**", value = "> `/chatgpt hello gpt-3.5-turbo`")
-            em.set_footer(text = "<> means requird, [] means optional")
-            await interaction.response.send_message(embed = em)
-        elif command.value == "bing ask":
-            em = discord.Embed(title = "__**Bing Ask**__", description = "Ask Bing AI.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> bing ask <prompt> [conversation_style]")
-            em.add_field(name = "**Example:**", value = "> `/bing ask hello creative`")
-            em.set_footer(text = "<> means requird, [] means optional")
-            await interaction.response.send_message(embed = em)
-        elif command.value == "bard":
+        if command.value == "bard":
             em = discord.Embed(title = "__**Bard**__", description = "Ask Bard.", color = 0x2F3136)
             em.add_field(name = "**Syntax:**", value = "> bard <prompt>")
             em.add_field(name = "**Example:**", value = "> `/bard hello`")
             em.set_footer(text = "<> means requird, [] means optional")
-        elif command.value == "dalle":
-            em = discord.Embed(title = "__**Dall-E**__", description = "Create an image using Dall-E AI.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> dalle <prompt> [number_of_images] [size]")
-            em.add_field(name = "**Example:**", value = "> `/dalle a white cat 5 512x512`")
-            em.set_footer(text = "<> means requird, [] means optional")
-            await interaction.response.send_message(embed = em)
         elif command.value == "imagine":
-            em = discord.Embed(title = "__**Imagine**__", description = "Create images using Stable Diffusion.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> imagine <prompt>")
-            em.add_field(name = "**Example:**", value = "> `/imagine white cat`")
-            em.set_footer(text = "<> means requird, [] means optional")
-            await interaction.response.send_message(embed = em)
-        elif command.value == "bing image_creator":
-            em = discord.Embed(title = "__**Bing Image Creator**__", description = "Create an image using Bing Image Creator.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> bing image_creator <prompt>")
-            em.add_field(name = "**Example:**", value = "> `/bing image_creator a white cow`")
+            em = discord.Embed(title = "__**Imagine**__", description = "Generate images using AI models", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> imagine <prompt> [model]")
+            em.add_field(name = "**Example:**", value = "> `/imagine white cat Dalle-3`")
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
 
