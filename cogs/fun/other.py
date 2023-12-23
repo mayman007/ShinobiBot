@@ -66,21 +66,16 @@ class FunOther(commands.Cog):
     @app_commands.command(name = "wyr", description = "Would you rather...")
     @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def wyr(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         async with aiohttp.ClientSession() as session:
-            async with session.get("http://either.io/") as r:
-                text = await r.text()
-        soup = BeautifulSoup(text, "lxml")
-        l = []
-        for choice in soup.find_all("span", {"class":"option-text"}):
-            l.append(choice.text)
-        e = discord.Embed(colour = 0x2F3136)
-        e.set_author(name = "Would you rather...", url = "http://either.io/", icon_url = self.bot.user.avatar.url)
-        e.add_field(name = "EITHER...", value = f":regional_indicator_a: {l[0]}", inline = False)
-        e.add_field(name = "OR...", value = f":regional_indicator_b: {l[1]}")
+            async with session.get("https://would-you-rather-api.abaanshanid.repl.co/") as r:
+                response = await r.json()
+        e = discord.Embed(title=response["data"], colour = 0x2F3136)
+        await interaction.followup.send("Would you rather...")
         msg = await interaction.channel.send(embed = e)
         await msg.add_reaction("🇦")
         await msg.add_reaction("🇧")
-        await interaction.response.send_message("Embed sent.", ephemeral = True)
+        
 
     #emojify
     @app_commands.command(name = "emojify", description = "Convert your words to emojis!")
