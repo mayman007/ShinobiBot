@@ -1,11 +1,11 @@
 import discord
-from discord import ui, app_commands, utils
+from discord import app_commands
 import aiohttp
 from discord.ext import commands
-from cogs.ticket import ticket_launcher, main
-from cogs.settings import suggVotes
-from cogs.utility import pollButtons, giveawayButton
-from datetime import datetime
+from cogs.ticket.ticket import ticket_launcher, main
+from cogs.settings.suggestions import suggVotes
+from cogs.misc.giveaway import giveawayButton
+from cogs.misc.poll import pollButtons
 import logging
 import logging.handlers
 import aiosqlite
@@ -21,9 +21,15 @@ class MyBot(commands.Bot):
         intents.members = True
         intents.message_content = True
         super().__init__(command_prefix = None, intents = intents, application_id = os.getenv("APP_ID"))
-        files = [file_name for file_name in os.listdir("cogs") if file_name.endswith(".py")]
+        # Adding cogs
         cogs = []
-        for file_name in files: cogs.append(f"cogs.{file_name[:-3]}")
+        for root, dirs, files in os.walk("cogs"):
+            if "__pycache__" in root:
+                continue
+            folder_name = os.path.basename(root)
+            for file_name in files:
+                if file_name.endswith(".py"):
+                    cogs.append(f"cogs.{folder_name}.{file_name[:-3]}")
         self.initial_extensions = cogs
         self.added = False
     async def setup_hook(self):
@@ -83,104 +89,6 @@ async def on_app_command_error(interaction: discord.Interaction, error: app_comm
         await error_channel.send(error)
         await interaction.response.send_message(f"Sorry, an error had occured.\nIf you are facing any issues with me you can always send your </feedback:1027218853127794780>.", ephemeral = True)
         raise error
-
-# User info context menu
-@bot.tree.context_menu(name = "User Info")
-async def open_ticket_context_menu(interaction: discord.Interaction, member: discord.Member):
-    if member is None: member = interaction.user
-    date_format = "%a, %d %b %Y %I:%M %p"
-    embed = discord.Embed(description = member.mention, color = 0x2F3136)
-    embed.set_author(name = str(member), icon_url = member.avatar.url)
-    embed.set_thumbnail(url = member.avatar.url)
-    embed.add_field(name = "**Joined**", value = f"> {member.joined_at.strftime(date_format)}")
-    members = sorted(interaction.guild.members, key = lambda m: m.joined_at)
-    embed.add_field(name = "**Join position**", value = f"> {str(members.index(member)+1)}")
-    embed.add_field(name = "**Registered**", value = f"> {member.created_at.strftime(date_format)}")
-    if len(member.roles) > 1:
-        role_string = ' '.join([r.mention for r in member.roles][1:])
-        embed.add_field(name = "**Roles [{}]**".format(len(member.roles)-1), value = f"> {role_string}", inline = False)
-    perm_string = ', '.join([str(p[0]).replace("_", " ").title() for p in member.guild_permissions if p[1]])
-    embed.add_field(name = "**Guild permissions**", value = f"> {perm_string}", inline = False)
-    embed.set_footer(text = 'ID: ' + str(member.id))
-    await interaction.response.send_message(embed = embed)
-
-# Ticket context menu
-@bot.tree.context_menu(name = "Open a Ticket")
-async def open_ticket_context_menu(interaction: discord.Interaction, member: discord.Member):
-    if interaction.user.top_role <= member.top_role and not interaction.user == interaction.guild.owner:
-        return await interaction.response.send_message(f"Your role must be higher than {member.mention}!", ephemeral = True)
-    ticket = utils.get(interaction.guild.text_channels, name = f"ticket-for-{member.name.lower().replace(' ', '-')}-{member.discriminator}")
-    if ticket is not None: await interaction.response.send_message(f"{member.mention} already have a ticket open at {ticket.mention}!", ephemeral = True)
-    else:
-        overwrites = {
-            interaction.guild.default_role: discord.PermissionOverwrite(view_channel = False),
-            member: discord.PermissionOverwrite(view_channel = True, read_message_history = True, send_messages = True, attach_files = True, embed_links = True),
-            interaction.guild.me: discord.PermissionOverwrite(view_channel = True, send_messages = True, read_message_history = True)
-        }
-        async with aiosqlite.connect("db/tickets_role.db") as db:
-            async with db.cursor() as cursor:
-                await cursor.execute("SELECT role FROM roles WHERE guild = ?", (interaction.guild.id,))
-                data = await cursor.fetchone()
-                if data: ticket_role = data[0]
-                else: ticket_role = None
-        if not ticket_role == None:
-            ticket_role = interaction.guild.get_role(ticket_role)
-            overwrites[ticket_role] = discord.PermissionOverwrite(view_channel = True, read_message_history = True, send_messages = True, attach_files = True, embed_links = True)
-            ticket_sentence = f"{ticket_role.mention}, {interaction.user.mention} created a ticket for {member.mention}!"
-        else:
-            ticket_sentence = f"{interaction.user.mention} created a ticket for {member.mention}!"
-        guild = interaction.guild
-        category = discord.utils.get(guild.categories, name = "tickets")
-        if category is None: #If there's no category matching with the `name`
-            category = await guild.create_category("tickets") #Creates the category
-        try:
-            channel = await interaction.guild.create_text_channel(name = f"ticket-for-{member.name}-{member.discriminator}", overwrites = overwrites, reason = f"Ticket for {member}", category = category)
-        except: return await interaction.response.send_message("Ticket creation failed! Make sure I have `Manage Channels` permissions!", ephemeral = True)
-        await channel.send(ticket_sentence, view = main())
-        await interaction.response.send_message(f"I've opened a ticket for {member.mention} at {channel.mention}!", ephemeral = True)
-
-# Feedback button
-class feedbackButton(discord.ui.View):
-    def __init__(self, *, timeout = 180):
-        super().__init__(timeout = timeout)
-        self.cooldown = commands.CooldownMapping.from_cooldown(1, 600, commands.BucketType.member)
-    @discord.ui.button(label = "Send Feedback", style = discord.ButtonStyle.blurple)
-    async def feedback_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != interaction.message.interaction.user: return await interaction.response.send_message("> This is not for you!", ephemeral = True)
-        retry = self.cooldown.get_bucket(interaction.message).update_rate_limit()
-        if retry: return await interaction.response.send_message(f"Slow down! Try again in {round(retry, 1)} seconds!", ephemeral = True)
-        await interaction.response.send_modal(feedbackModal())
-
-# Feedback modal
-class feedbackModal(ui.Modal, title = "Send Your Feedback"):
-    ftitle = ui.TextInput(label = "Title", style = discord.TextStyle.short, placeholder = "Write a title for the issue/suggestion.", required = True, max_length = 50)
-    fdes = ui.TextInput(label = "Long Description", style = discord.TextStyle.short, placeholder = "Descripe the issue/suggestion.", required = True, max_length = 1000)
-    fsol = ui.TextInput(label = "Solution (optional)", style = discord.TextStyle.short, placeholder = "Write a solution for the issue.", required = False, max_length = 1000)
-    async def on_submit(self, interaction: discord.Interaction):
-        channel = bot.get_channel(int(os.getenv("FEEDBACK_CHANNEL_ID")))
-        invite = await interaction.channel.create_invite(max_age = 300)
-        try:
-            embed = discord.Embed(title = f"User: {interaction.user}\nServer: {interaction.guild.name}\n{invite}", description = f"**{self.ftitle}**", timestamp = datetime.now())
-            embed.add_field(name = "Description", value = self.fdes)
-            embed.add_field(name = "Solution", value = self.fsol)
-            try: embed.set_author(name = interaction.user, icon_url = interaction.user.avatar)
-            except: embed.set_author(name = interaction.user)
-            await channel.send(embed = embed)
-            await interaction.response.send_message("Your feedback has been sent succesfully!", ephemeral = True)
-        except:
-            embed = discord.Embed(title = f"User: {interaction.user}\nServer: {interaction.guild.name}\n{invite}", description = f"**{self.ftitle}**", timestamp = datetime.now())
-            embed.add_field(name = "Description", value = self.fdes)
-            try: embed.set_author(name = interaction.user, icon_url = interaction.user.avatar)
-            except: embed.set_author(name = interaction.user)
-            await channel.send(embed = embed)
-            await interaction.response.send_message("Your feedback has been sent succesfully!", ephemeral = True)
-
-# Feedback command
-@bot.tree.command(name = "feedback", description = "Send your feedback directly to the developers.")
-async def feedback(interaction: discord.Interaction):
-    view = feedbackButton()
-    embed = discord.Embed(title = "If you had faced any problems or have any suggestions, feel free to send your feedback!")
-    await interaction.response.send_message(embed = embed, view = view, ephemeral = True)
 
 # On leave
 @bot.event
