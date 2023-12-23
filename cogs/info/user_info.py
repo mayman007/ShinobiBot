@@ -108,7 +108,8 @@ class UserInfo(commands.Cog):
     @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     async def avatar(self, interaction: discord.Interaction, member: discord.Member = None):
         if not member: member = interaction.user
-        userAvatar = member.avatar.url
+        try: userAvatar = member.avatar.url
+        except: return await interaction.response.send_message(f"{member.mention} doesn't have an avatar.", ephemeral = True)
         e = discord.Embed(title = "Avatar Link ", url = userAvatar,color = 0x2F3136)
         e.set_author(name = member.name, icon_url = userAvatar)
         e.set_image(url = userAvatar)
@@ -132,9 +133,9 @@ class UserInfo(commands.Cog):
         except:
             await interaction.response.send_message("> The user doesn't have a banner.", ephemeral = True)
         #sending the banner
-        userAvatar = member.avatar.url
         e = discord.Embed(title = "Banner Link", url = banner_url, color = 0x2F3136)
-        e.set_author(name = member.name, icon_url = userAvatar)
+        try: e.set_author(name = member.name, icon_url = member.avatar.url)
+        except: e.set_author(name = member.name)
         e.set_image(url = banner_url)
         try: e.set_footer(text = f"Requested by {interaction.user}", icon_url = interaction.user.avatar.url)
         except: e.set_footer(text = f"Requested by {interaction.user}")
