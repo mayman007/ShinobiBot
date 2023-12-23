@@ -29,7 +29,10 @@ class MyBot(commands.Bot):
             folder_name = os.path.basename(root)
             for file_name in files:
                 if file_name.endswith(".py"):
-                    cogs.append(f"cogs.{folder_name}.{file_name[:-3]}")
+                    if folder_name == "cogs":
+                        cogs.append(f"cogs.{file_name[:-3]}")
+                    else:
+                        cogs.append(f"cogs.{folder_name}.{file_name[:-3]}")
         self.initial_extensions = cogs
         self.added = False
     async def setup_hook(self):
