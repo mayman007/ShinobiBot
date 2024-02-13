@@ -97,7 +97,7 @@ class Dropdown(discord.ui.Select):
         # Artificial Intelligence page
         elif self.values[0] == "Artificial Intelligence":
             embed = discord.Embed(title = "**Artificial Intelligence**", description = "Use famous AI tools", color = 0x2F3136)
-            embed.add_field(name = "**Commands**", value = "> </gemini:1090416058382438440> , </imagine:1122943777326256413>")
+            embed.add_field(name = "**Commands**", value = "> </gemini:1206979797981462628> , </bing:1206979148950798456> , </imagine:1122943777326256413>")
             embed.set_footer(text = "Use /help artificial-intelligence <command> for information on a command.")
             await interaction.message.edit(embed = embed)
             await interaction.response.defer()
@@ -441,13 +441,19 @@ class Help(commands.GroupCog, name = "help"):
     @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.choices(command = [
         app_commands.Choice(name = "gemini", value = "gemini"),
+        app_commands.Choice(name = "bing", value = "bing"),
         app_commands.Choice(name = "imagine", value = "imagine")
         ])
-    async def utility(self, interaction: discord.Interaction, command: app_commands.Choice[str]):
+    async def ai(self, interaction: discord.Interaction, command: app_commands.Choice[str]):
         if command.value == "gemini":
             em = discord.Embed(title = "__**Gemini**__", description = "Chat with Google's Gemini Pro AI", color = 0x2F3136)
             em.add_field(name = "**Syntax:**", value = "> gemini <prompt>")
             em.add_field(name = "**Example:**", value = "> `/gemini hello`")
+            em.set_footer(text = "<> means requird, [] means optional")
+        elif command.value == "bing":
+            em = discord.Embed(title = "__**Bing**__", description = "Chat with Bing GPT-4 AI", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> bing <prompt>")
+            em.add_field(name = "**Example:**", value = "> `/bing hello`")
             em.set_footer(text = "<> means requird, [] means optional")
         elif command.value == "imagine":
             em = discord.Embed(title = "__**Imagine**__", description = "Generate images using AI models", color = 0x2F3136)
@@ -466,7 +472,7 @@ class Help(commands.GroupCog, name = "help"):
         app_commands.Choice(name = "character", value = "character"),
         app_commands.Choice(name = "aghpb", value = "aghpb")
         ])
-    async def utility(self, interaction: discord.Interaction, command: app_commands.Choice[str]):
+    async def anime(self, interaction: discord.Interaction, command: app_commands.Choice[str]):
         if command.value == "anime":
             em = discord.Embed(title = "__**Anime**__", description = "Search Anime from MAL", color = 0x2F3136)
             em.add_field(name = "**Syntax:**", value = "> anime <title>")
