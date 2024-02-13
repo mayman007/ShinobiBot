@@ -93,12 +93,9 @@ class Chatbots(commands.Cog):
         if response["source_keys"] != []:
             index = 0
             sources_text = ""
-            print(len(response['source_values']))
-            print(response['source_values'])
             for source_key in response["source_keys"]:
                 source_url = response['source_values'][index]
                 index += 1
-                # if source_url in sources_text: continue
                 if source_key == "": sources_text += f"\n- {source_url}"
                 else: sources_text += f"\n- [{source_key}]({source_url})"
 
