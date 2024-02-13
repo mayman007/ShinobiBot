@@ -450,11 +450,13 @@ class Help(commands.GroupCog, name = "help"):
             em.add_field(name = "**Syntax:**", value = "> gemini <prompt>")
             em.add_field(name = "**Example:**", value = "> `/gemini hello`")
             em.set_footer(text = "<> means requird, [] means optional")
+            await interaction.response.send_message(embed = em)
         elif command.value == "bing":
             em = discord.Embed(title = "__**Bing**__", description = "Chat with Bing GPT-4 AI", color = 0x2F3136)
             em.add_field(name = "**Syntax:**", value = "> bing <prompt>")
             em.add_field(name = "**Example:**", value = "> `/bing hello`")
             em.set_footer(text = "<> means requird, [] means optional")
+            await interaction.response.send_message(embed = em)
         elif command.value == "imagine":
             em = discord.Embed(title = "__**Imagine**__", description = "Generate images using AI models", color = 0x2F3136)
             em.add_field(name = "**Syntax:**", value = "> imagine <prompt> [model]")
