@@ -23,7 +23,7 @@ class Chatbots(commands.Cog):
     @app_commands.command(name = "gemini", description = "Chat with Google's Gemini Pro AI")
     @app_commands.describe(prompt = "The question you wanna ask.")
     @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
-    async def bard(self, interaction: discord.Interaction, prompt: str):
+    async def gemini(self, interaction: discord.Interaction, prompt: str):
         await interaction.response.defer()
         api_key = os.getenv("GEMINI_API_KEY")
         genai.configure(api_key=api_key)
@@ -47,7 +47,7 @@ class Chatbots(commands.Cog):
         app_commands.Choice(name = "balanced", value = "balanced"),
         app_commands.Choice(name = "precise", value = "precise")
         ])
-    async def bard(self, interaction: discord.Interaction, prompt: str, conversation_style: app_commands.Choice[str] = None):
+    async def bing(self, interaction: discord.Interaction, prompt: str, conversation_style: app_commands.Choice[str] = None):
         await interaction.response.defer()
         # Setting convo style
         if conversation_style == None:
