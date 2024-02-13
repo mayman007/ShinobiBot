@@ -8,3 +8,4 @@ beautifulsoup4==4.12.2
 EdgeGPT==0.12.1
 GoogleBard==2.1.0
 python-dotenv==1.0.0
+google-generativeai=0.3.2

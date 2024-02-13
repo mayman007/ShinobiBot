@@ -97,7 +97,7 @@ class Dropdown(discord.ui.Select):
         # Artificial Intelligence page
         elif self.values[0] == "Artificial Intelligence":
             embed = discord.Embed(title = "**Artificial Intelligence**", description = "Use famous AI tools", color = 0x2F3136)
-            embed.add_field(name = "**Commands**", value = "> </bard:1090416058382438440> , </imagine:1122943777326256413>")
+            embed.add_field(name = "**Commands**", value = "> </gemini:1090416058382438440> , </imagine:1122943777326256413>")
             embed.set_footer(text = "Use /help artificial-intelligence <command> for information on a command.")
             await interaction.message.edit(embed = embed)
             await interaction.response.defer()
@@ -440,14 +440,14 @@ class Help(commands.GroupCog, name = "help"):
     @app_commands.describe(command = "Choose a command to get info about it.")
     @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
     @app_commands.choices(command = [
-        app_commands.Choice(name = "bard", value = "bard"),
+        app_commands.Choice(name = "gemini", value = "gemini"),
         app_commands.Choice(name = "imagine", value = "imagine")
         ])
     async def utility(self, interaction: discord.Interaction, command: app_commands.Choice[str]):
-        if command.value == "bard":
-            em = discord.Embed(title = "__**Bard**__", description = "Ask Bard.", color = 0x2F3136)
-            em.add_field(name = "**Syntax:**", value = "> bard <prompt>")
-            em.add_field(name = "**Example:**", value = "> `/bard hello`")
+        if command.value == "gemini":
+            em = discord.Embed(title = "__**Gemini**__", description = "Chat with Google's Gemini Pro AI", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> gemini <prompt>")
+            em.add_field(name = "**Example:**", value = "> `/gemini hello`")
             em.set_footer(text = "<> means requird, [] means optional")
         elif command.value == "imagine":
             em = discord.Embed(title = "__**Imagine**__", description = "Generate images using AI models", color = 0x2F3136)
