@@ -89,14 +89,14 @@ class Giveaway(commands.Cog):
         if len(give_clicked) <= 0:
             emptyEmbed = discord.Embed(title = "__*🎉GIVEAWAY🎉*__",
                                        description = f"No one participated in the giveaway\nHosted by: {interaction.user.mention}\nPrize: **{prize}**\nEnded at: {give_timer}")
-            emptyEmbed.set_thumbnail(url = icon)
+            if icon != "no icon": emptyEmbed.set_thumbnail(url = icon)
             await msg.edit(embed = emptyEmbed, view = None)
         else:
             winner = random.choice(give_clicked)
             emb = discord.Embed(title = "__*🎉GIVEAWAY🎉*__",
                             description = f"Click 🎉 to enter!\nHosted by: {interaction.user.mention}\nPrize: **{prize}**\nParticipators: **{len(give_clicked)}**\nEnded at: {give_timer}",
                             colour = 0xff0000)
-            emb.set_thumbnail(url = icon)
+            if icon != "no icon": emb.set_thumbnail(url = icon)
             await msg.edit(content = f"__***🎉Giveway ended, {winner} won!🎉***__", view = None, embed = emb)
             await msg.reply(f"> **Congratulations {winner} On Winning {prize} 🎉🎉**")
 
