@@ -90,7 +90,7 @@ class Dropdown(discord.ui.Select):
         # Censor System page
         elif self.values[0] == "Censor System":
             embed = discord.Embed(title = "**Censor System**", description = "Create a Censor System", color = 0x2F3136)
-            embed.add_field(name = "**Commands**", value = "> </censor enable:1208140083711185017> , </censor disable:1208140083711185017> , </censor words:1208140083711185017> , </censor alert:1208140083711185017> , </censor whitelist:1208140083711185017> , </censor links:1208140083711185017> , </censor invites:1208140083711185017> , </censor display:1208140083711185017>")
+            embed.add_field(name = "**Commands**", value = "> </censor enable:1208140083711185017> , </censor disable:1208140083711185017> , </censor words:1208140083711185017> , </censor punishment:1208140083711185017> , </censor alert:1208140083711185017> , </censor whitelist:1208140083711185017> , </censor links:1208140083711185017> , </censor invites:1208140083711185017> , </censor display:1208140083711185017>")
             embed.set_footer(text = "Use /help censor <command> for information on a command.")
             await interaction.message.edit(embed = embed)
             await interaction.response.defer()
