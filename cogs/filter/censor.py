@@ -22,13 +22,13 @@ class Censor(commands.GroupCog, name = "censor"):
     async def censor_enable(self, interaction: discord.Interaction):
         async with aiosqlite.connect("db/censor.db") as db:
             async with db.cursor() as cursor:
-                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, censor_links TEXT, censor_invites TEXT)")
+                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, alert INTEGER, censor_links TEXT, censor_invites TEXT)")
                 await cursor.execute("SELECT switch FROM censor WHERE guild = ?", (interaction.guild.id,))
                 data = await cursor.fetchone()
                 if data:
                     await interaction.response.send_message("Your censor system is already enabled.", ephemeral = True)
                 else:
-                    await cursor.execute("INSERT INTO censor (guild, switch, words, punishment, whitelist, censor_links, censor_invites) VALUES (?, ?, ?, ?, ?, ?, ?)", (interaction.guild.id, 1, "[]", "none", "0", "disabled", "disabled",))
+                    await cursor.execute("INSERT INTO censor (guild, switch, words, punishment, whitelist, alert, censor_links, censor_invites) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (interaction.guild.id, 1, "[]", "none", "0", "0", "disabled", "disabled",))
                     embed = discord.Embed(title = "⛔ ┃ Censor System Enable", description = "Censor System is now enabled", color = 0x000000)
                     await interaction.response.send_message(embed = embed)
             await db.commit()
@@ -40,7 +40,7 @@ class Censor(commands.GroupCog, name = "censor"):
     async def censor_disable(self, interaction: discord.Interaction):
         async with aiosqlite.connect("db/censor.db") as db:
             async with db.cursor() as cursor:
-                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, censor_links TEXT, censor_invites TEXT)")
+                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, alert INTEGER, censor_links TEXT, censor_invites TEXT)")
                 await cursor.execute("SELECT switch FROM censor WHERE guild = ?", (interaction.guild.id,))
                 data = await cursor.fetchone()
                 if data:
@@ -62,7 +62,7 @@ class Censor(commands.GroupCog, name = "censor"):
     async def censor_words(self, interaction: discord.Interaction, option: app_commands.Choice[str], words: str):
         async with aiosqlite.connect("db/censor.db") as db:
             async with db.cursor() as cursor:
-                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, censor_links TEXT, censor_invites TEXT)")
+                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, alert INTEGER, censor_links TEXT, censor_invites TEXT)")
                 await cursor.execute("SELECT * FROM censor WHERE guild = ?", (interaction.guild.id,))
                 data = await cursor.fetchone()
                 if data: # If system is enabled
@@ -118,7 +118,7 @@ class Censor(commands.GroupCog, name = "censor"):
     async def censor_punishment(self, interaction: discord.Interaction, punishment: app_commands.Choice[str]):
         async with aiosqlite.connect("db/censor.db") as db:
             async with db.cursor() as cursor:
-                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, censor_links TEXT, censor_invites TEXT)")
+                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, alert INTEGER, censor_links TEXT, censor_invites TEXT)")
                 await cursor.execute("SELECT switch FROM censor WHERE guild = ?", (interaction.guild.id,))
                 data = await cursor.fetchone()
                 if data: await cursor.execute("UPDATE censor SET punishment = ? WHERE guild = ?", (punishment.value, interaction.guild.id,))
@@ -135,12 +135,31 @@ class Censor(commands.GroupCog, name = "censor"):
     async def censor_whitelist(self, interaction: discord.Interaction, channel: discord.TextChannel):
         async with aiosqlite.connect("db/censor.db") as db:
             async with db.cursor() as cursor:
-                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, censor_links TEXT, censor_invites TEXT)")
+                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, alert INTEGER, censor_links TEXT, censor_invites TEXT)")
                 await cursor.execute("SELECT switch FROM censor WHERE guild = ?", (interaction.guild.id,))
                 data = await cursor.fetchone()
                 if data: await cursor.execute("UPDATE censor SET whitelist = ? WHERE guild = ?", (str(channel.id), interaction.guild.id,))
                 else: return await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from /censor enable", ephemeral = True)
                 embed = discord.Embed(title = "⛔ ┃ Censor System Whitelist", description = f"{channel.mention} is now whitelisted", color = 0x000000)
+                await interaction.response.send_message(embed = embed)
+            await db.commit()
+
+    # Censor alert channel
+    @app_commands.command(name = "alert", description = "Set an alert channel for the Censor System")
+    @app_commands.checks.has_permissions(manage_channels = True)
+    @app_commands.describe(channel = "The channel to send alerts to")
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
+    async def censor_alert(self, interaction: discord.Interaction, channel: discord.TextChannel):
+        async with aiosqlite.connect("db/censor.db") as db:
+            async with db.cursor() as cursor:
+                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, alert INTEGER, censor_links TEXT, censor_invites TEXT)")
+                await cursor.execute("SELECT * FROM censor WHERE guild = ?", (interaction.guild.id,))
+                data = await cursor.fetchone()
+                if data:
+                    await cursor.execute("UPDATE censor SET alert = ? WHERE guild = ?", (str(channel.id), interaction.guild.id,))
+                else:
+                    return await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from /censor enable", ephemeral = True)
+                embed = discord.Embed(title = "⛔ ┃ Censor System Alert", description = f"{channel.mention} is now the alert channel", color = 0x000000)
                 await interaction.response.send_message(embed = embed)
             await db.commit()
 
@@ -151,15 +170,15 @@ class Censor(commands.GroupCog, name = "censor"):
     async def censor_links(self, interaction: discord.Interaction):
         async with aiosqlite.connect("db/censor.db") as db:
             async with db.cursor() as cursor:
-                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, censor_links TEXT, censor_invites TEXT)")
+                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, alert INTEGER, censor_links TEXT, censor_invites TEXT)")
                 await cursor.execute("SELECT * FROM censor WHERE guild = ?", (interaction.guild.id,))
                 data = await cursor.fetchone()
                 if data:
-                    if data[5] == "enabled":
+                    if data[6] == "enabled":
                         await cursor.execute("UPDATE censor SET censor_links = ? WHERE guild = ?", ("disabled", interaction.guild.id,))
                         embed = discord.Embed(title = "⛔ ┃ Censoring Links Disabled", description = f"Censoring all links is now disabled", color = 0x000000)
                         await interaction.response.send_message(embed = embed)
-                    elif data[5] == "disabled":
+                    elif data[6] == "disabled":
                         await cursor.execute("UPDATE censor SET censor_links = ? WHERE guild = ?", ("enabled", interaction.guild.id,))
                         embed = discord.Embed(title = "⛔ ┃ Censoring Links Enabled", description = f"Censoring all links is now enabled", color = 0x000000)
                         await interaction.response.send_message(embed = embed)
@@ -173,15 +192,15 @@ class Censor(commands.GroupCog, name = "censor"):
     async def censor_invites(self, interaction: discord.Interaction):
         async with aiosqlite.connect("db/censor.db") as db:
             async with db.cursor() as cursor:
-                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, censor_links TEXT, censor_invites TEXT)")
+                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, alert INTEGER, censor_links TEXT, censor_invites TEXT)")
                 await cursor.execute("SELECT * FROM censor WHERE guild = ?", (interaction.guild.id,))
                 data = await cursor.fetchone()
                 if data:
-                    if data[6] == "enabled":
+                    if data[7] == "enabled":
                         await cursor.execute("UPDATE censor SET censor_invites = ? WHERE guild = ?", ("disabled", interaction.guild.id,))
                         embed = discord.Embed(title = "⛔ ┃ Censoring Invites Disabled", description = f"Censoring other server's invites is now disabled", color = 0x000000)
                         await interaction.response.send_message(embed = embed)
-                    elif data[6] == "disabled":
+                    elif data[7] == "disabled":
                         await cursor.execute("UPDATE censor SET censor_invites = ? WHERE guild = ?", ("enabled", interaction.guild.id,))
                         embed = discord.Embed(title = "⛔ ┃ Censoring Invites Enabled", description = f"Censoring other server's invites is now enabled", color = 0x000000)
                         await interaction.response.send_message(embed = embed)
@@ -195,7 +214,7 @@ class Censor(commands.GroupCog, name = "censor"):
     async def censor_display(self, interaction: discord.Interaction):
         async with aiosqlite.connect("db/censor.db") as db:
             async with db.cursor() as cursor:
-                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, censor_links TEXT, censor_invites TEXT)")
+                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, alert INTEGER, censor_links TEXT, censor_invites TEXT)")
                 await cursor.execute("SELECT * FROM censor WHERE guild = ?", (interaction.guild.id,))
                 data = await cursor.fetchone()
                 if data:
@@ -206,9 +225,11 @@ class Censor(commands.GroupCog, name = "censor"):
                     punishment = str(data[3]).title()
                     whitelisted = self.bot.get_channel(int(data[4]))
                     if whitelisted: whitelisted = whitelisted.mention
-                    censor_links = str(data[5]).title()
-                    censor_invites = str(data[6]).title()
-                    embed = discord.Embed(title=f"Censor System settings for {interaction.guild.name}", description=f"Status: **{status}**\nCensored Words: **{words}**\nPunishment: **{punishment}**\nWhitelisted Channel: **{whitelisted}**\nCensor Links: **{censor_links}**\nCensor Invites: **{censor_invites}**")
+                    alert_channel = self.bot.get_channel(int(data[5]))
+                    if alert_channel: alert_channel = alert_channel.mention
+                    censor_links = str(data[6]).title()
+                    censor_invites = str(data[7]).title()
+                    embed = discord.Embed(title=f"Censor System settings for {interaction.guild.name}", description=f"Status: **{status}**\nCensored Words: **{words}**\nPunishment: **{punishment}**\nAlert Channel: **{alert_channel}**\nWhitelisted Channel: **{whitelisted}**\nCensor Links: **{censor_links}**\nCensor Invites: **{censor_invites}**")
                     await interaction.response.send_message(embed=embed)
                 else: await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from /censor enable", ephemeral = True)
 
