@@ -11,6 +11,7 @@ class Dropdown(discord.ui.Select):
             discord.SelectOption(label = "Index", description = "Shows the main help page.", emoji = "👋"),
             discord.SelectOption(label = "Tickets", description = "Shows tickets commands", emoji = "📩"),
             discord.SelectOption(label = "Anti-Spam", description = "Shows anti-spam commands", emoji = "⛔"),
+            discord.SelectOption(label = "Censor System", description = "Shows censor system commands", emoji = "🚫"),
             discord.SelectOption(label = "Logging", description = "Shows logging commands", emoji = "📝"),
             discord.SelectOption(label = "Moderation", description = "Shows moderation commands.", emoji = "⚒️"),
             discord.SelectOption(label = "Artificial Intelligence", description = "Shows artificial intelligence commands.", emoji = "🤖"),
@@ -83,6 +84,14 @@ class Dropdown(discord.ui.Select):
             embed = discord.Embed(title = "**Tickets**", description = "Create and moderate tickets", color = 0x2F3136)
             embed.add_field(name = "**Commands**", value = "> </ticket launch:1020114423026810906> , </ticket close:1020114423026810906> , </ticket archive:1020114423026810906> , </ticket add:1020114423026810906> , </ticket remove:1020114423026810906> , </ticket role:1020114423026810906> , </ticket transcript:1020114423026810906>")
             embed.set_footer(text = "Use /help tickets <command> for information on a command.")
+            await interaction.message.edit(embed = embed)
+            await interaction.response.defer()
+
+        # Censor System page
+        elif self.values[0] == "Censor System":
+            embed = discord.Embed(title = "**Censor System**", description = "Create a Censor System", color = 0x2F3136)
+            embed.add_field(name = "**Commands**", value = "> </censor enable:1208140083711185017> , </censor disable:1208140083711185017> , </censor words:1208140083711185017> , </censor alert:1208140083711185017> , </censor whitelist:1208140083711185017> , </censor links:1208140083711185017> , </censor invites:1208140083711185017> , </censor display:1208140083711185017>")
+            embed.set_footer(text = "Use /help censor <command> for information on a command.")
             await interaction.message.edit(embed = embed)
             await interaction.response.defer()
 
@@ -691,6 +700,77 @@ class Help(commands.GroupCog, name = "help"):
             em.set_footer(text = "<> means requird, [] means optional")
             await interaction.response.send_message(embed = em)
 
+    #censor commands help
+    @app_commands.command(name = "censor", description = "Shinobi Bot's Censor System catogery help.")
+    @app_commands.describe(command = "Choose a command to get info about it.")
+    @app_commands.checks.cooldown(1, 5, key = lambda i: (i.user.id))
+    @app_commands.choices(command = [
+        app_commands.Choice(name = "enable", value = "enable"),
+        app_commands.Choice(name = "disable", value = "disable"),
+        app_commands.Choice(name = "words", value = "words"),
+        app_commands.Choice(name = "punishment", value = "punishment"),
+        app_commands.Choice(name = "whitelist", value = "whitelist"),
+        app_commands.Choice(name = "alert", value = "alert"),
+        app_commands.Choice(name = "links", value = "links"),
+        app_commands.Choice(name = "invites", value = "invites"),
+        app_commands.Choice(name = "display", value = "display")
+        ])
+    async def censor(self, interaction: discord.Interaction, command: app_commands.Choice[str]):
+        if command.value == "enable":
+            em = discord.Embed(title = "__**Censor Enable**__", description = "Enables Censor System.", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> censor enable")
+            em.add_field(name = "**Example:**", value = "> `/censor enable`")
+            em.set_footer(text = "<> means requird, [] means optional")
+            await interaction.response.send_message(embed = em)
+        elif command.value == "disable":
+            em = discord.Embed(title = "__**Censor Disable**__", description = "Disables Censor System.", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> censor disable")
+            em.add_field(name = "**Example:**", value = "> `/censor disable`")
+            em.set_footer(text = "<> means requird, [] means optional")
+            await interaction.response.send_message(embed = em)
+        elif command.value == "words":
+            em = discord.Embed(title = "__**Censor Words**__", description = "Add or remove words from the Censor System.", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> censor words <words>")
+            em.add_field(name = "**Example:**", value = "> `/censor words some, words, to ban`")
+            em.set_footer(text = "<> means requird, [] means optional")
+            await interaction.response.send_message(embed = em)
+        elif command.value == "punishment":
+            em = discord.Embed(title = "__**Censor Punishment**__", description = "Sets a punishment for Censor System.", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> censor punishment <punishment>")
+            em.add_field(name = "**Example:**", value = "> `/censor punishment timeout`")
+            em.set_footer(text = "<> means requird, [] means optional")
+            await interaction.response.send_message(embed = em)
+        elif command.value == "whitelist":
+            em = discord.Embed(title = "__**Censor Whitelist**__", description = "Whitelist a channel.", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> censor whitelist <channel>")
+            em.add_field(name = "**Example:**", value = "> `/censor whitelist #channel`")
+            em.set_footer(text = "<> means requird, [] means optional")
+            await interaction.response.send_message(embed = em)
+        elif command.value == "alert":
+            em = discord.Embed(title = "__**Censor Alert**__", description = "Set an alert channel.", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> censor alert <channel>")
+            em.add_field(name = "**Example:**", value = "> `/censor alert #channel`")
+            em.set_footer(text = "<> means requird, [] means optional")
+            await interaction.response.send_message(embed = em)
+        elif command.value == "links":
+            em = discord.Embed(title = "__**Censor Links**__", description = "Censor all links.", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> censor links")
+            em.add_field(name = "**Example:**", value = "> `/censor links`")
+            em.set_footer(text = "<> means requird, [] means optional")
+            await interaction.response.send_message(embed = em)
+        elif command.value == "invites":
+            em = discord.Embed(title = "__**Censor Invites**__", description = "Censor all servers' invites.", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> censor invites")
+            em.add_field(name = "**Example:**", value = "> `/censor invites`")
+            em.set_footer(text = "<> means requird, [] means optional")
+            await interaction.response.send_message(embed = em)
+        elif command.value == "display":
+            em = discord.Embed(title = "__**Censor Display**__", description = "Display Censor System settings in this server.", color = 0x2F3136)
+            em.add_field(name = "**Syntax:**", value = "> censor display")
+            em.add_field(name = "**Example:**", value = "> `/censor display`")
+            em.set_footer(text = "<> means requird, [] means optional")
+            await interaction.response.send_message(embed = em)
+
     #antispam commands help
     @app_commands.command(name = "antispam", description = "Shinobi Bot's anti-spam catogery help.")
     @app_commands.describe(command = "Choose a command to get info about it.")
@@ -701,7 +781,7 @@ class Help(commands.GroupCog, name = "help"):
         app_commands.Choice(name = "punishment", value = "punishment"),
         app_commands.Choice(name = "whitelist", value = "whitelist")
         ])
-    async def settings(self, interaction: discord.Interaction, command: app_commands.Choice[str]):
+    async def antispam(self, interaction: discord.Interaction, command: app_commands.Choice[str]):
         if command.value == "enable":
             em = discord.Embed(title = "__**Anti-Spam Enable**__", description = "Enables Anti-Spam System.", color = 0x2F3136)
             em.add_field(name = "**Syntax:**", value = "> antispam enable")
