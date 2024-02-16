@@ -103,7 +103,7 @@ class Censor(commands.GroupCog, name = "censor"):
                         if already_removed_words != []: embed.set_footer(text=f"Note: {', '.join(already_removed_words)} are not on the system. Check /censor display to view all the settings")
                         await interaction.response.send_message(embed = embed)
                 else:
-                    return await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from /censor enable", ephemeral = True)
+                    return await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from </censor enable:1208140083711185017>", ephemeral = True)
             await db.commit()
 
     # Censor punishment
@@ -125,7 +125,7 @@ class Censor(commands.GroupCog, name = "censor"):
                 await cursor.execute("SELECT switch FROM censor WHERE guild = ?", (interaction.guild.id,))
                 data = await cursor.fetchone()
                 if data: await cursor.execute("UPDATE censor SET punishment = ? WHERE guild = ?", (punishment.value, interaction.guild.id,))
-                else: return await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from /censor enable", ephemeral = True)
+                else: return await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from </censor enable:1208140083711185017>", ephemeral = True)
                 embed = discord.Embed(title = "⛔ ┃ Censor System Punishment", description = f"Censor System punishment has been updated to `{punishment.value}`", color = 0x000000)
                 await interaction.response.send_message(embed = embed)
             await db.commit()
@@ -142,7 +142,7 @@ class Censor(commands.GroupCog, name = "censor"):
                 await cursor.execute("SELECT switch FROM censor WHERE guild = ?", (interaction.guild.id,))
                 data = await cursor.fetchone()
                 if data: await cursor.execute("UPDATE censor SET whitelist = ? WHERE guild = ?", (str(channel.id), interaction.guild.id,))
-                else: return await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from /censor enable", ephemeral = True)
+                else: return await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from </censor enable:1208140083711185017>", ephemeral = True)
                 embed = discord.Embed(title = "⛔ ┃ Censor System Whitelist", description = f"{channel.mention} is now whitelisted", color = 0x000000)
                 await interaction.response.send_message(embed = embed)
             await db.commit()
@@ -161,7 +161,7 @@ class Censor(commands.GroupCog, name = "censor"):
                 if data:
                     await cursor.execute("UPDATE censor SET alert = ? WHERE guild = ?", (str(channel.id), interaction.guild.id,))
                 else:
-                    return await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from /censor enable", ephemeral = True)
+                    return await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from </censor enable:1208140083711185017>", ephemeral = True)
                 embed = discord.Embed(title = "⛔ ┃ Censor System Alert", description = f"{channel.mention} is now the alert channel", color = 0x000000)
                 await interaction.response.send_message(embed = embed)
             await db.commit()
@@ -185,7 +185,7 @@ class Censor(commands.GroupCog, name = "censor"):
                         await cursor.execute("UPDATE censor SET censor_links = ? WHERE guild = ?", ("enabled", interaction.guild.id,))
                         embed = discord.Embed(title = "⛔ ┃ Censoring Links Enabled", description = f"Censoring all links is now enabled", color = 0x000000)
                         await interaction.response.send_message(embed = embed)
-                else: return await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from /censor enable", ephemeral = True)
+                else: return await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from </censor enable:1208140083711185017>", ephemeral = True)
             await db.commit()
 
     # Censor invites
@@ -207,7 +207,7 @@ class Censor(commands.GroupCog, name = "censor"):
                         await cursor.execute("UPDATE censor SET censor_invites = ? WHERE guild = ?", ("enabled", interaction.guild.id,))
                         embed = discord.Embed(title = "⛔ ┃ Censoring Invites Enabled", description = f"Censoring other server's invites is now enabled", color = 0x000000)
                         await interaction.response.send_message(embed = embed)
-                else: return await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from /censor enable", ephemeral = True)
+                else: return await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from </censor enable:1208140083711185017>", ephemeral = True)
             await db.commit()
 
     # Censor display
@@ -234,7 +234,7 @@ class Censor(commands.GroupCog, name = "censor"):
                     censor_invites = str(data[7]).title()
                     embed = discord.Embed(title=f"Censor System settings for {interaction.guild.name}", description=f"Status: **{status}**\nCensored Words: **{words}**\nPunishment: **{punishment}**\nAlert Channel: **{alert_channel}**\nWhitelisted Channel: **{whitelisted}**\nCensor Links: **{censor_links}**\nCensor Invites: **{censor_invites}**")
                     await interaction.response.send_message(embed=embed)
-                else: await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from /censor enable", ephemeral = True)
+                else: await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from </censor enable:1208140083711185017>", ephemeral = True)
 
 
     # On message events
