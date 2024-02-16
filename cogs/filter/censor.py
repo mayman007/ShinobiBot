@@ -3,6 +3,9 @@ import aiosqlite
 import discord
 from discord import app_commands
 from discord.ext import commands
+import re
+from datetime import timedelta
+from datetime import datetime
 
 
 # Filter Class
@@ -232,6 +235,111 @@ class Censor(commands.GroupCog, name = "censor"):
                     embed = discord.Embed(title=f"Censor System settings for {interaction.guild.name}", description=f"Status: **{status}**\nCensored Words: **{words}**\nPunishment: **{punishment}**\nAlert Channel: **{alert_channel}**\nWhitelisted Channel: **{whitelisted}**\nCensor Links: **{censor_links}**\nCensor Invites: **{censor_invites}**")
                     await interaction.response.send_message(embed=embed)
                 else: await interaction.response.send_message("Censor System is not enabled in this server.\nEnable it from /censor enable", ephemeral = True)
+
+
+    # On message events
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message):
+        if message.author.bot: return # If bot ignore it
+
+        # Open Censor database
+        async with aiosqlite.connect("db/censor.db") as db:
+            async with db.cursor() as cursor:
+                await cursor.execute("CREATE TABLE IF NOT EXISTS censor (guild ID, switch INTEGER, words TEXT, punishment TEXT, whitelist INTEGER, alert INTEGER, censor_links TEXT, censor_invites TEXT)")
+                await cursor.execute("SELECT * FROM censor WHERE guild = ?", (message.guild.id,))
+                data = await cursor.fetchone()
+         # If censor is enabled
+        if data:
+            message_content = message.content
+            message_censored = False
+            censored_content = ""
+            censored_words = ast.literal_eval(data[2])
+            punishment = data[3]
+            whitelisted_channel_id = int(data[4])
+            alert_channel_id = int(data[5])
+            censor_links = data[6]
+            censor_invites = data[7]
+            # If channel is not whitelisted
+            if message.channel.id != whitelisted_channel_id:
+                # If censor invites is enabled
+                if censor_invites == "enabled":
+                    if "discord.gg/" in message_content:
+                        message_censored = True
+                        censored_content = "Server invite"
+                # If censor links is enabled and message not deleted
+                if message_censored == False and censor_links == "enabled":
+                    pattern = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'
+                    is_link = bool(re.search(pattern, message_content))
+                    if is_link:
+                        message_censored = True
+                        censored_content = "Link"
+                # If there is censor words and message not deleted
+                if message_censored == False and censored_words != []:
+                    for word in censored_words:
+                        if word in message_content:
+                            message_censored = True
+                            censored_content = word
+                # If message should be censored
+                if message_censored == True:
+                    try:
+                        await message.delete()
+                    except: # If I don't have permissions to delete the message
+                        if alert_channel_id != 0:
+                            alert_channel = self.bot.get_channel(alert_channel_id)
+                            embed = discord.Embed(description = f"**⛔ I can't censor a message sent by {message.author.mention} in {message.channel.mention} that contains `{censored_content}`. Check my permissions. [Jump to Message]({message.jump_url})**", color = 0x000000, timestamp = datetime.now())
+                            try: embed.set_author(name = message.author, icon_url = message.author.avatar.url)
+                            except: embed.set_author(name = message.author)
+                            embed.add_field(name = "Message:", value = f"```{message_content}```")
+                            embed.set_footer(text = message.guild.name)
+                            return await alert_channel.send(embed=embed)
+                    # If there should be a punishment
+                    if punishment != "none":
+                        if punishment != "none":
+                            if message.guild.me.top_role <= message.author.top_role:
+                                if alert_channel_id != 0: # If my role is lower than the member
+                                    alert_channel = self.bot.get_channel(alert_channel_id)
+                                    embed = discord.Embed(description = f"**⛔ I can't punish {message.author.mention} for sending a message in {message.channel.mention} that contains `{censored_content}`. Check my roles. [Jump to Message]({message.jump_url})**", color = 0x000000, timestamp = datetime.now())
+                                    try: embed.set_author(name = message.author, icon_url = message.author.avatar.url)
+                                    except: embed.set_author(name = message.author)
+                                    embed.add_field(name = "Message:", value = f"```{message_content}```")
+                                    embed.set_footer(text = message.guild.name)
+                                    return await alert_channel.send(embed=embed)
+                            if punishment == "mute":
+                                mutedRole = discord.utils.get(message.guild.roles, name = "SB-Muted")
+                                if not mutedRole:
+                                    mutedRole = await message.guild.create_role(name = "SB-Muted")
+                                    for channel in message.guild.channels: await channel.set_permissions(mutedRole, send_messages = False)
+                                await message.author.add_roles(mutedRole)
+                                await message.author.send(f"You have been muted in {message.guild.name} for sending a censored message\n`{censored_content}`")
+                            elif punishment == "timeout":
+                                await message.author.timeout(timedelta(minutes = 10), reason = "Sending a message that contains censored content")
+                                await message.author.send(f"You have been timed out in {message.guild.name} for sending a censored message\n`{censored_content}`")
+                            elif punishment == "warn":
+                                async with aiosqlite.connect("db/warnings.db") as db:
+                                    async with db.cursor() as cursor:
+                                        await cursor.execute("CREATE TABLE IF NOT EXISTS warnings (warns INTEGER, member INTEGER, guild ID)")
+                                        await cursor.execute("SELECT warns FROM warnings WHERE member = ? AND guild = ?", (message.author.id, message.guild.id,))
+                                        data = await cursor.fetchone()
+                                        if data: await cursor.execute("UPDATE warnings SET warns = ? WHERE member = ? AND guild = ?", (data[0] + 1, message.author.id, message.guild.id,))
+                                        else: await cursor.execute("INSERT INTO warnings (warns, member, guild) VALUES (?, ?, ?)", (1, message.author.id, message.guild.id,))
+                                    await db.commit()
+                                await message.author.send(f"You have been warned in {message.guild.name} for sending a censored message\n`{censored_content}`")
+                            elif punishment == "kick":
+                                await message.author.kick(reason = "Sending a message that contains censored content")
+                                await message.author.send(f"You have been kicked out from {message.guild.name} for sending a censored message\n`{censored_content}`")
+                            elif punishment == "ban":
+                                await message.author.ban(reason = "Sending a message that contains censored content")
+                                await message.author.send(f"You have been banned from {message.guild.name} for sending a censored message\n`{censored_content}`")
+                    # If everything is fine and there is an alert channel
+                    if alert_channel_id != 0:
+                        alert_channel = self.bot.get_channel(alert_channel_id)
+                        embed = discord.Embed(description = f"**⛔ I censored a message sent by {message.author.mention} in {message.channel.mention} because it contained `{censored_content}`**", color = 0x000000, timestamp = datetime.now())
+                        try: embed.set_author(name = message.author, icon_url = message.author.avatar.url)
+                        except: embed.set_author(name = message.author)
+                        embed.add_field(name = "Punishment:", value = f"```{punishment}```")
+                        embed.add_field(name = "Message:", value = f"```{message_content}```")
+                        embed.set_footer(text = message.guild.name)
+                        return await alert_channel.send(embed=embed)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Censor(bot))
