@@ -8,7 +8,6 @@ from cogs.misc.giveaway import giveawayButton
 from cogs.misc.poll import pollButtons
 import logging
 import logging.handlers
-import aiosqlite
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -92,41 +91,5 @@ async def on_app_command_error(interaction: discord.Interaction, error: app_comm
         await error_channel.send(error)
         await interaction.response.send_message(f"Sorry, an error had occured.\nIf you are facing any issues with me you can always send your </feedback:1027218853127794780>.", ephemeral = True)
         raise error
-
-# On leave
-@bot.event
-async def on_guild_remove(guild: discord.Guild):
-    # Remove guild from databases
-    async with aiosqlite.connect("db/tickets_role.db") as db:
-        async with db.cursor() as cursor:
-            await cursor.execute("CREATE TABLE IF NOT EXISTS roles (role INTEGER, guild ID)")
-            await cursor.execute("SELECT role FROM roles WHERE guild = ?", (guild.id,))
-            data = await cursor.fetchone()
-            if data: await cursor.execute("DELETE FROM roles WHERE guild = ?", (guild.id,))
-        await db.commit()
-    async with aiosqlite.connect("db/suggestions.db") as db:
-        async with db.cursor() as cursor:
-            await cursor.execute("CREATE TABLE IF NOT EXISTS channels (sugg_channel INTEGER, rev_channel INTEGER, guild ID)")
-            await cursor.execute("SELECT sugg_channel AND rev_channel FROM channels WHERE guild = ?", (guild.id,))
-            data = await cursor.fetchone()
-            if data: await cursor.execute("DELETE FROM channels WHERE guild = ?", (guild.id,))
-        await db.commit()
-    async with aiosqlite.connect("db/antispam.db") as db:
-        async with db.cursor() as cursor:
-            await cursor.execute("CREATE TABLE IF NOT EXISTS antispam (switch INTEGER, punishment STRING, whitelist STRING, guild ID)")
-            await cursor.execute("SELECT switch FROM antispam WHERE guild = ?", (guild.id,))
-            data = await cursor.fetchone()
-            if data: await cursor.execute("DELETE FROM antispam WHERE guild = ?", (guild.id,))
-        await db.commit()
-    logs_files_list = ["joins", "leaves", "messages_edits", "messages_deletes", "role_create", "role_delete", "role_updates", "role_given", "role_remove",
-                      "channel_create", "channel_delete", "channel_updates", "member_ban", "member_unban", "member_timeout" ,"nickname_change", "server_updates"]
-    for log_file in logs_files_list:
-        async with aiosqlite.connect(f"db/log_{log_file}.db") as db:
-            async with db.cursor() as cursor:
-                await cursor.execute("CREATE TABLE IF NOT EXISTS log (channel INTEGER, guild ID)")
-                await cursor.execute("SELECT channel FROM log WHERE guild = ?", (guild.id,))
-                data = await cursor.fetchone()
-                if data: await cursor.execute("DELETE FROM log WHERE guild = ?", (guild.id,))
-            await db.commit()
 
 bot.run(os.getenv("BOT_TOKEN"))
