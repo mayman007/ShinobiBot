@@ -313,7 +313,7 @@ class Censor(commands.GroupCog, name = "censor"):
                                 await message.author.send(f"You have been muted in {message.guild.name} for sending a censored message\n`{censored_content}`")
                             elif punishment == "timeout":
                                 await message.author.timeout(timedelta(minutes = 10), reason = "Sending a message that contains censored content")
-                                await message.author.send(f"You have been timed out in {message.guild.name} for sending a censored message\n`{censored_content}`")
+                                auther_message = f"You have been timed out in {message.guild.name} for sending a censored message\n`{censored_content}`"
                             elif punishment == "warn":
                                 async with aiosqlite.connect("db/warnings.db") as db:
                                     async with db.cursor() as cursor:
@@ -323,13 +323,13 @@ class Censor(commands.GroupCog, name = "censor"):
                                         if data: await cursor.execute("UPDATE warnings SET warns = ? WHERE member = ? AND guild = ?", (data[0] + 1, message.author.id, message.guild.id,))
                                         else: await cursor.execute("INSERT INTO warnings (warns, member, guild) VALUES (?, ?, ?)", (1, message.author.id, message.guild.id,))
                                     await db.commit()
-                                await message.author.send(f"You have been warned in {message.guild.name} for sending a censored message\n`{censored_content}`")
+                                auther_message = f"You have been warned in {message.guild.name} for sending a censored message\n`{censored_content}`"
                             elif punishment == "kick":
                                 await message.author.kick(reason = "Sending a message that contains censored content")
-                                await message.author.send(f"You have been kicked out from {message.guild.name} for sending a censored message\n`{censored_content}`")
+                                auther_message = f"You have been kicked out from {message.guild.name} for sending a censored message\n`{censored_content}`"
                             elif punishment == "ban":
                                 await message.author.ban(reason = "Sending a message that contains censored content")
-                                await message.author.send(f"You have been banned from {message.guild.name} for sending a censored message\n`{censored_content}`")
+                                auther_message = f"You have been banned from {message.guild.name} for sending a censored message\n`{censored_content}`"
                     # If everything is fine and there is an alert channel
                     if alert_channel_id != 0:
                         alert_channel = self.bot.get_channel(alert_channel_id)
@@ -339,7 +339,8 @@ class Censor(commands.GroupCog, name = "censor"):
                         embed.add_field(name = "Punishment:", value = f"```{punishment}```")
                         embed.add_field(name = "Message:", value = f"```{message_content}```")
                         embed.set_footer(text = message.guild.name)
-                        return await alert_channel.send(embed=embed)
+                        await alert_channel.send(embed=embed)
+                        await message.author.send(auther_message)
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Censor(bot))
