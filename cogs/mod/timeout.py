@@ -52,7 +52,7 @@ class ModTimeout(commands.Cog):
         #timeout over message
         await asyncio.sleep(int(sleep))
         timeout_embed = discord.Embed(title = "Timeout over!", description = f"{member.mention}'s timeout is over", colour = discord.Colour.green())
-        await interaction.response.send_message(embed = timeout_embed)
+        await interaction.followup.send(embed = timeout_embed)
 
     #Multi-Timeout
     @app_commands.command(name = "multitimeout", description = "Timeouts multiple members. (maximum 5 members.)")
