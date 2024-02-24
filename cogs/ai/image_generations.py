@@ -1,7 +1,6 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from EdgeGPT.ImageGen import ImageGenAsync
 import io
 import os
 import aiohttp
